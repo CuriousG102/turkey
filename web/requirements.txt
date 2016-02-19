@@ -1,0 +1,6 @@
+boto==2.39.0
+dj-database-url==0.4.0
+Django==1.9.2
+gunicorn==19.4.5
+Pillow==3.1.1
+psycopg2==2.6.1
