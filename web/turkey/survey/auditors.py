@@ -3,7 +3,7 @@ from django.db import models
 from .models import Auditor
 
 # Some inspiration: http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf
-URL_NAME_TO_AUDITOR = {
+NAME_TO_AUDITOR = {
     'total_task_time': '',
     'before_typing_delay': '',
     'on_focus_time': '',
@@ -25,5 +25,5 @@ URL_NAME_TO_AUDITOR = {
     'scrolled_horizontal_pixels_total': '',
     'scrolled_vertical_pixels_specific': '',        # breakdown of specific_scrolled_pixels in time intervals
     'scrolled_horizontal_pixels_specific': '',
-    'focus_changes': '', # timestamped
+    'focus_changes': '',        # timestamped
 }
