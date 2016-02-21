@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
@@ -38,7 +39,20 @@ class Task(models.Model):
         ordering = ['-updated']
 
 
-class Step(models.Model):
+class EventAndSubmission:
+    template_code = 'survey/my_step_template.html'
+
+    @classmethod
+    def handle_submission_data(cls, data):
+        # return instance of class created from data
+        pass
+
+    @classmethod
+    def get_template_code(cls):
+        return render_to_string(cls.template_code)
+
+
+class Step(models.Model, EventAndSubmission):
     task = models.ForeignKey(
         'Task',
         verbose_name=_('Associated Task'),
@@ -49,20 +63,20 @@ class Step(models.Model):
         help_text=_('Controls the order that steps linked to a task are to be '
                     'taken in by the user')
     )
-    # template_code = 'survey/my_step_template.html'
 
     class Meta:
         abstract = True
+        verbose_name = _('Step')
+        verbose_name_plural = _('Steps')
         ordering = ['task', 'step_num', '-updated']
 
 
-class Auditor(models.Model):
+class Auditor(models.Model, EventAndSubmission):
     task = models.ForeignKey(
         'Task',
         verbose_name=_('Associated Task'),
         help_text=_('Task that this step is linked to')
     )
-    # template_code = 'survey/my_auditor_template.html
 
     class Meta:
         abstract = True
