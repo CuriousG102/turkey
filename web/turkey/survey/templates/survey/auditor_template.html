@@ -55,17 +55,19 @@
 			visibilityChange = "webkitvisibilitychange";
 		}
 
-		var off_focus_time = 0;
+		var off_focus_time = 0, last_focus_time = (new Date()).getTime();
 		function handleVisibilityChange() {
-			var start2;
+			var focus_change_time;
 			if (document[hidden]) {
-			    start2 = (new Date()).getTime();
-			    focus_changes.push((start2 - timeStart) / 1000.0);
-			    console.log("out of focus: " + (start2 - timeStart) / 1000.0);
+			    focus_change_time = (new Date()).getTime();
+			    focus_changes.push((focus_change_time - timeStart) / 1000.0);
+			    last_focus_time = (new Date()).getTime();
+			    // console.log("out of focus: " + (focus_change_time - timeStart) / 1000.0);
 			} else {
-			    start2 = (new Date()).getTime();
-			    off_focus_time += (stop2 - timeStart) / 1000.0;
-			    console.log("IN FOCUS: " + (start2 - timeStart) / 1000.0);
+			    focus_change_time = (new Date()).getTime();
+			    off_focus_time += (focus_change_time - last_focus_time) / 1000.0;
+			    // console.log("IN FOCUS: " + (focus_change_time - timeStart) / 1000.0);
+			    // console.log("total off focus time: " + off_focus_time);
 			}
 		}
 		document.addEventListener(visibilityChange, handleVisibilityChange, false);
