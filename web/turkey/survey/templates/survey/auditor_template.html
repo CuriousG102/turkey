@@ -4,13 +4,13 @@
 	var before_typing_delay = 0;
 	var on_focus_time = null;
 	var within_typing_delay = 0; //
-	var recorded_time_disparity = null;
+	var recorded_time_disparity = 0; // total - off focus time
 	var clicks_total = 0;
 	var clicks_specific = [];		// specific positions and (hopefully) elements clicked inside of
 	var keypresses_total = 0;
 	var keypresses_specific = []; 	// There are fields total tabs, total
 	                            // backspaces, and count of unique characters
-	                            // in the paper above, but these can
+	                  https://github.com/CuriousG102/turkey.git          // in the paper above, but these can
 	                            // be extracted from aggregations on
 	                            // keypresses_specific
 	var mouse_movement_total = null;
@@ -21,7 +21,7 @@
 	var scrolled_horizontal_pixels_total = 0;
 	var scrolled_vertical_pixels_specific = [];        // breakdown of specific_scrolled_pixels in time intervals; actual position, amount in scroll change, or both?
 	var scrolled_horizontal_pixels_specific = [];
-	var focus_changes = null; // timestamped
+	var focus_changes = []; // timestamped
 
 
 	$(document).ready(function() {
@@ -39,6 +39,49 @@
 			}
 		},
 
+		// Set the name of the hidden property and the change event for visibility
+		var hidden, visibilityChange; 
+		if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+			hidden = "hidden";
+			visibilityChange = "visibilitychange";
+		} else if (typeof document.mozHidden !== "undefined") {
+			hidden = "mozHidden";
+			visibilityChange = "mozvisibilitychange";
+		} else if (typeof document.msHidden !== "undefined") {
+			hidden = "msHidden";
+			visibilityChange = "msvisibilitychange";
+		} else if (typeof document.webkitHidden !== "undefined") {
+			hidden = "webkitHidden";
+			visibilityChange = "webkitvisibilitychange";
+		}
+
+		var start = (new Date()).getTime();
+		function handleVisibilityChange() {
+			var start2;
+			if (document[hidden]) {
+			    start2 = (new Date()).getTime();
+			    console.log("out of focus: " + (start2 - start) / 1000.0);
+			} else {
+			    start2 = (new Date()).getTime();
+			    console.log("IN FOCUS: " + (start2 - start) / 1000.0);
+			}
+		}
+		document.addEventListener(visibilityChange, handleVisibilityChange, false);
+
+		// focus handler
+		/*var off_focus_time = 0;
+		var handle_focus_events = function() {
+			var start;
+			if(document[hidden]) {
+				start = (new Date()).getTime();
+				focus_changes.push((start - startTime) / 1000.0);
+			} else {
+				var stop = (new Date()).getTime();
+				off_focus_time += (stop - start) / 1000.0;
+			}
+		};
+		document.addEventListener("visibilityChange", handle_focus_events, false);
+*/
 		// clicking events
 		$('*').click(function(e) {
 			e.stopPropagation();
