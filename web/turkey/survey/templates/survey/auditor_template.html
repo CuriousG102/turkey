@@ -55,33 +55,21 @@
 			visibilityChange = "webkitvisibilitychange";
 		}
 
-		var start = (new Date()).getTime();
+		var off_focus_time = 0;
 		function handleVisibilityChange() {
 			var start2;
 			if (document[hidden]) {
 			    start2 = (new Date()).getTime();
-			    console.log("out of focus: " + (start2 - start) / 1000.0);
+			    focus_changes.push((start2 - timeStart) / 1000.0);
+			    console.log("out of focus: " + (start2 - timeStart) / 1000.0);
 			} else {
 			    start2 = (new Date()).getTime();
-			    console.log("IN FOCUS: " + (start2 - start) / 1000.0);
+			    off_focus_time += (stop2 - timeStart) / 1000.0;
+			    console.log("IN FOCUS: " + (start2 - timeStart) / 1000.0);
 			}
 		}
 		document.addEventListener(visibilityChange, handleVisibilityChange, false);
 
-		// focus handler
-		/*var off_focus_time = 0;
-		var handle_focus_events = function() {
-			var start;
-			if(document[hidden]) {
-				start = (new Date()).getTime();
-				focus_changes.push((start - startTime) / 1000.0);
-			} else {
-				var stop = (new Date()).getTime();
-				off_focus_time += (stop - start) / 1000.0;
-			}
-		};
-		document.addEventListener("visibilityChange", handle_focus_events, false);
-*/
 		// clicking events
 		$('*').click(function(e) {
 			e.stopPropagation();
