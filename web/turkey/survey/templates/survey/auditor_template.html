@@ -1,0 +1,44 @@
+<script>
+	var total_task_time;
+	var before_typing_delay;
+	var on_focus_time;
+	var within_typing_delay;
+	var recorded_time_disparity;
+	var clicks_total;
+	var clicks_specific;		// specific positions and (hopefully) elements clicked inside of
+	var keypresses_total;
+	var keypresses_specific; 	// There are fields total tabs, total
+	                            // backspaces, and count of unique characters
+	                            // in the paper above, but these can
+	                            // be extracted from aggregations on
+	                            // keypresses_specific
+	var mouse_movement_total;
+	var mouse_movement_specific;
+	var pastes_total;
+	var pastes_specific;
+	var scrolled_vertical_pixels_total; // total of position changes via scroll (absolute values)
+	var scrolled_horizontal_pixels_total;
+	var scrolled_vertical_pixels_specific;        // breakdown of specific_scrolled_pixels in time intervals
+	var scrolled_horizontal_pixels_specific;
+	var focus_changes; // timestamped
+
+
+	// clicking events
+	$('*').click(function(e) {
+		e.stopPropagation();
+		clicks_total += 1;
+		clicks_specific.push(this);
+		console.log("clicks: " + clicks_total);
+		console.log(clicks_specific);
+	});
+
+	// keypress events
+	$('*').keyup(function(e) {
+		e.stopPropagation();
+		keypresses_total += 1;
+		keypresses_specific.push(String.fromCharCode(e.keycode));
+		console.log("kp: " + keypresses_total);
+		console.log(keypresses_specific);
+	});
+
+</script>
