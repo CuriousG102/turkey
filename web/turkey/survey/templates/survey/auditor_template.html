@@ -2,17 +2,17 @@
 	// right now, 'null's are just placeholder values for unclear/ambiguous/uncertain vars
 	var total_task_time = 0;
 	var before_typing_delay = 0;
-	var on_focus_time = null;
+	var on_focus_time = 0; // total - off focus time *********
 	var within_typing_delay = 0; //
-	var recorded_time_disparity = 0; // total - off focus time
+	var recorded_time_disparity = 0; // total - off focus time **********
 	var clicks_total = 0;
 	var clicks_specific = [];		// specific positions and (hopefully) elements clicked inside of
 	var keypresses_total = 0;
 	var keypresses_specific = []; 	// There are fields total tabs, total
-	                            // backspaces, and count of unique characters
-	                  https://github.com/CuriousG102/turkey.git          // in the paper above, but these can
-	                            // be extracted from aggregations on
-	                            // keypresses_specific
+		                            // backspaces, and count of unique characters
+		                  			// in the paper above, but these can
+		                            // be extracted from aggregations on
+		                            // keypresses_specific
 	var mouse_movement_total = null;
 	var mouse_movement_specific = null;
 	var pastes_total = 0;
@@ -94,6 +94,15 @@
 			// console.log(keypresses_specific);
 		}),
 
+		// paste events
+		$("input").bind("paste", function(e){
+		    e.stopPropagation();
+		    pastes_total += 1;
+			var pasted_data = e.originalEvent.clipboardData.getData('text');
+		    pastes_specific.push(pasted_data)
+		    console.log(pasted_data);
+		} );
+
 		// vertical scroll events
 		var previousV = 0;
 		$(window).scroll(function() {
@@ -130,6 +139,8 @@
 		// submit
 		var submit_auditor = function() {
 			total_task_time = ((new Date()).getTime() - timeStart) / 1000.0; //seconds
+			recorded_time_disparity = total_task_time - off_focus_time;
+			on_focus_time = total_task_time - off_focus_time;
 			
 			return {
 				'total_task_time' 						:	total_task_time,
