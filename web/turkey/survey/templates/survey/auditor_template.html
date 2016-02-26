@@ -1,5 +1,4 @@
 <script>
-	// right now, 'null's are just placeholder values for unclear/ambiguous/uncertain vars
 	var total_task_time = 0;
 	var before_typing_delay = 0;
 	var on_focus_time = 0; // total - off focus time *********
@@ -13,8 +12,8 @@
 		                  			// in the paper above, but these can
 		                            // be extracted from aggregations on
 		                            // keypresses_specific
-	var mouse_movement_total = null;
-	var mouse_movement_specific = null;
+	var mouse_movement_total = 0;
+	var mouse_movement_specific = [];
 	var pastes_total = 0;
 	var pastes_specific = [];
 	var scrolled_vertical_pixels_total = 0; // total of position changes via scroll (absolute values)
@@ -95,13 +94,23 @@
 		}),
 
 		// paste events
-		$("input").bind("paste", function(e){
+		$("input").bind("paste", function(e) {
 		    e.stopPropagation();
 		    pastes_total += 1;
 			var pasted_data = e.originalEvent.clipboardData.getData('text');
 		    pastes_specific.push(pasted_data)
-		    console.log(pasted_data);
-		} );
+		    
+		    // console.log(pasted_data);
+		}),
+
+		// mouse events
+		$("*").mousemove(function(e) {
+		    mouse_movement_total += 1;
+		    var position = [e.pageX, e.pageY];
+		    mouse_movement_specific.push(position);
+
+		    // console.log("mouse move: " + position);
+		}),
 
 		// vertical scroll events
 		var previousV = 0;
