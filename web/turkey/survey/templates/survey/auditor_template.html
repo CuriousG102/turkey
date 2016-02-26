@@ -1,8 +1,10 @@
 <script>
+	var submit_auditor;
+
 	var total_task_time = 0;
 	var before_typing_delay = 0;
 	var on_focus_time = 0; // total - off focus time *********
-	var within_typing_delay = 0; //
+	var within_typing_delay = false; //
 	var recorded_time_disparity = 0; // total - off focus time **********
 	var clicks_total = 0;
 	var clicks_specific = [];		// specific positions and (hopefully) elements clicked inside of
@@ -32,10 +34,10 @@
 		var report_typing_delay = function() {
 			report_delay = false;
 			var time = (new Date()).getTime();
-			if((time - timeStart) / 1000.0 < typing_delay) {
+			var timestamp = (time - timeStart) / 1000.0;
+			if(timestamp < typing_delay) 
 				within_typing_delay = true;			
-				before_typing_delay = time / 1000.0;
-			}
+			before_typing_delay = timestamp;
 		};
 
 		// Set the name of the hidden property and the change event for visibility
@@ -133,6 +135,7 @@
 		var previousH = 0;
 		$(window).scroll(function() {
 			var curr = $(window).scrollTop();
+			var timestamp = ((new Date()).getTime() - timeStart) / 1000.0;
 			
 			var rawAmount = curr - previousH; // directed scrolling vs total scrolling
 			var amount = Math.abs(rawAmount);
@@ -146,7 +149,7 @@
 		});
 
 		// submit
-		var submit_auditor = function() {
+		submit_auditor = function() {
 			total_task_time = ((new Date()).getTime() - timeStart) / 1000.0; //seconds
 			recorded_time_disparity = total_task_time - off_focus_time;
 			on_focus_time = total_task_time - off_focus_time;
