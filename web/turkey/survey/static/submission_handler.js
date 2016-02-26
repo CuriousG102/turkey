@@ -1,14 +1,19 @@
-var God = {
+var Overlord = {
     steps: [],
-        register: function(f) {
+    submission: {}, // results
+    
+    // enqueue a function f
+    register: function(f) {
         this.steps.push(f);
-    }
-    on_submit: function() {
-    var submission_map = {};
-    $.each(this.steps, function(e) {
-        var result = e();
-        submission[result[0]] = result[1];
-    });
+    },
+    
+    submit: function() {
+        $.each(this.steps, function(index, value) {
+            var result = value();
+            this.submission[result.name] = result.value;
+        }
+    };
+
     // post submission map to endpoint
     }
 }
