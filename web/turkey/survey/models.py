@@ -7,8 +7,20 @@ from .steps import *  # we have to get all the user defined models from steps
 from .auditors import *  # we have to get all the user defined models from auditors
 
 
+class Model(models.Model):
+    """
+    Abstract model to be used to define all our top-level models. Holds fields
+    that we desire all models to have, like time created and time updated.
+    """
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
+    updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
+
+    class Meta:
+        abstract = True
+
+
 # Create your models here.
-class Task(models.Model):
+class Task(Model):
     number_simultaneous_users = models.IntegerField(
         verbose_name=_('Number of simultaneous users'),
         help_text=_('Number of users who need to be in the lobby and ready '
@@ -21,43 +33,72 @@ class Task(models.Model):
     )
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
-    auditors = models.ManyToManyField(
-        'Auditor',
-        verbose_name=_('Auditors'),
-        help_text=_('Auditors attached to this task\'s main page')
-    )
     owners = models.ManyToManyField(
         User,
         verbose_name=_('Owners'),
         help_text=_('Users with permission to view and modify')
     )
-    created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
-    updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
 
     class Meta:
         verbose_name = _('Interactive Task')
-        ordering = ['-updated']
+        ordering = ['-updated', '-created']
 
 
-class EventAndSubmission:
-    template_code = 'survey/my_step_template.html'
+class DataModel(Model):
+    """
+    Exists to link specific instances of data to a general instance of auditor
+    and step that is linked to HIT. So for example, there is a general auditor/step
+    with configuration created by the user, and then when there is a submission on a
+    task, that auditor/step creates an instance of its data model with the captured
+    data from the user, and that data model points back at the auditor/step
+    """
 
-    @classmethod
-    def handle_submission_data(cls, data):
-        # return instance of class created from data
-        pass
-
-    @classmethod
-    def get_template_code(cls):
-        return render_to_string(cls.template_code)
+    class Meta:
+        abstract = True
+        ordering = ['-updated', '-created']
 
 
-class Step(models.Model, EventAndSubmission):
+class StepDataModel(DataModel):
+    general_model = models.ForeignKey('Step')
+
+
+class AuditorDataModel(DataModel):
+    general_model = models.ForeignKey('Auditor')
+
+
+class TaskLinkedModel:
     task = models.ForeignKey(
         'Task',
         verbose_name=_('Associated Task'),
         help_text=_('Task that this step is linked to')
     )
+
+
+class EventAndSubmission:
+    override_data_save = False
+    template_code = 'survey/my_step_template.html'
+    data_model = DataModel
+
+    def handle_submission_data(self, data):
+        # return instance of class created from data
+        pass
+
+    def get_template_code(self):
+        return render_to_string(self.template_code)
+
+    def save_processed_data_to_model(self, processed_data):
+        assert (type(processed_data) == list or type(processed_data) == dict)
+        if type(processed_data) != list:
+            processed_data = [processed_data]
+        for dictionary in processed_data:
+            model_instance = self.data_model()
+            for key, value in dictionary.items():
+                setattr(model_instance, key, value)
+            model_instance.general_model = self
+            model_instance.save()
+
+
+class Step(models.Model, EventAndSubmission, TaskLinkedModel):
     step_num = models.IntegerField(
         verbose_name=_('Step Number'),
         help_text=_('Controls the order that steps linked to a task are to be '
@@ -68,15 +109,12 @@ class Step(models.Model, EventAndSubmission):
         abstract = True
         verbose_name = _('Step')
         verbose_name_plural = _('Steps')
-        ordering = ['task', 'step_num', '-updated']
+        ordering = ['task', 'step_num', '-updated', '-created']
 
 
-class Auditor(models.Model, EventAndSubmission):
-    task = models.ForeignKey(
-        'Task',
-        verbose_name=_('Associated Task'),
-        help_text=_('Task that this step is linked to')
-    )
-
+class Auditor(models.Model, EventAndSubmission, TaskLinkedModel):
     class Meta:
         abstract = True
+        verbose_name = _('Auditor')
+        verbose_name_plural = _('Auditors')
+        ordering = ['task', '-updated', '-created']
