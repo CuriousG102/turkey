@@ -21,8 +21,8 @@ class RecordSubmission(APIView):
     def post(self, request, **kwargs):
         submission = request.data
         task = Task.objects.get(pk=kwargs['pk'])
-        self.save_data_to_mapped_models(submission.auditors, NAME_TO_AUDITOR, task)
-        self.save_data_to_mapped_models(submission.steps, NAME_TO_STEP, task)
+        self.save_data_to_mapped_models(submission['auditors'], NAME_TO_AUDITOR, task)
+        self.save_data_to_mapped_models(submission['steps'], NAME_TO_STEP, task)
         return Response(status=status.HTTP_201_CREATED)
 
 
