@@ -15,7 +15,7 @@ class RecordSubmission(APIView):
     def save_data_to_mapped_models(self, data, map, task):
         for name, model_data in data.items():
             model = apps.get_model('survey', map[name]).get(task=task)
-            processed_data = model.handle_submission_data(model_data)
+            model.handle_submission_data(model_data)
 
     def post(self, request, **kwargs):
         submission = request.data

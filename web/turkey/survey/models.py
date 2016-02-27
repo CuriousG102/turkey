@@ -75,13 +75,27 @@ class TaskLinkedModel:
 
 
 class EventAndSubmission:
-    override_data_save = False
     template_code = 'survey/my_step_template.html'
     data_model = DataModel
 
     def handle_submission_data(self, data):
-        # return instance of class created from data
-        pass
+        """
+        Parameter data will be created directly from the JSON sent via
+        auditor or step code for submission. How you handle it here is up
+        to you. You can create a dictionary or list of dictionaries for
+        filling the data model linked your Step or Auditor via data_model.
+        As long as the keys and corresponding Python primitives (values)
+        match your data model you can pass that dictionary or list of
+        dictionaries to save_processed_data_to_model and it will create
+        those data models for you. Alternatively, you can choose to handle
+        the model creation on your own. This will be necessary if your data
+        model has relations with models other than the one your Step or Auditor
+        model. The base case of this method is written for the simplest
+        possible scenario: The data coming in from the submission is a dictionary,
+        it directly matches your data model, and so it can be passed directly to
+        save_processed_data_to_model without validation or translation.
+        """
+        self.save_processed_data_to_model(data)
 
     def get_template_code(self):
         return render_to_string(self.template_code)
