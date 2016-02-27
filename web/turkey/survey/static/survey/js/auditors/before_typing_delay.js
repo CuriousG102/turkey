@@ -13,9 +13,12 @@ var AuditorBeforeTypingDelay = {
     },
     submit_callable: function () {
         return {
-            'did_type': this.first_typing_event_date ? true : false,
-            'milliseconds': this.first_typing_event_date.getTime() -
+            'milliseconds': this.first_typing_event_date
+                            ?
+                            this.first_typing_event_date.getTime() -
                             this.start_date.getTime()
+                            :
+                            null
         };
     }
 };
