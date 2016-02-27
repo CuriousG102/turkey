@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -19,12 +20,20 @@ class Model(models.Model):
         abstract = True
 
 
+def not_less_than_one(value):
+    if value < 1:
+        raise ValidationError(
+            _('If number_simultaneous_users is < 1, the value makes no sense.')
+        )
+
+
 # Create your models here.
 class Task(Model):
     number_simultaneous_users = models.IntegerField(
         verbose_name=_('Number of simultaneous users'),
         help_text=_('Number of users who need to be in the lobby and ready '
-                    'to begin before they may start the task')
+                    'to begin before they may start the task'),
+        validators=not_less_than_one
     )
     task_dependencies = models.ManyToManyField(
         'Task',
@@ -70,7 +79,7 @@ class TaskLinkedModel:
     task = models.ForeignKey(
         'Task',
         verbose_name=_('Associated Task'),
-        help_text=_('Task that this step is linked to')
+        help_text=_('Task that this is linked to')
     )
 
 
