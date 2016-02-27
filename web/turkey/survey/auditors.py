@@ -1,5 +1,4 @@
 # register and build your step models here
-from django.db import models
 from .models import Auditor
 
 # Some inspiration: http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf
