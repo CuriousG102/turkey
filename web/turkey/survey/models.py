@@ -98,7 +98,7 @@ class EventAndSubmission:
         dictionaries to save_processed_data_to_model and it will create
         those data models for you. Alternatively, you can choose to handle
         the model creation on your own. This will be necessary if your data
-        model has relations with models other than the one your Step or Auditor
+        model has relations with models other than the your Step or Auditor
         model. The base case of this method is written for the simplest
         possible scenario: The data coming in from the submission is a dictionary,
         it directly matches your data model, and so it can be passed directly to
