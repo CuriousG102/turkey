@@ -56,3 +56,9 @@ var Overlord = {
 };
 
 var overlord = Object.create(Overlord);
+
+$(document).ready(function() {
+    $('#submit').click(function() {
+        overlord.submit();
+    });
+});
