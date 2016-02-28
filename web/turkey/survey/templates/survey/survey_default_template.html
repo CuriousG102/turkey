@@ -11,15 +11,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
-    {% for auditor in auditors %}
-      {% with auditor.script_location as auditor_loc %}
-        <script src="{% static auditor_loc %}"></script>
-      {% endwith %}
+    {% for auditor_loc in auditor_script_locations %}
+      <script src="{% static auditor_loc %}"></script>
     {% endfor %}
-    {% for step in steps %}
-      {% with step.script_location as step_loc %}
-        <script src="{% static step_loc %}"></script>
-      {% endwith %}
+    {% for step_loc in step_script_locations %}
+      <script src="{% static step_loc %}"></script>
     {% endfor %}
   </head>
   <body>
