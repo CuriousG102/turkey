@@ -84,7 +84,7 @@ class TaskLinkedModel:
 
 
 class EventAndSubmission:
-    template_code = 'survey/my_step_template.html'
+    script_location = 'survey/step_or_auditor/my_example.js'
     data_model = DataModel
 
     def handle_submission_data(self, data):
@@ -106,9 +106,6 @@ class EventAndSubmission:
         """
         self.save_processed_data_to_model(data)
 
-    def get_template_code(self):
-        return render_to_string(self.template_code)
-
     def save_processed_data_to_model(self, processed_data):
         assert (type(processed_data) == list or type(processed_data) == dict)
         if type(processed_data) != list:
@@ -122,11 +119,23 @@ class EventAndSubmission:
 
 
 class Step(models.Model, EventAndSubmission, TaskLinkedModel):
+    """
+    Your step should include some way to distinguish it from another instance of
+    the same class in its template code, because the user may make multiple
+    instances of the same step model (e.g. two multiple choice questions).
+    That way, the associated script can pick up on those different instances,
+    for example by seeing that they have different numbers associated with
+    their primary keys in the id attribute on one of their tags
+    """
+    template_code = 'survey/my_step_template.html'
     step_num = models.IntegerField(
         verbose_name=_('Step Number'),
         help_text=_('Controls the order that steps linked to a task are to be '
                     'taken in by the user')
     )
+
+    def get_template_code(self):
+        return render_to_string(self.template_code)
 
     class Meta:
         abstract = True

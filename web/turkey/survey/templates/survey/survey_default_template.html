@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src=""></script>
+    {% for auditor in auditors %}
+      <script src="{{ auditor.script_location }}"></script>
+    {% endfor %}
+    {% for step in steps %}
+      <script src="{{ step.script_location }}"></script>
+    {% endfor %}
+  </head>
+  <body>
+    {% for step in steps %}
+      step.get_template_code
+    {% endfor %}
+  </body>
+</html>
