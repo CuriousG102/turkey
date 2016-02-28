@@ -1,7 +1,9 @@
-# register and build your auditor models here
 from django.db import models
-from .models import Auditor, AuditorData
 from django.utils.translation import ugettext_lazy as _
+
+# register and build your auditor models here
+from .models import Auditor, AuditorData
+
 
 # Some inspiration: http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf
 NAME_TO_AUDITOR = {
