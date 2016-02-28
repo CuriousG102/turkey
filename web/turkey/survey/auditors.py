@@ -44,7 +44,7 @@ class AuditorTotalTaskTimeData(AuditorData):
 
 
 class AuditorTotalTaskTime(Auditor):
-    template_code = 'survey/auditors/total_task_time.html'
+    script_location = 'survey/js/auditors/total_task_time.js'
     data_model = AuditorTotalTaskTimeData
 
     class Meta(Auditor.Meta):
@@ -67,7 +67,7 @@ class AuditorBeforeTypingDelayData(AuditorData):
 
 
 class AuditorBeforeTypingDelay(Auditor):
-    template_code = 'survey/auditors/before_typing_delay.html'
+    script_location = 'survey/js/auditors/before_typing_delay.js'
     data_model = AuditorBeforeTypingDelayData
 
     class Meta(Auditor.Meta):

@@ -12,10 +12,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
     {% for auditor in auditors %}
-      <script src="{{ auditor.script_location }}"></script>
+      {% with auditor.script_location as auditor_loc %}
+        <script src="{% static auditor_loc %}"></script>
+      {% endwith %}
     {% endfor %}
     {% for step in steps %}
-      <script src="{{ step.script_location }}"></script>
+      {% with step.script_location as step_loc %}
+        <script src="{% static step_loc %}"></script>
+      {% endwith %}
     {% endfor %}
   </head>
   <body>
