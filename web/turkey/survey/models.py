@@ -47,6 +47,10 @@ class Task(Model):
         verbose_name=_('Owners'),
         help_text=_('Users with permission to view and modify')
     )
+    survey_name = models.CharField(max_length=144,
+                            verbose_name=_('Survey Name'),
+                            help_text=('This is exposed to the user: Name of '
+                                       'the survey they\'re taking'))
 
     class Meta:
         verbose_name = _('Interactive Task')
@@ -127,7 +131,7 @@ class Step(models.Model, EventAndSubmission, TaskLinkedModel):
     for example by seeing that they have different numbers associated with
     their primary keys in the id attribute on one of their tags
     """
-    template_code = 'survey/my_step_template.html'
+    template_file = 'survey/my_step_template.html'
     step_num = models.IntegerField(
         verbose_name=_('Step Number'),
         help_text=_('Controls the order that steps linked to a task are to be '
@@ -135,7 +139,15 @@ class Step(models.Model, EventAndSubmission, TaskLinkedModel):
     )
 
     def get_template_code(self):
-        return render_to_string(self.template_code)
+        return render_to_string(self.template_file,
+                                {'step_instance': self})
+
+    @property
+    def template_code(self):
+        # get_template_code is not inlined so the user can override that
+        # call without having to understand how @property or the template
+        # system works in its entirety
+        return self.get_template_code()
 
     class Meta:
         abstract = True

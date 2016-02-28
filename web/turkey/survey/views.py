@@ -51,4 +51,5 @@ class TaskView(View):
 
         return TemplateResponse(request, task.survey_wrap_template, status=status.HTTP_200_OK,
                                 context={'auditors': auditors,
-                                         'steps': steps})
+                                         'steps': steps,
+                                         'task': task})
