@@ -2,6 +2,8 @@ $.ajaxSetup({
     timeout: 10 * Math.pow(10, 3) // seconds
 });
 
+var NOT_READY_TO_SUBMIT = "whoops";
+
 var Overlord = {
     steps: [],
     auditors: [],
@@ -20,14 +22,31 @@ var Overlord = {
             window.alert('Submission in progress, please wait.');
             return;
         }
+
+        this.posting = true;
         var submission = {
             'auditors': {},
             'steps': {}
         };
+
+        var unsuccessful = false;
         $.each(this.steps, function(i, el) {
             var name = el[0], callback = el[1];
-            submission['steps'][name] = callback();
+            try {
+                submission['steps'][name] = callback();
+            } catch (err) {
+                unsuccessful = true;
+                if (err !== NOT_READY_TO_SUBMIT) error_func();
+            }
         });
+
+        if (unsuccessful) return;
+
+        $.each(this.auditors, function(i, el) {
+            var name = el[0], callback = el[1];
+            submission['auditors'][name] = callback();
+        });
+
 
         var error_func = function() {
             window.alert('Submission failed. Please try again.')

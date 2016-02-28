@@ -1,7 +1,9 @@
-# register and build your auditor models here
 from django.db import models
-from .models import Auditor, AuditorDataModel
 from django.utils.translation import ugettext_lazy as _
+
+# register and build your auditor models here
+from .models import Auditor, AuditorData
+
 
 # Some inspiration: http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf
 NAME_TO_AUDITOR = {
@@ -31,7 +33,7 @@ NAME_TO_AUDITOR = {
 }
 
 
-class AuditorTotalTaskTimeData(AuditorDataModel):
+class AuditorTotalTaskTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorTotalTaskTime')
     milliseconds = models.IntegerField(
         verbose_name=_('total task time'),
@@ -39,9 +41,12 @@ class AuditorTotalTaskTimeData(AuditorDataModel):
                     'spent on the task page')
     )
 
+    class Meta(AuditorData.Meta):
+        abstract = False
+
 
 class AuditorTotalTaskTime(Auditor):
-    template_code = 'survey/auditors/total_task_time.html'
+    script_location = 'survey/js/auditors/total_task_time.js'
     data_model = AuditorTotalTaskTimeData
 
     class Meta(Auditor.Meta):
@@ -50,7 +55,7 @@ class AuditorTotalTaskTime(Auditor):
         verbose_name_plural = _('Auditors: Total Task Time')
 
 
-class AuditorBeforeTypingDelayData(AuditorDataModel):
+class AuditorBeforeTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorBeforeTypingDelay')
     milliseconds = models.IntegerField(
         verbose_name=_('total task time'),
@@ -59,9 +64,12 @@ class AuditorBeforeTypingDelayData(AuditorDataModel):
         null=True  # can be null because user might never type
     )
 
+    class Meta(AuditorData.Meta):
+        abstract = False
+
 
 class AuditorBeforeTypingDelay(Auditor):
-    template_code = 'survey/auditors/before_typing_delay.html'
+    script_location = 'survey/js/auditors/before_typing_delay.js'
     data_model = AuditorBeforeTypingDelayData
 
     class Meta(Auditor.Meta):
