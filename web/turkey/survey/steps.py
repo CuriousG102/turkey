@@ -1,5 +1,4 @@
 # register and build your step models here
-from django.db import models
 from .models import Step
 
 NAME_TO_STEP = {
