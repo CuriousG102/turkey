@@ -71,11 +71,11 @@ class DataModel(Model):
         ordering = ['-updated', '-created']
 
 
-class StepDataModel(DataModel):
+class StepData(DataModel):
     general_model = models.ForeignKey('Step')
 
 
-class AuditorDataModel(DataModel):
+class AuditorData(DataModel):
     general_model = models.ForeignKey('Auditor')
 
 

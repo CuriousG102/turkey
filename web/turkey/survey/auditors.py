@@ -1,6 +1,6 @@
 # register and build your auditor models here
 from django.db import models
-from .models import Auditor, AuditorDataModel
+from .models import Auditor, AuditorData
 from django.utils.translation import ugettext_lazy as _
 
 # Some inspiration: http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf
@@ -31,13 +31,16 @@ NAME_TO_AUDITOR = {
 }
 
 
-class AuditorTotalTaskTimeData(AuditorDataModel):
+class AuditorTotalTaskTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorTotalTaskTime')
     milliseconds = models.IntegerField(
         verbose_name=_('total task time'),
         help_text=_('total time in milliseconds that the user'
                     'spent on the task page')
     )
+
+    class Meta(AuditorData.Meta):
+        abstract = False
 
 
 class AuditorTotalTaskTime(Auditor):
@@ -50,7 +53,7 @@ class AuditorTotalTaskTime(Auditor):
         verbose_name_plural = _('Auditors: Total Task Time')
 
 
-class AuditorBeforeTypingDelayData(AuditorDataModel):
+class AuditorBeforeTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorBeforeTypingDelay')
     milliseconds = models.IntegerField(
         verbose_name=_('total task time'),
@@ -58,6 +61,9 @@ class AuditorBeforeTypingDelayData(AuditorDataModel):
                     'took before typing'),
         null=True  # can be null because user might never type
     )
+
+    class Meta(AuditorData.Meta):
+        abstract = False
 
 
 class AuditorBeforeTypingDelay(Auditor):
