@@ -1,11 +1,9 @@
 var AuditorPastesSpecific = {
     pastes_specific: [],
     log_paste_content: function (e) {
-        $("document").bind("paste", function(e) {
-            // e.stopPropagation();
-            var pasted_data = e.originalEvent.clipboardData.getData('text');
-            this.pastes_specific.push(pasted_data);
-        });
+        // e.stopPropagation();
+        var pasted_data = e.originalEvent.clipboardData.getData('text');
+        this.pastes_specific.push(pasted_data);
     },
     submit_callable: function () {
         return {
@@ -21,11 +19,9 @@ var AuditorPastesSpecific = {
 var auditor_pastes_specific = Object.create(AuditorPastesSpecific);
 
 $(document).ready(function() {
-    $(document).bind("paste", function() {
-        auditor_pastes_specific
-            .log_paste_content
-            .bind(auditor_pastes_specific
-    });
+    $(document).bind("paste", auditor_pastes_specific
+                                .log_paste_content
+                                .bind(auditor_pastes_specific);
 });
 
 overlord.register_auditor('pastes_specific',
