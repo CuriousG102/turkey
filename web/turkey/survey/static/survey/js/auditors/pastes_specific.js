@@ -21,7 +21,7 @@ var AuditorPastesSpecific = {
 var auditor_pastes_specific = Object.create(AuditorPastesSpecific);
 
 $(document).ready(function() {
-    $(document).bind("paste", function(e) {
+    $(document).bind("paste", function() {
         auditor_pastes_specific
             .log_paste_content
             .bind(auditor_pastes_specific
