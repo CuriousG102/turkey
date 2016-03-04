@@ -7,10 +7,13 @@ var AuditorScrolledHorizontalPixelsSpecific = {
         // var timestamp = ((new Date()).getTime() - start_date.getTime()) / 1000.0;
 
         var rawAmount = current_position - previous_position;
-        previous_position = current_position;
         
-        this.scrolled_horizontal_pixels_specific.push({ 'position' : current_position, 'change' : rawAmount });
-        // this.scrolled_horizontal_pixels_specific.push({ 'timestamp' : timestamp, 'position' : current_position, 'change' : rawAmount });
+        if(current_position != previous_position) {            
+            this.scrolled_horizontal_pixels_specific.push({ 'position' : current_position, 'change' : rawAmount });
+            // this.scrolled_horizontal_pixels_specific.push({ 'timestamp' : timestamp, 'position' : current_position, 'change' : rawAmount });
+            
+            previous_position = current_position;
+        }
     },
     submit_callable: function () {
         return {

@@ -4,11 +4,14 @@ var AuditorScrolledHorizontalPixelsTotal = {
     log_hscroll_event: function (e) {
         var current_position = $(window).scrollLeft();
 
-        var rawAmount = current_position - previous_position;
-        var amount = Math.abs(rawAmount);
-        previous_position = current_position;
-        
-        this.scrolled_horizontal_pixels_total += amount;
+        if(current_position != previous_position) {
+            var rawAmount = current_position - previous_position;
+            var amount = Math.abs(rawAmount);
+
+            this.scrolled_horizontal_pixels_total += amount;
+
+            previous_position = current_position;
+        }
     },
     submit_callable: function () {
         return {
