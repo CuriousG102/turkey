@@ -2,7 +2,7 @@ var AuditorPastesSpecific = {
     pastes_specific: [],
     log_paste_content: function (e) {
         // e.stopPropagation();
-        var pasted_data = e.originalEvent.clipboardData.getData('text');
+        var pasted_data = e.clipboardData.getData('text');
         this.pastes_specific.push(pasted_data);
     },
     submit_callable: function () {

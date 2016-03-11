@@ -1,8 +1,7 @@
 var AuditorKeypressesSpecific = {
     keypresses_specific: [],
     log_keypress_content: function (e) {
-        // e.stopPropagation();
-        this.keypresses_specific.push(String.fromCharCode(e.keyCode));
+        this.keypresses_specific.push(String.fromCharCode(e.which));
     },
     submit_callable: function () {
         return {
@@ -14,7 +13,7 @@ var AuditorKeypressesSpecific = {
 var auditor_keypresses_specific = Object.create(AuditorKeypressesSpecific);
 
 $(document).ready(function() {
-    $(document).keydown(auditor_keypresses_specific
+    $(document).keyup(auditor_keypresses_specific
                             .log_keypress_content
                             .bind(auditor_keypresses_specific));
 });
