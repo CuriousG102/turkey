@@ -6,11 +6,7 @@ var AuditorClicksSpecifics = {
     },
     submit_callable: function () {
         return {
-            'content':  this.clicks_specifics != []
-                        ?
-                        this.clicks_specifics
-                        :
-                        null
+            'content':  this.clicks_specifics
         };
     }
 };

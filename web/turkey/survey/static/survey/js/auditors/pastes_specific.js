@@ -7,11 +7,7 @@ var AuditorPastesSpecific = {
     },
     submit_callable: function () {
         return {
-            'content':  this.pastes_specific != []
-                        ?
-                        this.pastes_specific
-                        :
-                        null
+            'content':  this.pastes_specific
         };
     }
 };

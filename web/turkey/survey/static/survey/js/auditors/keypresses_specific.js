@@ -6,11 +6,7 @@ var AuditorKeypressesSpecific = {
     },
     submit_callable: function () {
         return {
-            'content':  this.keypresses_specific != []
-                        ?
-                        this.keypresses_specific
-                        :
-                        null
+            'content':  this.keypresses_specific
         };
     }
 };

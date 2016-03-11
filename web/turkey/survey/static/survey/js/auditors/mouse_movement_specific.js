@@ -8,11 +8,7 @@ var AuditorMouseMovementSpecific = {
     },
     submit_callable: function () {
         return {
-            'content':  this.mouse_movement_specific != null
-                        ?
-                        this.mouse_movement_specific
-                        :
-                        null
+            'content':  this.mouse_movement_specific
         };
     }
 };

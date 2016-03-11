@@ -17,11 +17,7 @@ var AuditorScrolledVerticalPixelsSpecific = {
     },
     submit_callable: function () {
         return {
-            'content':  this.scrolled_vertical_pixels_specifics != []
-                        ?
-                        this.scrolled_vertical_pixels_specifics
-                        :
-                        null
+            'content':  this.scrolled_vertical_pixels_specifics
         };
     }
 };
