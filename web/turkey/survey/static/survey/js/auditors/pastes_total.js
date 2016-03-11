@@ -1,7 +1,6 @@
 var AuditorPastesTotal = {
     pastes_total: 0,
     log_paste_event: function (e) {
-        // e.stopPropagation();
         this.pastes_total += 1;
     },
     submit_callable: function () {
