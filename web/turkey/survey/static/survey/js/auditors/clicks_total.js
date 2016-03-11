@@ -1,7 +1,6 @@
 var AuditorClicksTotal = {
     clicks_total: 0,
     log_click_event: function (e) {
-        e.stopPropagation();
         this.clicks_total += 1;
     },
     submit_callable: function () {
