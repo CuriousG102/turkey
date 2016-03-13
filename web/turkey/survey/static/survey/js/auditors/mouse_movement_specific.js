@@ -1,6 +1,5 @@
 var AuditorMouseMovementSpecific = {
     mouse_movement_specific: [],
-    previous_position: 0,
     log_mousemove_specific: function (e) {
             var position = [e.pageX, e.pageY];
             this.mouse_movement_specific.push(position);
