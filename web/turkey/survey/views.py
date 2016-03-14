@@ -57,7 +57,7 @@ class TaskView(View):
         auditors = []
         for auditor_model_name in NAME_TO_AUDITOR.values():
             auditor_model = apps.get_model('survey', auditor_model_name)
-            auditors.append(auditor_model.objects.get(task=task))
+            auditors.extend(auditor_model.objects.filter(task=task))
 
         steps = []
         for step_model_name in NAME_TO_STEP.values():
