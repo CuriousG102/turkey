@@ -2,6 +2,7 @@ from django.apps import apps
 from django.template.response import TemplateResponse
 from django.views.generic import View
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -12,9 +13,10 @@ from .models import Task, TaskInteraction
 
 # TODO: Authentication
 class RecordSubmission(APIView):
-    def save_data_to_mapped_models(self, data, map, task,
+    def save_data_to_mapped_models(self, data, map,
                                    task_interaction_model):
         associated_models = []
+        task = task_interaction_model.task
         # model fetch step
         for name, model_data in data.items():
             associated_models.append(apps.get_model('survey', map[name])
@@ -40,15 +42,15 @@ class RecordSubmission(APIView):
         # TODO: What to do when it's not found?
         task_interaction_model = TaskInteraction.objects \
             .get(pk=kwargs['pk'])
-        # TODO: clean up legacy left in these method signatures by removing task altogether
-        task = task_interaction_model.task
-        self.save_data_to_mapped_models(submission['auditors'],
-                                        NAME_TO_AUDITOR, task,
-                                        task_interaction_model)
-        self.save_data_to_mapped_models(submission['steps'], NAME_TO_STEP,
-                                        task,
-                                        task_interaction_model)
-        return Response(status=status.HTTP_201_CREATED)
+        try:
+            self.save_data_to_mapped_models(submission['auditors'],
+                                            NAME_TO_AUDITOR,
+                                            task_interaction_model)
+            self.save_data_to_mapped_models(submission['steps'], NAME_TO_STEP,
+                                            task_interaction_model)
+            return Response(status=status.HTTP_201_CREATED)
+        except ValidationError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class TaskView(View):
