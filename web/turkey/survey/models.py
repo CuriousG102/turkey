@@ -60,6 +60,20 @@ class Task(Model):
         ordering = ['-updated', '-created']
 
 
+class TaskInteraction(Model):
+    """
+    Created for each new HIT with Task. Data models for Steps and Auditors
+    tie back to this.
+
+    The obvious: We need to know who each auditor and step data entry is
+    associated with.
+
+    The other consideration: We can see what percentage of people are
+    completing our HITs
+    """
+    task = models.ForeignKey('Task')
+
+
 class _DataModel(Model):
     """
     Exists to link specific instances of data to a general instance of auditor
@@ -68,6 +82,7 @@ class _DataModel(Model):
     task, that auditor/step creates an instance of its data model with the captured
     data from the user, and that data model points back at the auditor/step
     """
+    task_interaction_model = models.ForeignKey('TaskInteraction')
 
     class Meta:
         abstract = True
@@ -106,7 +121,7 @@ class _EventAndSubmissionModel(Model):
             processed_data = [processed_data]
         return processed_data
 
-    def validate(self, processed_data):
+    def validate(self, processed_data, task_interaction_model):
         """
         Function that should be called BEFORE save_processed_data_to_model
         is called on any models. Prevents us from saving a few valid models
@@ -114,7 +129,8 @@ class _EventAndSubmissionModel(Model):
         as needed. Is intended as a sister method to the base method for
         save_processed_data_to_model
         """
-        self.save_processed_data_to_model(processed_data, dry_run=True)
+        self.save_processed_data_to_model(processed_data,
+                                          task_interaction_model, dry_run=True)
 
     @classmethod
     def is_user_alterable_model_field(cls, field_name):
@@ -124,7 +140,8 @@ class _EventAndSubmissionModel(Model):
             return False
         return True
 
-    def save_processed_data_to_model(self, processed_data, dry_run=False):
+    def save_processed_data_to_model(self, processed_data,
+                                     task_interaction_model, dry_run=False):
         """
         Simple helper function. Takes a list of dictionaries or a single
         dictionary in the parameter processed_data, where the keys
@@ -147,6 +164,7 @@ class _EventAndSubmissionModel(Model):
             for key, value in dictionary.items():
                 setattr(model_instance, key, value)
             model_instance.general_model = self
+            model_instance.task_interaction_model = task_interaction_model
             data_models.append(model_instance)
         if dry_run:
             for model in data_models:
@@ -157,10 +175,10 @@ class _EventAndSubmissionModel(Model):
             # big SQL statement.
             self.data_model.objects.bulk_create(data_models)
 
-    def validate_submission_data(self, data):
+    def validate_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
 
-    def handle_submission_data(self, data):
+    def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
 
 
@@ -180,10 +198,10 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
                     'taken in by the user')
     )
 
-    def validate_submission_data(self, data):
-        self.validate(data[str(self.pk)])
+    def validate_submission_data(self, data, task_interaction_model):
+        self.validate(data[str(self.pk)], task_interaction_model)
 
-    def handle_submission_data(self, data):
+    def handle_submission_data(self, data, task_interaction_model):
         """
         Parameter data will be created directly from the JSON sent via
         step code for submission. How you handle it here is up
@@ -202,7 +220,8 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
         directly matches your data model, and so can be passed directly to
         save_processed_data_to_model without validation or translation.
         """
-        self.save_processed_data_to_model(data[str(self.pk)])
+        self.save_processed_data_to_model(data[str(self.pk)],
+                                          task_interaction_model)
 
     def get_template_code(self):
         return render_to_string(self.template_file,
@@ -235,10 +254,10 @@ class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
         except type(self).DoesNotExist:
             pass  # this is what we want
 
-    def validate_submission_data(self, data):
-        self.validate(data)
+    def validate_submission_data(self, data, task_interaction_model):
+        self.validate(data, task_interaction_model)
 
-    def handle_submission_data(self, data):
+    def handle_submission_data(self, data, task_interaction_model):
         """
         Parameter data will be created directly from the JSON sent via
         auditor code for submission. How you handle it here is up
@@ -256,7 +275,7 @@ class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
         and so can be passed directly to save_processed_data_to_model without
         validation or translation.
         """
-        self.save_processed_data_to_model(data)
+        self.save_processed_data_to_model(data, task_interaction_model)
 
     class Meta:
         abstract = True
