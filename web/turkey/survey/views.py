@@ -11,13 +11,24 @@ from .models import Task
 
 
 # TODO: Authentication
-# TODO: Content type restrictions
 class RecordSubmission(APIView):
     def save_data_to_mapped_models(self, data, map, task):
+        associated_models = []
+        # model fetch step
         for name, model_data in data.items():
-            models = apps.get_model('survey', map[name]).objects.filter(
-                task=task)
-            for model in models:
+            associated_models.append(apps.get_model('survey', map[name])
+                                     .objects.filter(task=task))
+
+        # validation step
+        for name, model_data, associated_models in zip(data.items(),
+                                                       associated_models):
+            for model in associated_models:
+                model.validate_submission_data(model_data)
+
+        # save step
+        for name, model_data, associated_models in zip(data.items(),
+                                                       associated_models):
+            for model in associated_models:
                 model.handle_submission_data(model_data)
 
     def post(self, request, **kwargs):
