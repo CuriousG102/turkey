@@ -4,9 +4,6 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from .steps import *  # we have to get all the user defined models from steps
-from .auditors import *  # we have to get all the user defined models from
-
 
 class Model(models.Model):
     """
@@ -90,11 +87,14 @@ class _DataModel(Model):
 
 
 class StepData(_DataModel):
-    general_model = models.ForeignKey('Step')
+    pass
+    #  general_model = models.ForeignKey('Step') <-- field you must implement
 
 
 class AuditorData(_DataModel):
-    general_model = models.ForeignKey('Auditor')
+    pass
+    #  general_model = models.ForeignKey('Auditor') <--
+    #                                                  field you must implement
 
 
 class _TaskLinkedModel(models.Model):
@@ -103,6 +103,9 @@ class _TaskLinkedModel(models.Model):
         verbose_name=_('Associated Task'),
         help_text=_('Task that this is linked to')
     )
+
+    class Meta:
+        abstract = True
 
 
 class _EventAndSubmissionModel(Model):
@@ -180,6 +183,9 @@ class _EventAndSubmissionModel(Model):
 
     def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
+
+    class Meta:
+        abstract = True
 
 
 class Step(_EventAndSubmissionModel, _TaskLinkedModel):
@@ -282,3 +288,7 @@ class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
         verbose_name = _('Auditor')
         verbose_name_plural = _('Auditors')
         ordering = ['task', '-updated', '-created']
+
+
+from .steps import *  # we have to get all the user defined models from steps
+from .auditors import *  # we have to get all the user defined models from

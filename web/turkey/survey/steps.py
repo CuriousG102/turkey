@@ -32,6 +32,7 @@ class StepMultipleChoice(Step):
     template_file = 'survey/multiple_choice.html'
     data_model = StepMultipleChoiceData
     title = models.CharField(
+        max_length=144,
         verbose_name=_('Title'),
         help_text=_(
             'Title for multiple choice prompt. Choose carefully. '
@@ -124,28 +125,28 @@ class StepMultipleChoiceResponse(Model):
         ordering = ['order']
 
 
-class StepTextResponseData(StepData):
-    general_model = models.ForeignKey('StepTextResponse')
-    response = models.TextField(verbose_name=_('Response'),
-                                help_text=_('User\'s text response'))
-    text = models.TextField(
-        verbose_name=_('Text Response Prompt'),
-        help_text=_(
-            'The text to go along with your response '
-            'choice prompt. Choose carefully. This and associated '
-            'responses are not allowed to change after the first '
-            'user has responded to this multiple choice step. Then, '
-            'you must create a new Multiple'
-        )
-    )
-
-    class Meta(StepData.Meta):
-        abstract = False
-
-
-class StepTextResponse(Step):
-    data_model = StepTextResponseData
-    prompt = models.TextField(verbose_name=_('Prompt'))
-
-    class Meta(Step.Meta):
-        abstract = False
+# class StepTextResponseData(StepData):
+#     general_model = models.ForeignKey('StepTextResponse')
+#     response = models.TextField(verbose_name=_('Response'),
+#                                 help_text=_('User\'s text response'))
+#     text = models.TextField(
+#         verbose_name=_('Text Response Prompt'),
+#         help_text=_(
+#             'The text to go along with your response '
+#             'choice prompt. Choose carefully. This and associated '
+#             'responses are not allowed to change after the first '
+#             'user has responded to this multiple choice step. Then, '
+#             'you must create a new Multiple'
+#         )
+#     )
+#
+#     class Meta(StepData.Meta):
+#         abstract = False
+#
+#
+# class StepTextResponse(Step):
+#     data_model = StepTextResponseData
+#     prompt = models.TextField(verbose_name=_('Prompt'))
+#
+#     class Meta(Step.Meta):
+#         abstract = False
