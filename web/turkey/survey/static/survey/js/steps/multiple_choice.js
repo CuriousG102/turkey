@@ -23,3 +23,9 @@ var StepMultipleChoice = {
         return step_mcs;
     }
 };
+
+var step_multiple_choice = Object.create(StepMultipleChoice);
+overlord.register_step('multiple_choice',
+                       step_multiple_choice
+                           .submit_callable
+                           .bind(step_multiple_choice));
