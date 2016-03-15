@@ -37,14 +37,11 @@ var AuditorOnFocusTime = {
 var auditor_on_focus_time = Object.create(AuditorOnFocusTime);
 auditor_on_focus_time.setup();
 
-$(document).ready(function() {
-    document.addEventListener(  visibility_change,
-                                function() {
-                                    auditor_on_focus_time.hidden = hidden;
-                                    auditor_on_focus_time.log_on_focus_time;
-                                },
-                                false);
-});
+document.addEventListener(  auditor_on_focus_time.visibility_change,
+                            auditor_on_focus_time
+                                .log_on_focus_time
+                                .bind(auditor_on_focus_time),
+                            false);
 
 overlord.register_auditor('on_focus_time',
                           auditor_on_focus_time

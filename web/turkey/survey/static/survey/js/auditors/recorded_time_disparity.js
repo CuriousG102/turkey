@@ -37,14 +37,11 @@ var AuditorRecordedTimeDisparity = {
 var auditor_recorded_time_disparity = Object.create(AuditorRecordedTimeDisparity);
 auditor_recorded_time_disparity.setup();
 
-$(document).ready(function() {
-    document.addEventListener(  visibility_change,
-                                function() {
-                                    auditor_recorded_time_disparity.hidden = hidden;
-                                    auditor_recorded_time_disparity.log_recorded_time_disparity;
-                                },
-                                false);
-});
+document.addEventListener(  auditor_on_focus_time.visibility_change,
+                            auditor_recorded_time_disparity
+                                .log_recorded_time_disparity
+                                .bind(auditor_on_focus_time),
+                            false);
 
 overlord.register_auditor('recorded_time_disparity',
                           auditor_recorded_time_disparity

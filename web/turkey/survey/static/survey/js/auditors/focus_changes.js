@@ -34,14 +34,11 @@ var AuditorFocusChanges = {
 var auditor_focus_changes = Object.create(AuditorFocusChanges);
 auditor_focus_changes.setup();
 
-$(document).ready(function() {
-    document.addEventListener(  visibility_change,
-                                function() {
-                                    auditor_focus_changes.hidden = hidden;
-                                    auditor_focus_changes.log_focus_changes;
-                                },
-                                false);
-});
+document.addEventListener(  auditor_focus_changes.visibility_change,
+                            auditor_focus_changes
+                                .log_focus_changes
+                                .bind(auditor_focus_changes),
+                            false);
 
 overlord.register_auditor('focus_changes',
                           auditor_focus_changes
