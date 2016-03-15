@@ -199,7 +199,7 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
     )
 
     def validate_submission_data(self, data, task_interaction_model):
-        self.validate(data[str(self.pk)], task_interaction_model)
+        self.validate(data[self.pk], task_interaction_model)
 
     def handle_submission_data(self, data, task_interaction_model):
         """
@@ -220,7 +220,7 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
         directly matches your data model, and so can be passed directly to
         save_processed_data_to_model without validation or translation.
         """
-        self.save_processed_data_to_model(data[str(self.pk)],
+        self.save_processed_data_to_model(data[self.pk],
                                           task_interaction_model)
 
     def get_template_code(self):
