@@ -199,7 +199,7 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
     )
 
     def validate_submission_data(self, data, task_interaction_model):
-        self.validate(data[str(self.pk)], task_interaction_model)
+        self.validate(data[self.pk], task_interaction_model)
 
     def handle_submission_data(self, data, task_interaction_model):
         """
