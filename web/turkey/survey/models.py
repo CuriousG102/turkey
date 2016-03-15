@@ -52,6 +52,14 @@ class Task(Model):
                                        'This is exposed to the user: Name of '
                                        'the survey they\'re taking'))
 
+    def clean(self):
+        if self.pk and self.taskinteraction_set.count():
+            original = type(self).objects.get(pk=self.pk)
+            if self.survey_name != original.survey_name:
+                return ValidationError(_('Can\'t change the name of the '
+                                         'survey as there are already '
+                                         'responses'))
+
     class Meta:
         verbose_name = _('Interactive Task')
         ordering = ['-updated', '-created']
