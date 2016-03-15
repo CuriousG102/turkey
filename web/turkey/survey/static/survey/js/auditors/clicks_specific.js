@@ -13,9 +13,7 @@ var AuditorClicksSpecifics = {
         this.clicks_specifics.push(dom);
     },
     submit_callable: function () {
-        return {
-            'content':  this.clicks_specifics
-        };
+        return this.clicks_specifics;
     }
 };
 

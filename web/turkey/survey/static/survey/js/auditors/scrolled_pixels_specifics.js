@@ -27,9 +27,7 @@ var AuditorScrolledPixelsSpecific = {
         );
     },
     submit_callable: function () {
-        return {
-            'content':  this.scrolled_pixels_specific
-        };
+        return this.scrolled_pixels_specific;
     }
 };
 
