@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.db import transaction
 from django.template.response import TemplateResponse
 from django.views.generic import View
 from rest_framework import status
@@ -22,14 +23,6 @@ class RecordSubmission(APIView):
             associated_models.append(apps.get_model('survey', map[name])
                                      .objects.filter(task=task))
 
-        # validation step
-        # TODO: Figure out how to handle ValidationErrors here
-        for name, model_data, associated_models in zip(data.items(),
-                                                       associated_models):
-            for model in associated_models:
-                model.validate_submission_data(model_data,
-                                               task_interaction_model)
-
         # save step
         for name, model_data, associated_models in zip(data.items(),
                                                        associated_models):
@@ -40,14 +33,21 @@ class RecordSubmission(APIView):
     def post(self, request, **kwargs):
         submission = request.data
         # TODO: What to do when it's not found?
-        task_interaction_model = TaskInteraction.objects \
-            .get(pk=kwargs['pk'])
         try:
-            self.save_data_to_mapped_models(submission['auditors'],
-                                            NAME_TO_AUDITOR,
-                                            task_interaction_model)
-            self.save_data_to_mapped_models(submission['steps'], NAME_TO_STEP,
-                                            task_interaction_model)
+            task_interaction_model = TaskInteraction.objects \
+                .get(pk=kwargs['pk'])
+        except TaskInteraction.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            # if we fail validation or anything else all is well and nothing
+            # is committed
+            with transaction.atomic():
+                self.save_data_to_mapped_models(submission['auditors'],
+                                                NAME_TO_AUDITOR,
+                                                task_interaction_model)
+                self.save_data_to_mapped_models(submission['steps'],
+                                                NAME_TO_STEP,
+                                                task_interaction_model)
             return Response(status=status.HTTP_201_CREATED)
         except ValidationError:
             return Response(status=status.HTTP_400_BAD_REQUEST)

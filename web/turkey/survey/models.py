@@ -124,17 +124,6 @@ class _EventAndSubmissionModel(Model):
             processed_data = [processed_data]
         return processed_data
 
-    def validate(self, processed_data, task_interaction_model):
-        """
-        Function that should be called BEFORE save_processed_data_to_model
-        is called on any models. Prevents us from saving a few valid models
-        and then erroring out on an invalid model. May need to be overridden
-        as needed. Is intended as a sister method to the base method for
-        save_processed_data_to_model
-        """
-        self.save_processed_data_to_model(processed_data,
-                                          task_interaction_model, dry_run=True)
-
     @classmethod
     def is_user_alterable_model_field(cls, field_name):
         try:
@@ -144,7 +133,7 @@ class _EventAndSubmissionModel(Model):
         return True
 
     def save_processed_data_to_model(self, processed_data,
-                                     task_interaction_model, dry_run=False):
+                                     task_interaction_model):
         """
         Simple helper function. Takes a list of dictionaries or a single
         dictionary in the parameter processed_data, where the keys
@@ -152,13 +141,12 @@ class _EventAndSubmissionModel(Model):
         are values to be saved on those fields. Not appropriate for all
         situations but fits many, especially with auditors.
         """
-        if dry_run:
-            for dictionary in processed_data:
-                for key in dictionary.keys():
-                    if not self.is_user_alterable_model_field(key):
-                        raise ValidationError(
-                            _('processed_data contains dictionaries'
-                              'without matching fields'))
+        for dictionary in processed_data:
+            for key in dictionary.keys():
+                if not self.is_user_alterable_model_field(key):
+                    raise ValidationError(
+                        _('processed_data contains dictionaries'
+                          'without matching fields'))
 
         processed_data = self.processed_data_to_list(processed_data)
         data_models = []
@@ -169,17 +157,13 @@ class _EventAndSubmissionModel(Model):
             model_instance.general_model = self
             model_instance.task_interaction_model = task_interaction_model
             data_models.append(model_instance)
-        if dry_run:
-            for model in data_models:
-                model.full_clean()
+        for model in data_models:
+            model.full_clean()
         else:
             # better for performance to not be creating these one by one and
             # blocking for large periods of time. we would rather send one
             # big SQL statement.
             self.data_model.objects.bulk_create(data_models)
-
-    def validate_submission_data(self, data, task_interaction_model):
-        raise NotImplementedError()
 
     def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
@@ -203,9 +187,6 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
         help_text=_('Controls the order that steps linked to a task are to be '
                     'taken in by the user')
     )
-
-    def validate_submission_data(self, data, task_interaction_model):
-        self.validate(data[self.pk], task_interaction_model)
 
     def handle_submission_data(self, data, task_interaction_model):
         """
@@ -259,9 +240,6 @@ class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
                                     'same auditor for each task'))
         except type(self).DoesNotExist:
             pass  # this is what we want
-
-    def validate_submission_data(self, data, task_interaction_model):
-        self.validate(data, task_interaction_model)
 
     def handle_submission_data(self, data, task_interaction_model):
         """
