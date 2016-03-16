@@ -1,14 +1,8 @@
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, FieldDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-
-from .steps import *  # we have to get all the user defined models from steps
-from .auditors import *  # we have to get all the user defined models from
-
-
-# auditors
 
 
 class Model(models.Model):
@@ -63,7 +57,21 @@ class Task(Model):
         ordering = ['-updated', '-created']
 
 
-class DataModel(Model):
+class TaskInteraction(Model):
+    """
+    Created for each new HIT with Task. Data models for Steps and Auditors
+    tie back to this.
+
+    The obvious: We need to know who each auditor and step data entry is
+    associated with.
+
+    The other consideration: We can see what percentage of people are
+    completing our HITs
+    """
+    task = models.ForeignKey('Task')
+
+
+class _DataModel(Model):
     """
     Exists to link specific instances of data to a general instance of auditor
     and step that is linked to HIT. So for example, there is a general auditor/step
@@ -71,33 +79,61 @@ class DataModel(Model):
     task, that auditor/step creates an instance of its data model with the captured
     data from the user, and that data model points back at the auditor/step
     """
+    task_interaction_model = models.ForeignKey('TaskInteraction')
 
     class Meta:
         abstract = True
         ordering = ['-updated', '-created']
 
 
-class StepData(DataModel):
-    general_model = models.ForeignKey('Step')
+class StepData(_DataModel):
+    pass
+    #  general_model = models.ForeignKey('Step') <-- field you must implement
 
 
-class AuditorData(DataModel):
-    general_model = models.ForeignKey('Auditor')
+class AuditorData(_DataModel):
+    pass
+    #  general_model = models.ForeignKey('Auditor') <--
+    #                                                  field you must implement
 
 
-class TaskLinkedModel(models.Model):
+class _TaskLinkedModel(models.Model):
     task = models.ForeignKey(
         'Task',
         verbose_name=_('Associated Task'),
         help_text=_('Task that this is linked to')
     )
 
+    class Meta:
+        abstract = True
 
-class EventAndSubmissionModel(Model):
-    script_location = 'survey/step_or_auditor/my_example.js'
-    data_model = DataModel
 
-    def save_processed_data_to_model(self, processed_data):
+class _EventAndSubmissionModel(Model):
+    script_location = 'survey/js/step_or_auditor/my_example.js'
+    data_model = _DataModel
+
+    @staticmethod
+    def processed_data_to_list(processed_data):
+        try:
+            assert (
+                type(processed_data) == list or type(processed_data) == dict
+            )
+        except AssertionError:
+            raise ValidationError(_('processed_data is not list or dict'))
+        if type(processed_data) != list:
+            processed_data = [processed_data]
+        return processed_data
+
+    @classmethod
+    def is_user_alterable_model_field(cls, field_name):
+        try:
+            cls.data_model._meta.get_field(field_name)
+        except FieldDoesNotExist:
+            return False
+        return True
+
+    def save_processed_data_to_model(self, processed_data,
+                                     task_interaction_model):
         """
         Simple helper function. Takes a list of dictionaries or a single
         dictionary in the parameter processed_data, where the keys
@@ -105,18 +141,38 @@ class EventAndSubmissionModel(Model):
         are values to be saved on those fields. Not appropriate for all
         situations but fits many, especially with auditors.
         """
-        assert (type(processed_data) == list or type(processed_data) == dict)
-        if type(processed_data) != list:
-            processed_data = [processed_data]
+        for dictionary in processed_data:
+            for key in dictionary.keys():
+                if not self.is_user_alterable_model_field(key):
+                    raise ValidationError(
+                        _('processed_data contains dictionaries'
+                          'without matching fields'))
+
+        processed_data = self.processed_data_to_list(processed_data)
+        data_models = []
         for dictionary in processed_data:
             model_instance = self.data_model()
             for key, value in dictionary.items():
                 setattr(model_instance, key, value)
             model_instance.general_model = self
-            model_instance.save()
+            model_instance.task_interaction_model = task_interaction_model
+            data_models.append(model_instance)
+        for model in data_models:
+            model.full_clean()
+        else:
+            # better for performance to not be creating these one by one and
+            # blocking for large periods of time. we would rather send one
+            # big SQL statement.
+            self.data_model.objects.bulk_create(data_models)
+
+    def handle_submission_data(self, data, task_interaction_model):
+        raise NotImplementedError()
+
+    class Meta:
+        abstract = True
 
 
-class Step(EventAndSubmissionModel, TaskLinkedModel):
+class Step(_EventAndSubmissionModel, _TaskLinkedModel):
     """
     Your step should include some way to distinguish it from another instance of
     the same class in its template code, because the user may make multiple
@@ -132,7 +188,7 @@ class Step(EventAndSubmissionModel, TaskLinkedModel):
                     'taken in by the user')
     )
 
-    def handle_submission_data(self, data):
+    def handle_submission_data(self, data, task_interaction_model):
         """
         Parameter data will be created directly from the JSON sent via
         step code for submission. How you handle it here is up
@@ -151,7 +207,8 @@ class Step(EventAndSubmissionModel, TaskLinkedModel):
         directly matches your data model, and so can be passed directly to
         save_processed_data_to_model without validation or translation.
         """
-        self.save_processed_data_to_model(data[str(self.pk)])
+        self.save_processed_data_to_model(data[self.pk],
+                                          task_interaction_model)
 
     def get_template_code(self):
         return render_to_string(self.template_file,
@@ -171,7 +228,7 @@ class Step(EventAndSubmissionModel, TaskLinkedModel):
         ordering = ['task', 'step_num', '-updated', '-created']
 
 
-class Auditor(EventAndSubmissionModel, TaskLinkedModel):
+class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
     # https://docs.djangoproject.com/en/1.9/ref/models/instances/#validating-objects
     def clean(self):
         # it is not valid to create two auditors for the same task
@@ -184,7 +241,7 @@ class Auditor(EventAndSubmissionModel, TaskLinkedModel):
         except type(self).DoesNotExist:
             pass  # this is what we want
 
-    def handle_submission_data(self, data):
+    def handle_submission_data(self, data, task_interaction_model):
         """
         Parameter data will be created directly from the JSON sent via
         auditor code for submission. How you handle it here is up
@@ -202,10 +259,14 @@ class Auditor(EventAndSubmissionModel, TaskLinkedModel):
         and so can be passed directly to save_processed_data_to_model without
         validation or translation.
         """
-        self.save_processed_data_to_model(data)
+        self.save_processed_data_to_model(data, task_interaction_model)
 
     class Meta:
         abstract = True
         verbose_name = _('Auditor')
         verbose_name_plural = _('Auditors')
         ordering = ['task', '-updated', '-created']
+
+
+from .steps import *  # we have to get all the user defined models from steps
+from .auditors import *  # we have to get all the user defined models from
