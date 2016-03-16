@@ -29,6 +29,10 @@ var Overlord = {
             'steps': {}
         };
 
+        var error_func = function() {
+            window.alert('Submission failed. Please try again.')
+        };
+
         var unsuccessful = false;
         $.each(this.steps, function(i, el) {
             var name = el[0], callback = el[1];
@@ -46,11 +50,6 @@ var Overlord = {
             var name = el[0], callback = el[1];
             submission['auditors'][name] = callback();
         });
-
-
-        var error_func = function() {
-            window.alert('Submission failed. Please try again.')
-        };
 
         $.post({
             url: SUBMISSION_ENDPOINT,
