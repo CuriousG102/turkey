@@ -29,7 +29,7 @@ var AuditorRecordedTimeDisparity = {
     },
     submit_callable: function () {
         return {
-            'milliseconds': this.start_date.getTime() - this.on_focus_time
+            'milliseconds': ((new Date()).getTime() - this.start_date.getTime()) - this.on_focus_time
         };
     }
 };

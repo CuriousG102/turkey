@@ -25,9 +25,7 @@ var AuditorFocusChanges = {
         }
     },
     submit_callable: function () {
-        return {
-            'times': this.focus_changes
-        };
+        return this.focus_changes;
     }
 };
 
