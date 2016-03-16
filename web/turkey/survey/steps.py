@@ -67,6 +67,7 @@ class StepMultipleChoice(Step):
                                 {'step_instance': self,
                                  'responses': responses})
 
+    # TODO: Move clean methods higher up the inheritance chain
     def clean(self):
         # if object is not new and already has user data
         if self.pk:

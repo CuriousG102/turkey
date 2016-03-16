@@ -1,10 +1,20 @@
 {% extends 'admin/change_form.html' %}
 
+<!-- TODO: This is super janky. Look into using functionality in https://github.com/MattBroach/Django-Merged-Inlines if there's time. I didn't trust the code without dissecting it and there's not enough time for that right now -->
 {% block after_field_sets %}
-  {% for related_step in related_steps %}
-    <!-- Do something -->
+  {% load i18n %}
+  Associated Steps:
+  {% for url, related_step in related_steps %}
+    {% blocktrans with step_num=related_step.step_num step=related_step url=url %}
+      <a href="{{ url }}">Step #{{ step_num }}: {{ step }}</a>
+    {% endblocktrans %}
   {% endfor %}
-  {% for related_auditor in related_auditors %}
-    <!-- Do something -->
+  {% url 'steps-add-page' %}
+  <!-- TODO: Link to Add View which I am currently figuring out how to add to admin -->
+  Associated Auditors:
+  {% for url, related_auditor in related_auditors %}
+    <a href="{{ url }}">{{ related_auditor }}</a>
   {% endfor %}
+  {% url 'auditors-add-page' %}
+  <!-- TODO: Link to Add View which I am currently figuring out how to add to admin -->
 {% endblock %}
