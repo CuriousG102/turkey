@@ -4,9 +4,7 @@ var AuditorKeypressesSpecific = {
         this.keypresses_specific.push(String.fromCharCode(e.which));
     },
     submit_callable: function () {
-        return {
-            'content':  this.keypresses_specific
-        };
+        return this.keypresses_specific;
     }
 };
 

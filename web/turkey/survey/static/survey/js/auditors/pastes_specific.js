@@ -5,9 +5,7 @@ var AuditorPastesSpecific = {
         this.pastes_specific.push(pasted_data);
     },
     submit_callable: function () {
-        return {
-            'content':  this.pastes_specific
-        };
+        return this.pastes_specific;
     }
 };
 
