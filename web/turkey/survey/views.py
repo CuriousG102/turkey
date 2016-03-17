@@ -98,3 +98,9 @@ class TaskView(View):
                      'task_interaction_model': task_interaction_model,
                      'auditor_script_locations': auditor_script_locations,
                      'step_script_locations': step_script_locations})
+#
+# class StepsAdminView(View):
+#     pass
+#
+# class AuditorsAdminView(View):
+#     pass
