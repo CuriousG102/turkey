@@ -65,7 +65,7 @@ class Task(Model):
         verbose_name = _('Interactive Task')
         ordering = ['-updated', '-created']
 
-
+# TODO: This should inherit from _TaskLinkedModel
 class TaskInteraction(Model):
     """
     Created for each new HIT with Task. Data models for Steps and Auditors
@@ -106,6 +106,7 @@ class AuditorData(_DataModel):
     #                                                  field you must implement
 
 
+# TODO: Should inherit from Model
 class _TaskLinkedModel(models.Model):
     task = models.ForeignKey(
         'Task',

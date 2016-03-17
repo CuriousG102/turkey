@@ -57,45 +57,39 @@ class TaskAdmin(admin.ModelAdmin):
                  task_id)
                 for model in models]
 
-    def add_step_view(self, request, task_id=None):
+    def check_task_id(self, task_id):
         if task_id == 0:
             raise Http404(
                 _('Cannot add %s to an %s that does not '
                   'yet exist' %
                   ('steps', self.model._meta.verbose_name.title()))
             )
+
+    def add_step_view(self, request, task_id=None):
+        self.check_task_id(task_id)
         available_step_models = [apps.get_model('survey', model_name)
                                  for model_name in NAME_TO_STEP.values()]
-        available_step_urls = self.get_add_urls(available_step_models, task_id)
-        context = dict(
-            self.admin_site.each_context(request),
-            step_models_and_urls=zip(available_step_models,
-                                     available_step_urls)
-        )
-
-        return TemplateResponse(request, self.step_add_template, context)
+        return self.get_add_page_response(request, self.step_add_template,
+                                          available_step_models, task_id)
 
     def add_auditor_view(self, request, task_id=None):
-        if task_id == 0:
-            raise Http404(
-                _('Cannot add %s to an %s that does not '
-                  'yet exist' %
-                  ('auditors', self.model._meta.verbose_name.title()))
-            )
+        self.check_task_id(task_id)
         available_auditor_models = []
         for model_name in NAME_TO_AUDITOR.values():
             model = apps.get_model('survey', model_name)
             if model.objects.filter(task=task_id).count() == 0:
                 available_auditor_models.append(model)
-        available_auditor_urls = self.get_add_urls(available_auditor_models,
-                                                   task_id)
+        return self.get_add_page_response(request, self.auditor_add_template,
+                                          available_auditor_models, task_id)
+
+    def get_add_page_response(self, request, template, models, task_id):
+        names = [model._meta.verbose_name.title for model in models]
+        urls = self.get_add_urls(models, task_id)
         context = dict(
             self.admin_site.each_context(request),
-            auditor_models_and_urls=zip(available_auditor_models,
-                                        available_auditor_urls)
+            model_names_and_urls=zip(names, urls)
         )
-
-        return TemplateResponse(request, self.auditor_add_template, context)
+        return TemplateResponse(request, template, context)
 
     def get_models_change_pages(self, models):
         links = []

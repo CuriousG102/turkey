@@ -1,11 +1,6 @@
-{% extends "admin/base_site.html" %}
-{% block content %}
+{% extends "survey/admin/add.html" %}
+{% block models_list_head %}
   {% load i18n %}
-  <h3>{% trans 'Add Auditor' %}</h3>
-  <h4>{% trans 'Available Auditors:' %}</h4>
-  <ul>
-    {% for model, url in auditor_models_and_urls %}
-      <a href="{{ url }}">{{ model._meta.verbose_name.title }}</a>
-    {% endfor %}
-  </ul>
+  <h3>{% trans 'Add Step' %}</h3>
+  <h4>{% trans 'Available Steps:' %}</h4>
 {% endblock %}
