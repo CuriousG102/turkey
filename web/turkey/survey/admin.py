@@ -29,17 +29,21 @@ create_step_or_auditor_admins(NAME_TO_AUDITOR.values())
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    step_add_template = 'survey/admin/step_add_template.html'
-    auditor_add_template = 'survey/admin/auditor_add_template.html'
+    step_add_template = 'survey/admin/step_add.html'
+    auditor_add_template = 'survey/admin/auditor_add.html'
 
     def get_urls(self):
         urls = super().get_urls()
+
+        info = self.model._meta.app_label, self.model._meta.model_name
         my_urls = [
             url(r'^\d+/add_step/$',
                 self.admin_site.admin_view(self.add_step_view,
-                                           cacheable=True)),
+                                           cacheable=True),
+                name='%s_%s_add_step' % info),
             url(r'^\d+/add_auditor/$',
-                self.admin_site.admin_view(self.add_auditor_view))
+                self.admin_site.admin_view(self.add_auditor_view),
+                name='%s_%s_add_auditor' % info)
         ]
         return my_urls + urls
 
@@ -57,7 +61,8 @@ class TaskAdmin(admin.ModelAdmin):
         available_step_urls = self.get_add_urls(available_step_models, task_id)
         context = dict(
             self.admin_site.each_context(request),
-            step_urls=available_step_urls
+            step_models_and_urls=zip(available_step_models,
+                                     available_step_urls)
         )
 
         return TemplateResponse(request, self.step_add_template, context)
@@ -72,7 +77,8 @@ class TaskAdmin(admin.ModelAdmin):
                                                    task_id)
         context = dict(
             self.admin_site.each_context(request),
-            auditor_urls=available_auditor_urls
+            auditor_models_and_urls=zip(available_auditor_models,
+                                        available_auditor_urls)
         )
 
         return TemplateResponse(request, self.auditor_add_template, context)

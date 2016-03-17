@@ -1,0 +1,11 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+  {% load i18n %}
+  <h3>{% trans 'Add Step' %}</h3>
+  <h4>{% trans 'Available Steps:' %}</h4>
+  <ul>
+    {% for model, url in step_models_and_urls %}
+      <a href="{{ url }}">{{ model._meta.verbose_name.title }}</a>
+    {% endfor %}
+  </ul>
+{% endblock %}
