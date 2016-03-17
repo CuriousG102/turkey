@@ -31,10 +31,11 @@ class Task(Model):
         verbose_name=_('Number of simultaneous users'),
         help_text=_('Number of users who need to be in the lobby and ready '
                     'to begin before they may start the task'),
-        validators=not_less_than_one
+        validators=[not_less_than_one]
     )
     task_dependencies = models.ManyToManyField(
         'Task',
+        blank=True,
         verbose_name=_('Task Dependencies'),
         help_text=_(
             'Tasks that must be completed before this task by a given user')

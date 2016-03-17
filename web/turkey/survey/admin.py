@@ -2,7 +2,9 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.apps import apps
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.template.response import TemplateResponse
+from django.utils.translation import ugettext_lazy as _
 from .models import Task
 from .steps import NAME_TO_STEP
 from .auditors import NAME_TO_AUDITOR
@@ -37,11 +39,11 @@ class TaskAdmin(admin.ModelAdmin):
 
         info = self.model._meta.app_label, self.model._meta.model_name
         my_urls = [
-            url(r'^\d+/add_step/$',
+            url(r'^(?P<task_id>[0-9]+)/add_step/$',
                 self.admin_site.admin_view(self.add_step_view,
                                            cacheable=True),
                 name='%s_%s_add_step' % info),
-            url(r'^\d+/add_auditor/$',
+            url(r'^(?P<task_id>[0-9]+)/add_auditor/$',
                 self.admin_site.admin_view(self.add_auditor_view),
                 name='%s_%s_add_auditor' % info)
         ]
@@ -55,7 +57,13 @@ class TaskAdmin(admin.ModelAdmin):
                  task_id)
                 for model in models]
 
-    def add_step_view(self, request, task_id):
+    def add_step_view(self, request, task_id=None):
+        if task_id == 0:
+            raise Http404(
+                _('Cannot add %s to an %s that does not '
+                  'yet exist' %
+                  ('steps', self.model._meta.verbose_name.title()))
+            )
         available_step_models = [apps.get_model('survey', model_name)
                                  for model_name in NAME_TO_STEP.values()]
         available_step_urls = self.get_add_urls(available_step_models, task_id)
@@ -67,7 +75,13 @@ class TaskAdmin(admin.ModelAdmin):
 
         return TemplateResponse(request, self.step_add_template, context)
 
-    def add_auditor_view(self, request, task_id):
+    def add_auditor_view(self, request, task_id=None):
+        if task_id == 0:
+            raise Http404(
+                _('Cannot add %s to an %s that does not '
+                  'yet exist' %
+                  ('auditors', self.model._meta.verbose_name.title()))
+            )
         available_auditor_models = []
         for model_name in NAME_TO_AUDITOR.values():
             model = apps.get_model('survey', model_name)
@@ -117,6 +131,7 @@ class TaskAdmin(admin.ModelAdmin):
         )
         context.update({
             'related_steps': related_steps,
-            'related_auditors': related_auditors
+            'related_auditors': related_auditors,
+            'task_id': task.pk if task is not None else 0
         })
         return super().render_change_form(request, context, **kwargs)
