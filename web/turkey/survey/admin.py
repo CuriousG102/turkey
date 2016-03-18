@@ -1,8 +1,10 @@
 from django.conf.urls import url
 from django.contrib import admin
 from django.apps import apps
+from django.contrib.admin.options import IS_POPUP_VAR
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 from .models import Task
@@ -16,6 +18,24 @@ def create_step_or_auditor_admin(model):
             # hacky way to keep this
             # from showing up in the list of models
             return {}
+
+        def redirect_back_to_task(self, request, obj):
+            POST = request.POST
+            # if this looks messy it's because Django framework's ModelAdmin
+            # code is apparently also a train wreck
+            if IS_POPUP_VAR in POST or '_continue' in POST \
+                    or '_addanother' in POST:
+                return None
+            return redirect('admin:survey_task_change', obj.task.pk)
+
+        def response_change(self, request, obj):
+            return self.redirect_back_to_task(request, obj) \
+                   or super().response_change(request, obj)
+
+        def response_add(self, request, obj, post_url_continue=None):
+            return self.redirect_back_to_task(request, obj) \
+                   or super().response_add(request, obj,
+                                           post_url_continue=post_url_continue)
 
     admin.site.register(model, StepAuditorAdmin)
 
@@ -57,23 +77,33 @@ class TaskAdmin(admin.ModelAdmin):
                  task_id)
                 for model in models]
 
-    def check_task_id(self, task_id):
+    def convert_and_check_task_id(self, task_id):
         if task_id == 0:
             raise Http404(
                 _('Cannot add %s to an %s that does not '
                   'yet exist' %
                   ('steps', self.model._meta.verbose_name.title()))
             )
+        try:
+            task_id = int(task_id)
+        except ValueError:
+            raise Http404(_('%s not a primary key') % task_id)
+        try:
+            self.model.objects.get(pk=task_id)
+        except self.model.DoesNotExist:
+            raise Http404(_('%s with pk %d does not exist') %
+                          (self.model._meta.verbose_name.title(), task_id))
+        return task_id
 
     def add_step_view(self, request, task_id=None):
-        self.check_task_id(task_id)
+        task_id = self.convert_and_check_task_id(task_id)
         available_step_models = [apps.get_model('survey', model_name)
                                  for model_name in NAME_TO_STEP.values()]
         return self.get_add_page_response(request, self.step_add_template,
                                           available_step_models, task_id)
 
     def add_auditor_view(self, request, task_id=None):
-        self.check_task_id(task_id)
+        task_id = self.convert_and_check_task_id(task_id)
         available_auditor_models = []
         for model_name in NAME_TO_AUDITOR.values():
             model = apps.get_model('survey', model_name)
