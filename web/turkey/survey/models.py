@@ -15,7 +15,7 @@ class Model(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
 
     def __str__(self):
-        return self.updated.strftime(_('Updated: %B %d, %Y'))
+        return self.updated.strftime(str(_('Updated: %B %d, %Y')))
 
     class Meta:
         abstract = True
@@ -57,7 +57,7 @@ class Task(Model):
                                        'the survey they\'re taking'))
 
     def __str__(self):
-        return ' '.join(['%s: ' % self.verbose_name, self.survey_name,
+        return ' '.join(['%s: ' % self._meta.verbose_name, self.survey_name,
                          super().__str__()])
 
     def clean(self):
@@ -201,8 +201,10 @@ class _EventAndSubmissionModel(Model):
         raise NotImplementedError()
 
     def __str__(self):
-        return _('%s for: %s %s') % \
-               (self.__class__.__name__, self.task,
+        return _('%s for: [%s] %s') % \
+               (self._meta.verbose_name or
+                '%s object' % self.__class__.__name__,
+                self.task,
                 self.updated.strftime('Updated: %B %d, %Y'))
 
     class Meta:

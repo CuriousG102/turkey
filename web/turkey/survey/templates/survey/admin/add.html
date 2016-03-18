@@ -5,7 +5,9 @@
   {% endblock %}
   <ul>
     {% for name, url in model_names_and_urls %}
-      <a href="{{ url }}">{{ name }}</a>
+      <li>
+        <a href="{{ url }}">{{ name }}</a>
+      </li>
     {% endfor %}
   </ul>
 {% endblock %}
