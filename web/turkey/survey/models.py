@@ -14,6 +14,9 @@ class Model(models.Model):
                                    verbose_name=_('Created At'))
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
 
+    def __str__(self):
+        return self.updated.strftime(_('Updated: %B %d, %Y'))
+
     class Meta:
         abstract = True
 
@@ -53,6 +56,10 @@ class Task(Model):
                                        'This is exposed to the user: Name of '
                                        'the survey they\'re taking'))
 
+    def __str__(self):
+        return ' '.join(['%s: ' % self.verbose_name, self.survey_name,
+                         super().__str__()])
+
     def clean(self):
         if self.pk and self.taskinteraction_set.count():
             original = type(self).objects.get(pk=self.pk)
@@ -65,20 +72,6 @@ class Task(Model):
         verbose_name = _('Interactive Task')
         ordering = ['-updated', '-created']
 
-# TODO: This should inherit from _TaskLinkedModel
-class TaskInteraction(Model):
-    """
-    Created for each new HIT with Task. Data models for Steps and Auditors
-    tie back to this.
-
-    The obvious: We need to know who each auditor and step data entry is
-    associated with.
-
-    The other consideration: We can see what percentage of people are
-    completing our HITs
-    """
-    task = models.ForeignKey('Task')
-
 
 class _DataModel(Model):
     """
@@ -89,6 +82,12 @@ class _DataModel(Model):
     data from the user, and that data model points back at the auditor/step
     """
     task_interaction_model = models.ForeignKey('TaskInteraction')
+
+    def __str__(self):
+        return ' '.join(
+            [self._meta.verbose_name or
+             _('%s object,') % self.__class__.__name__,
+             super().__str__()])
 
     class Meta:
         abstract = True
@@ -106,7 +105,7 @@ class AuditorData(_DataModel):
     #                                                  field you must implement
 
 
-# TODO: Should inherit from Model
+# TODO: Should inherit from Model, but this causes field clashes, necessitating inheriting Model as well in some classes. Bad stuff.
 class _TaskLinkedModel(models.Model):
     task = models.ForeignKey(
         'Task',
@@ -114,8 +113,31 @@ class _TaskLinkedModel(models.Model):
         help_text=_('Task that this is linked to')
     )
 
+    def __str__(self):
+        return ' '.join(
+            [self._meta.verbose_name or
+             _('%s object,') % self.__class__.__name__,
+             _('Linked Task: %s') % self.task,
+             super().__str__()])
+
     class Meta:
         abstract = True
+
+
+class TaskInteraction(_TaskLinkedModel, Model):
+    """
+    Created for each new HIT with Task. Data models for Steps and Auditors
+    tie back to this.
+
+    The obvious: We need to know who each auditor and step data entry is
+    associated with.
+
+    The other consideration: We can see what percentage of people are
+    completing our HITs
+    """
+
+    class Meta:
+        verbose_name = _('Task Interaction')
 
 
 class _EventAndSubmissionModel(Model):
@@ -177,6 +199,11 @@ class _EventAndSubmissionModel(Model):
 
     def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
+
+    def __str__(self):
+        return _('%s for: %s %s') % \
+               (self.__class__.__name__, self.task,
+                self.updated.strftime('Updated: %B %d, %Y'))
 
     class Meta:
         abstract = True
