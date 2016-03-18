@@ -1,12 +1,12 @@
 var AuditorMouseMovementSpecific = {
     mouse_movement_specific: [],
     log_mousemove_specific: function (e) {
-            var position = {
+        this.mouse_movement_specific.push(
+            {
                 'X' : e.pageX,
                 'Y' : e.pageY
-            };
-            this.mouse_movement_specific.push(position);
-        }
+            }
+        );
     },
     submit_callable: function () {
         return this.mouse_movement_specific;

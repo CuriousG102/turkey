@@ -1,8 +1,7 @@
 var AuditorPastesSpecific = {
     pastes_specific: [],
     log_paste_content: function (e) {
-        var pasted_data = { 'data' : e.clipboardData.getData('text') };
-        this.pastes_specific.push(pasted_data);
+        this.pastes_specific.push({ 'data' : e.clipboardData.getData('text') });
     },
     submit_callable: function () {
         return this.pastes_specific;
