@@ -13,7 +13,17 @@ from .auditors import NAME_TO_AUDITOR
 
 
 def create_step_or_auditor_admin(model):
+    model_inlines = []
+    for inline in model.inlines:
+        class Inline(admin.StackedInline):
+            model = apps.get_model('survey', inline)
+            extra = 0
+
+        model_inlines.append(Inline)
+
     class StepAuditorAdmin(admin.ModelAdmin):
+        inlines = model_inlines  # autogenerate inlines as well
+
         def get_model_perms(self, request):
             # hacky way to keep this
             # from showing up in the list of models
@@ -42,7 +52,9 @@ def create_step_or_auditor_admin(model):
 
 def create_step_or_auditor_admins(model_name_list):
     for model_name in model_name_list:
-        create_step_or_auditor_admin(apps.get_model('survey', model_name))
+        model = apps.get_model('survey', model_name)
+        if not model.has_custom_admin:
+            create_step_or_auditor_admin(model)
 
 
 create_step_or_auditor_admins(NAME_TO_STEP.values())

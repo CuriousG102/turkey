@@ -143,6 +143,11 @@ class TaskInteraction(_TaskLinkedModel, Model):
 class _EventAndSubmissionModel(Model):
     script_location = 'survey/js/step_or_auditor/my_example.js'
     data_model = _DataModel
+    has_custom_admin = False
+    # shortcut to allow users to have related models that need
+    # to be edited for their step or auditor and still
+    # autogenerate admin page
+    inlines = []
 
     @staticmethod
     def processed_data_to_list(processed_data):
