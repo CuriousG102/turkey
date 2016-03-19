@@ -28,6 +28,7 @@ class StepMultipleChoiceData(StepData):
 
 
 class StepMultipleChoice(Step):
+    inlines = ['StepMultipleChoiceResponse']
     script_location = 'survey/js/steps/multiple_choice.js'
     template_file = 'survey/multiple_choice.html'
     data_model = StepMultipleChoiceData
@@ -67,6 +68,7 @@ class StepMultipleChoice(Step):
                                 {'step_instance': self,
                                  'responses': responses})
 
+    # TODO: Move clean methods higher up the inheritance chain
     def clean(self):
         # if object is not new and already has user data
         if self.pk:

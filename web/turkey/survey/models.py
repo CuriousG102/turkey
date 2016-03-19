@@ -14,6 +14,9 @@ class Model(models.Model):
                                    verbose_name=_('Created At'))
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
 
+    def __str__(self):
+        return self.updated.strftime(str(_('Updated: %B %d, %Y')))
+
     class Meta:
         abstract = True
 
@@ -31,10 +34,11 @@ class Task(Model):
         verbose_name=_('Number of simultaneous users'),
         help_text=_('Number of users who need to be in the lobby and ready '
                     'to begin before they may start the task'),
-        validators=not_less_than_one
+        validators=[not_less_than_one]
     )
     task_dependencies = models.ManyToManyField(
         'Task',
+        blank=True,
         verbose_name=_('Task Dependencies'),
         help_text=_(
             'Tasks that must be completed before this task by a given user')
@@ -52,23 +56,21 @@ class Task(Model):
                                        'This is exposed to the user: Name of '
                                        'the survey they\'re taking'))
 
+    def __str__(self):
+        return ' '.join(['%s: ' % self._meta.verbose_name, self.survey_name,
+                         super().__str__()])
+
+    def clean(self):
+        if self.pk and self.taskinteraction_set.count():
+            original = type(self).objects.get(pk=self.pk)
+            if self.survey_name != original.survey_name:
+                return ValidationError(_('Can\'t change the name of the '
+                                         'survey as there are already '
+                                         'responses'))
+
     class Meta:
         verbose_name = _('Interactive Task')
         ordering = ['-updated', '-created']
-
-
-class TaskInteraction(Model):
-    """
-    Created for each new HIT with Task. Data models for Steps and Auditors
-    tie back to this.
-
-    The obvious: We need to know who each auditor and step data entry is
-    associated with.
-
-    The other consideration: We can see what percentage of people are
-    completing our HITs
-    """
-    task = models.ForeignKey('Task')
 
 
 class _DataModel(Model):
@@ -80,6 +82,12 @@ class _DataModel(Model):
     data from the user, and that data model points back at the auditor/step
     """
     task_interaction_model = models.ForeignKey('TaskInteraction')
+
+    def __str__(self):
+        return ' '.join(
+            [self._meta.verbose_name or
+             _('%s object,') % self.__class__.__name__,
+             super().__str__()])
 
     class Meta:
         abstract = True
@@ -97,6 +105,7 @@ class AuditorData(_DataModel):
     #                                                  field you must implement
 
 
+# TODO: Should inherit from Model, but this causes field clashes, necessitating inheriting Model as well in some classes. Bad stuff.
 class _TaskLinkedModel(models.Model):
     task = models.ForeignKey(
         'Task',
@@ -104,13 +113,41 @@ class _TaskLinkedModel(models.Model):
         help_text=_('Task that this is linked to')
     )
 
+    def __str__(self):
+        return ' '.join(
+            [self._meta.verbose_name or
+             _('%s object,') % self.__class__.__name__,
+             _('Linked Task: %s') % self.task,
+             super().__str__()])
+
     class Meta:
         abstract = True
+
+
+class TaskInteraction(_TaskLinkedModel, Model):
+    """
+    Created for each new HIT with Task. Data models for Steps and Auditors
+    tie back to this.
+
+    The obvious: We need to know who each auditor and step data entry is
+    associated with.
+
+    The other consideration: We can see what percentage of people are
+    completing our HITs
+    """
+
+    class Meta:
+        verbose_name = _('Task Interaction')
 
 
 class _EventAndSubmissionModel(Model):
     script_location = 'survey/js/step_or_auditor/my_example.js'
     data_model = _DataModel
+    has_custom_admin = False
+    # shortcut to allow users to have related models that need
+    # to be edited for their step or auditor and still
+    # autogenerate admin page
+    inlines = []
 
     @staticmethod
     def processed_data_to_list(processed_data):
@@ -167,6 +204,13 @@ class _EventAndSubmissionModel(Model):
 
     def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
+
+    def __str__(self):
+        return _('%s for: [%s] %s') % \
+               (self._meta.verbose_name or
+                '%s object' % self.__class__.__name__,
+                self.task,
+                self.updated.strftime('Updated: %B %d, %Y'))
 
     class Meta:
         abstract = True
