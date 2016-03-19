@@ -17,6 +17,7 @@
       var NEXT_PAGE = "http://www.google.com";
       var SUBMISSION_ENDPOINT = {% url 'recordSubmission' pk=task_interaction_model.pk %};
     </script>
+    <script src="{% static "survey/js/globals/visibility_changes.js" %}"></script>
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
     {% for auditor_loc in auditor_script_locations %}
       <script src="{% static auditor_loc %}"></script>
