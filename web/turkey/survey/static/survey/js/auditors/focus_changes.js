@@ -5,7 +5,7 @@ var AuditorFocusChanges = {
     log_focus_changes: function (e) {
         if(document[this.hidden]) {
             var focus_change_time = (new Date()).getTime();
-            focus_changes.push(focus_change_time - start_date.getTime());
+            focus_changes.push({ 'time' : focus_change_time - start_date.getTime() });
         }
     },
     submit_callable: function () {
