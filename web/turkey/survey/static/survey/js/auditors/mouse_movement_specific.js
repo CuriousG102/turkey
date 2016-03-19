@@ -3,8 +3,8 @@ var AuditorMouseMovementSpecific = {
     log_mousemove_specific: function (e) {
         this.mouse_movement_specific.push(
             {
-                'X' : e.pageX,
-                'Y' : e.pageY
+                'x' : e.pageX,
+                'y' : e.pageY
             }
         );
     },
