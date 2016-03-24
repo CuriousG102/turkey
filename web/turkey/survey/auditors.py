@@ -55,6 +55,10 @@ class AuditorBeforeTypingDelay(Auditor):
 #clicks_total
 class AuditorClicksTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorClicksTotal')
+    count = models.IntegerField(
+        verbose_name=_('clicks total'),
+        help_text=_('total number of times a user clicked')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -106,6 +110,10 @@ class AuditorFocusChanges(Auditor):
 #keypresses_total
 class AuditorKeypressesTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorKeypressesTotal')
+    count = models.IntegerField(
+        verbose_name=_('keypresses total'),
+        help_text=_('total number of times a user pressed a key')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -140,6 +148,10 @@ class Auditor_(Auditor):
 #mouse_movement_total
 class AuditorMouseMovementTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorMouseMovementTotal')
+    amount = models.IntegerField(
+        verbose_name=_('mouse movement total'),
+        help_text=_('total number of pixels traversed by the cursor due to user moving mouse')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -250,6 +262,14 @@ class AuditorRecordedTimeDisparity(Auditor):
 #scrolled_pixels_total
 class AuditorScrolledPixelsTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorScrolledPixelsTotal')
+    horizontal = models.IntegerField(
+        verbose_name=_('scrolled horizontal pixels total'),
+        help_text=_('total number of pixels scrolled horizontally by the user')
+    )
+    vertical = models.IntegerField(
+        verbose_name=_('scrolled vertical pixels total'),
+        help_text=_('total number of pixels scrolled vertically by the user')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
