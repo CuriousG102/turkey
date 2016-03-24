@@ -34,9 +34,8 @@ NAME_TO_AUDITOR = {
 class AuditorBeforeTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorBeforeTypingDelay')
     milliseconds = models.IntegerField(
-        verbose_name=_('total task time'),
-        help_text=_('total time in milliseconds that the user'
-                    'took before typing'),
+        verbose_name=_('before typing delay'),
+        help_text=_('total time in milliseconds that the user took before typing'),
         null=True  # can be null because user might never type
     )
 
@@ -175,6 +174,10 @@ class AuditorMouseMovementSpecific(Auditor):
 #on_focus_time
 class AuditorOnFocusTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorOnFocusTime')
+    milliseconds = models.IntegerField(
+        verbose_name=_('on focus time'),
+        help_text=_('total time in milliseconds that the user spent on focus'),
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -226,6 +229,10 @@ class AuditorPastesSpecific(Auditor):
 #recorded_time_disparity
 class AuditorRecordedTimeDisparityData(AuditorData):
     general_model = models.ForeignKey('AuditorRecordedTimeDisparity')
+    milliseconds = models.IntegerField(
+        verbose_name=_('recorded time disparity'),
+        help_text=_('total time in milliseconds that the user spent off focus'),
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -274,30 +281,12 @@ class AuditorScrolledPixelsSpecific(Auditor):
         verbose_name_plural = _('Auditors: Scrolled Pixels Specific')
 
 
-#within_typing_delay
-class AuditorWithinTypingDelayData(AuditorData):
-    general_model = models.ForeignKey('AuditorWithinTypingDelay')
-
-    class Meta(AuditorData.Meta):
-        abstract = False
-
-class AuditorWithinTypingDelay(Auditor):
-    script_location = 'survey/js/auditors/within_typing_delay.js'
-    data_model = AuditorWithinTypingDelayData
-
-    class Meta(Auditor.Meta):
-        abstract = False
-        verbose_name = _('Auditor: Within Typing Delay')
-        verbose_name_plural = _('Auditors: Within Typing Delay')
-
-
 #total_task_time
 class AuditorTotalTaskTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorTotalTaskTime')
     milliseconds = models.IntegerField(
         verbose_name=_('total task time'),
-        help_text=_('total time in milliseconds that the user'
-                    'spent on the task page')
+        help_text=_('total time in milliseconds that the user spent on the task page')
     )
 
     class Meta(AuditorData.Meta):
@@ -311,3 +300,25 @@ class AuditorTotalTaskTime(Auditor):
         abstract = False
         verbose_name = _('Auditor: Total Task Time')
         verbose_name_plural = _('Auditors: Total Task Time')
+
+
+#within_typing_delay
+class AuditorWithinTypingDelayData(AuditorData):
+    general_model = models.ForeignKey('AuditorWithinTypingDelay')
+    milliseconds = models.IntegerField(
+        verbose_name=_('within typing delay'),
+        help_text=_('whether the user typed within the delay period'),
+        null=True
+    )
+
+    class Meta(AuditorData.Meta):
+        abstract = False
+
+class AuditorWithinTypingDelay(Auditor):
+    script_location = 'survey/js/auditors/within_typing_delay.js'
+    data_model = AuditorWithinTypingDelayData
+
+    class Meta(Auditor.Meta):
+        abstract = False
+        verbose_name = _('Auditor: Within Typing Delay')
+        verbose_name_plural = _('Auditors: Within Typing Delay')
