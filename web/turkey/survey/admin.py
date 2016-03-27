@@ -1,7 +1,8 @@
 from django.conf.urls import url
 from django.contrib import admin
 from django.apps import apps
-from django.contrib.admin.options import IS_POPUP_VAR
+from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
+from django.contrib.admin.utils import unquote, get_deleted_objects
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
@@ -29,23 +30,41 @@ def create_step_or_auditor_admin(model):
             # from showing up in the list of models
             return {}
 
-        def redirect_back_to_task(self, request, obj):
-            POST = request.POST
-            # if this looks messy it's because Django framework's ModelAdmin
-            # code is apparently also a train wreck
-            if IS_POPUP_VAR in POST or '_continue' in POST \
-                    or '_addanother' in POST:
-                return None
-            return redirect('admin:survey_task_change', obj.task.pk)
+        def redirect_back_to_task(self, request, task_id):
+            return redirect('admin:survey_task_change', task_id)
 
-        def response_change(self, request, obj):
-            return self.redirect_back_to_task(request, obj) \
-                   or super().response_change(request, obj)
+        def delete_view(self, request, object_id, extra_context=None):
+            to_field = request.POST.get(TO_FIELD_VAR,
+                                        request.GET.get(TO_FIELD_VAR))
+            # parent raises exception under these conditions before obj is
+            # obtained, so we preserve that ordering here
+            if not (to_field and not self.to_field_allowed(request, to_field)):
+                obj = self.get_object(request, unquote(object_id), to_field)
+                if obj is not None:
+                    task_id = obj.task.pk
 
-        def response_add(self, request, obj, post_url_continue=None):
-            return self.redirect_back_to_task(request, obj) \
-                   or super().response_add(request, obj,
-                                           post_url_continue=post_url_continue)
+            # by calling parent here, we can get the object's associated task
+            # before it is deleted, but let the parent do all necessary
+            # handling and give it an opportunity to generate exceptions
+            parent_response = super().delete_view(request, object_id,
+                                                  extra_context)
+
+            # request.post means user has confirmed deletion, this is the
+            # response we potentially wish to redirect
+            if request.POST and IS_POPUP_VAR not in request.POST:
+                # Your IDE will warn you that task_id may be referenced before
+                # assignment. This is not possible because the conditions
+                # that would cause task_id not to be assigned would also
+                # cause the parent call to raise an exception
+                return self.redirect_back_to_task(request, task_id)
+
+            return parent_response
+
+        def response_post_save_change(self, request, obj):
+            return self.redirect_back_to_task(request, obj)
+
+        def response_post_save_add(self, request, obj):
+            return self.redirect_back_to_task(request, obj.task.pk)
 
     admin.site.register(model, StepAuditorAdmin)
 
