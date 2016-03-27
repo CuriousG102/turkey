@@ -106,7 +106,7 @@ class AuditorData(_DataModel):
 
 
 # TODO: Should inherit from Model, but this causes field clashes, necessitating inheriting Model as well in some classes. Bad stuff.
-class _TaskLinkedModel(models.Model):
+class _TaskLinkedModel(Model):
     task = models.ForeignKey(
         'Task',
         verbose_name=_('Associated Task'),
@@ -124,7 +124,7 @@ class _TaskLinkedModel(models.Model):
         abstract = True
 
 
-class TaskInteraction(_TaskLinkedModel, Model):
+class TaskInteraction(_TaskLinkedModel):
     """
     Created for each new HIT with Task. Data models for Steps and Auditors
     tie back to this.
@@ -140,7 +140,7 @@ class TaskInteraction(_TaskLinkedModel, Model):
         verbose_name = _('Task Interaction')
 
 
-class _EventAndSubmissionModel(Model):
+class _EventAndSubmissionModel(_TaskLinkedModel):
     script_location = 'survey/js/step_or_auditor/my_example.js'
     data_model = _DataModel
     has_custom_admin = False
@@ -210,11 +210,24 @@ class _EventAndSubmissionModel(Model):
                 self.task,
                 self.updated.strftime('Updated: %B %d, %Y'))
 
+    # TODO: Move clean methods higher up the inheritance chain
+    def clean(self):
+        # if step/auditor object's task already has user data
+        # we can't let them alter it or auditors/steps
+        if self.task.taskinteraction_set.count() > 0:
+            raise ValidationError (
+                _('Steps and Auditors for %s may not be changed '
+                  'or added because it already has '
+                  'user interactions and data gathered would'
+                  'be invalidated') % self.task
+            )
+        super().clean()
+
     class Meta:
         abstract = True
 
 
-class Step(_EventAndSubmissionModel, _TaskLinkedModel):
+class Step(_EventAndSubmissionModel):
     """
     Your step should include some way to distinguish it from another instance of
     the same class in its template code, because the user may make multiple
@@ -252,9 +265,13 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
         self.save_processed_data_to_model(data[self.pk],
                                           task_interaction_model)
 
-    def get_template_code(self):
+    def get_template_code(self, additional_context=None):
+        if additional_context is None:
+            additional_context = dict()
+        context = {'step_instance': self}
+        context.update(additional_context)
         return render_to_string(self.template_file,
-                                {'step_instance': self})
+                                context)
 
     @property
     def template_code(self):
@@ -270,7 +287,7 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
         ordering = ['task', 'step_num', '-updated', '-created']
 
 
-class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
+class Auditor(_EventAndSubmissionModel):
     # https://docs.djangoproject.com/en/1.9/ref/models/instances/#validating-objects
     def clean(self):
         # it is not valid to create two auditors for the same task
@@ -282,6 +299,7 @@ class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
                                     'same auditor for each task'))
         except type(self).DoesNotExist:
             pass  # this is what we want
+        super().clean()
 
     def handle_submission_data(self, data, task_interaction_model):
         """

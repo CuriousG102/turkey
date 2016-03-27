@@ -86,8 +86,7 @@ class TaskView(View):
         step_script_locations = list(
             set([step.script_location for step in steps]))
 
-        task_interaction_model = TaskInteraction(task=task)
-        task_interaction_model.save()
+        task_interaction_model = TaskInteraction.objects.create(task=task)
 
         return TemplateResponse(
             request, task.survey_wrap_template,
