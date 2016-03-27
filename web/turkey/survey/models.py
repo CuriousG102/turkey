@@ -178,16 +178,15 @@ class _EventAndSubmissionModel(Model):
         are values to be saved on those fields. Not appropriate for all
         situations but fits many, especially with auditors.
         """
+
+        processed_data = self.processed_data_to_list(processed_data)
+        data_models = []
         for dictionary in processed_data:
             for key in dictionary.keys():
                 if not self.is_user_alterable_model_field(key):
                     raise ValidationError(
                         _('processed_data contains dictionaries'
                           'without matching fields'))
-
-        processed_data = self.processed_data_to_list(processed_data)
-        data_models = []
-        for dictionary in processed_data:
             model_instance = self.data_model()
             for key, value in dictionary.items():
                 setattr(model_instance, key, value)
@@ -196,11 +195,10 @@ class _EventAndSubmissionModel(Model):
             data_models.append(model_instance)
         for model in data_models:
             model.full_clean()
-        else:
-            # better for performance to not be creating these one by one and
-            # blocking for large periods of time. we would rather send one
-            # big SQL statement.
-            self.data_model.objects.bulk_create(data_models)
+        # better for performance to not be creating these one by one and
+        # blocking for large periods of time. we would rather send one
+        # big SQL statement.
+        self.data_model.objects.bulk_create(data_models)
 
     def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
