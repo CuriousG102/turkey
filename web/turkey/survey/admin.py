@@ -61,7 +61,7 @@ def create_step_or_auditor_admin(model):
             return parent_response
 
         def response_post_save_change(self, request, obj):
-            return self.redirect_back_to_task(request, obj)
+            return self.redirect_back_to_task(request, obj.task.pk)
 
         def response_post_save_add(self, request, obj):
             return self.redirect_back_to_task(request, obj.task.pk)
