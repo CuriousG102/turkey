@@ -1,4 +1,31 @@
+// using jQuery
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
 $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    },
     timeout: 10 * Math.pow(10, 3) // seconds
 });
 
@@ -40,11 +67,14 @@ var Overlord = {
                 submission['steps'][name] = callback();
             } catch (err) {
                 unsuccessful = true;
-                if (err !== NOT_READY_TO_SUBMIT) error_func();
+                if (err !== NOT_READY_TO_SUBMIT) ; // TODO
             }
         });
 
-        if (unsuccessful) return;
+        if (unsuccessful) {
+            this.posting = false;
+            return;
+        }
 
         $.each(this.auditors, function(i, el) {
             var name = el[0], callback = el[1];
@@ -53,8 +83,8 @@ var Overlord = {
 
         $.post({
             url: SUBMISSION_ENDPOINT,
+            contentType:"application/json; charset=utf-8",
             data: JSON.stringify(submission),
-            dataType: 'json',
             success: function (data, txt, xhr) {
                 this.posting = false;
                 if (xhr.status !== 201) {

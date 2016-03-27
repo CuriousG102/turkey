@@ -18,7 +18,7 @@ class StepMultipleChoiceData(StepData):
     def clean(self):
         # TODO: Write a test for this
         if self.response not in \
-                self.general_model.stepmultiplechoiceresponse_set:
+                self.general_model.stepmultiplechoiceresponse_set.all():
             raise ValidationError(
                 _('Response that is not in the set of responses'))
         super().clean()

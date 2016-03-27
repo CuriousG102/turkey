@@ -61,7 +61,8 @@ class AuditorBeforeTypingDelayData(AuditorData):
         verbose_name=_('total task time'),
         help_text=_('total time in milliseconds that the user'
                     'took before typing'),
-        null=True  # can be null because user might never type
+        null=True,  # can be null because user might never type
+        blank=True
     )
 
     class Meta(AuditorData.Meta):

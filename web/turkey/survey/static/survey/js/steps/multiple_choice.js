@@ -3,8 +3,8 @@ var StepMultipleChoice = {
         var step_mcs = {};
         var successful = true;
 
-        $.each($('.step-mc'), function (el) {
-            var name = el.attr('id');
+        $('.step-mc').each(function () {
+            var name = $(this).attr('id');
             var name_split = name.split('-');
             var pk = Number(name_split[name_split.length-1]);
             var response = $('input[name='+name+']').filter(':checked').val();

@@ -115,10 +115,10 @@ class _TaskLinkedModel(Model):
 
     def __str__(self):
         return ' '.join(
-            [self._meta.verbose_name or
+            [str(self._meta.verbose_name) or
              _('%s object,') % self.__class__.__name__,
-             _('Linked Task: %s') % self.task,
-             super().__str__()])
+             _('Linked Task: [%s]') % self.task,
+             str(super().__str__())])
 
     class Meta:
         abstract = True
@@ -161,14 +161,6 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
             processed_data = [processed_data]
         return processed_data
 
-    @classmethod
-    def is_user_alterable_model_field(cls, field_name):
-        try:
-            cls.data_model._meta.get_field(field_name)
-        except FieldDoesNotExist:
-            return False
-        return True
-
     def save_processed_data_to_model(self, processed_data,
                                      task_interaction_model):
         """
@@ -180,25 +172,25 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
         """
 
         processed_data = self.processed_data_to_list(processed_data)
-        data_models = []
         for dictionary in processed_data:
-            for key in dictionary.keys():
-                if not self.is_user_alterable_model_field(key):
-                    raise ValidationError(
-                        _('processed_data contains dictionaries'
-                          'without matching fields'))
             model_instance = self.data_model()
             for key, value in dictionary.items():
+                try:
+                    field = type(self).data_model._meta.get_field(key)
+                except FieldDoesNotExist:
+                    raise ValidationError(
+                        _('processed_data contains dictionaries '
+                          'without matching fields'))
+                if type(field) is models.ForeignKey:
+                    try:
+                        value = field.related_model.objects.get(pk=value)
+                    except field.related_model.DoesNotExist:
+                        raise ValidationError(_('Related Field Not Found'))
                 setattr(model_instance, key, value)
             model_instance.general_model = self
             model_instance.task_interaction_model = task_interaction_model
-            data_models.append(model_instance)
-        for model in data_models:
-            model.full_clean()
-        # better for performance to not be creating these one by one and
-        # blocking for large periods of time. we would rather send one
-        # big SQL statement.
-        self.data_model.objects.bulk_create(data_models)
+            model_instance.full_clean()
+            model_instance.save()
 
     def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
@@ -218,7 +210,7 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
             raise ValidationError (
                 _('Steps and Auditors for %s may not be changed '
                   'or added because it already has '
-                  'user interactions and data gathered would'
+                  'user interactions and data gathered would '
                   'be invalidated') % self.task
             )
         super().clean()
@@ -262,7 +254,7 @@ class Step(_EventAndSubmissionModel):
         directly matches your data model, and so can be passed directly to
         save_processed_data_to_model without validation or translation.
         """
-        self.save_processed_data_to_model(data[self.pk],
+        self.save_processed_data_to_model(data[str(self.pk)],
                                           task_interaction_model)
 
     def get_template_code(self, additional_context=None):
