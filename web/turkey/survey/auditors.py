@@ -37,6 +37,7 @@ class AuditorBeforeTypingDelayData(AuditorData):
         verbose_name=_('before typing delay'),
         help_text=_('total time in milliseconds that the user took before typing'),
         null=True  # can be null because user might never type
+        blank=True
     )
 
     class Meta(AuditorData.Meta):
@@ -84,16 +85,19 @@ class AuditorClicksSpecificData(AuditorData):
         verbose_name=_('clicks specific id')
         help_text=_('DOM ID of element that was clicked')
         null=True
+        blank=True
     )
     _class = models.TextField(
         verbose_name=_('clicks specific id')
         help_text=_('DOM class of element that was clicked')
         null=True
+        blank=True
     )
     _name = models.TextField(
         verbose_name=_('clicks specific id')
         help_text=_('DOM name of element that was clicked')
         null=True
+        blank=True
     )
 
 
@@ -391,6 +395,7 @@ class AuditorWithinTypingDelayData(AuditorData):
         verbose_name=_('within typing delay'),
         help_text=_('whether the user typed within the delay period'),
         null=True
+        blank=True
     )
 
     class Meta(AuditorData.Meta):
