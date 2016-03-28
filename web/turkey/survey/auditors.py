@@ -48,8 +48,8 @@ class AuditorBeforeTypingDelay(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Before Typing Delay')
-        verbose_name_plural = _('Auditors: Before Typing Delay')
+        verbose_name = _('Before Typing Delay Auditor')
+        verbose_name_plural = _('Before Typing Delay Auditors')
 
 
 #clicks_total
@@ -69,13 +69,14 @@ class AuditorClicksTotal(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Clicks Total')
-        verbose_name_plural = _('Auditors: Clicks Total')
+        verbose_name = _('Clicks Total Auditor')
+        verbose_name_plural = _('Clicks Total Auditors')
 
 
 #clicks_specific
 class AuditorClicksSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorClicksSpecific')
+    #id = models.TextField
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -86,8 +87,8 @@ class AuditorClicksSpecific(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Clicks Specific')
-        verbose_name_plural = _('Auditors: Clicks Specific')
+        verbose_name = _('Clicks Specific Auditor')
+        verbose_name_plural = _('Clicks Specific Auditors')
 
 
 #focus_changes
@@ -103,8 +104,8 @@ class AuditorFocusChanges(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Focus Changes')
-        verbose_name_plural = _('Auditors: Focus Changes')
+        verbose_name = _('Focus Changes Auditor')
+        verbose_name_plural = _('Focus Changes Auditors')
 
 
 #keypresses_total
@@ -124,8 +125,8 @@ class AuditorKeypressesTotal(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Keypresses Total')
-        verbose_name_plural = _('Auditors: Keypresses Total')
+        verbose_name = _('Keypresses Total Auditor')
+        verbose_name_plural = _('Keypresses Total Auditors')
 
 
 #keypresses_specific
@@ -141,8 +142,8 @@ class Auditor_(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Keypresses Specific')
-        verbose_name_plural = _('Auditors: Keypresses Specific')
+        verbose_name = _('Keypresses Specific Auditor')
+        verbose_name_plural = _('Keypresses Specific Auditors')
 
 
 #mouse_movement_total
@@ -162,8 +163,8 @@ class AuditorMouseMovementTotal(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Mouse Movement Total')
-        verbose_name_plural = _('Auditors: Mouse Movement Total')
+        verbose_name = _('Mouse Movement Total Auditor')
+        verbose_name_plural = _('Mouse Movement Total Auditors')
 
 
 #mouse_movement_specific
@@ -179,8 +180,8 @@ class AuditorMouseMovementSpecific(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Mouse Movement Specific')
-        verbose_name_plural = _('Auditors: Mouse Movement Specific')
+        verbose_name = _('Mouse Movement Specific Auditor')
+        verbose_name_plural = _('Mouse Movement Specific Auditors')
 
 
 #on_focus_time
@@ -200,8 +201,8 @@ class AuditorOnFocusTime(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: On Focus Time')
-        verbose_name_plural = _('Auditors: On Focus Time')
+        verbose_name = _('On Focus Time Auditor')
+        verbose_name_plural = _('On Focus Time Auditors')
 
 
 #pastes_total
@@ -217,8 +218,8 @@ class AuditorPastesTotal(Auditor):
 
     class Meta(AuditorData.Meta):
         abstract = False
-        verbose_name = _('Auditor: Pastes Total')
-        verbose_name_plural = _('Auditors: Pastes Total')
+        verbose_name = _('Pastes Total Auditor')
+        verbose_name_plural = _('Pastes Total Auditors')
 
 
 #pastes_specific
@@ -234,8 +235,8 @@ class AuditorPastesSpecific(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Pastes Specific')
-        verbose_name_plural = _('Auditors: Pastes Specific')
+        verbose_name = _('Pastes Specific Auditor')
+        verbose_name_plural = _('Pastes Specific Auditors')
 
 
 #recorded_time_disparity
@@ -255,8 +256,8 @@ class AuditorRecordedTimeDisparity(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Recorded Time Disparity')
-        verbose_name_plural = _('Auditors: Recorded Time Disparity')
+        verbose_name = _('Recorded Time Disparity Auditor')
+        verbose_name_plural = _('Recorded Time Disparity Auditors')
 
 
 #scrolled_pixels_total
@@ -280,8 +281,8 @@ class AuditorScrolledPixelsTotal(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Scrolled Pixels Total')
-        verbose_name_plural = _('Auditors: Scrolled Pixels Total')
+        verbose_name = _('Scrolled Pixels Total Auditor')
+        verbose_name_plural = _('Scrolled Pixels Total Auditors')
 
 
 #scrolled_pixels_specific
@@ -297,8 +298,8 @@ class AuditorScrolledPixelsSpecific(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Scrolled Pixels Specific')
-        verbose_name_plural = _('Auditors: Scrolled Pixels Specific')
+        verbose_name = _('Scrolled Pixels Specific Auditor')
+        verbose_name_plural = _('Scrolled Pixels Specific Auditors')
 
 
 #total_task_time
@@ -318,8 +319,8 @@ class AuditorTotalTaskTime(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Total Task Time')
-        verbose_name_plural = _('Auditors: Total Task Time')
+        verbose_name = _('Total Task Time Auditor')
+        verbose_name_plural = _('Total Task Time Auditors')
 
 
 #within_typing_delay
@@ -340,5 +341,5 @@ class AuditorWithinTypingDelay(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Within Typing Delay')
-        verbose_name_plural = _('Auditors: Within Typing Delay')
+        verbose_name = _('Within Typing Delay Auditor')
+        verbose_name_plural = _('Within Typing Delay Auditors')
