@@ -106,7 +106,7 @@ class AuditorData(_DataModel):
 
 
 # TODO: Should inherit from Model, but this causes field clashes, necessitating inheriting Model as well in some classes. Bad stuff.
-class _TaskLinkedModel(models.Model):
+class _TaskLinkedModel(Model):
     task = models.ForeignKey(
         'Task',
         verbose_name=_('Associated Task'),
@@ -115,16 +115,16 @@ class _TaskLinkedModel(models.Model):
 
     def __str__(self):
         return ' '.join(
-            [self._meta.verbose_name or
+            [str(self._meta.verbose_name) or
              _('%s object,') % self.__class__.__name__,
-             _('Linked Task: %s') % self.task,
-             super().__str__()])
+             _('Linked Task: [%s]') % self.task,
+             str(super().__str__())])
 
     class Meta:
         abstract = True
 
 
-class TaskInteraction(_TaskLinkedModel, Model):
+class TaskInteraction(_TaskLinkedModel):
     """
     Created for each new HIT with Task. Data models for Steps and Auditors
     tie back to this.
@@ -140,7 +140,7 @@ class TaskInteraction(_TaskLinkedModel, Model):
         verbose_name = _('Task Interaction')
 
 
-class _EventAndSubmissionModel(Model):
+class _EventAndSubmissionModel(_TaskLinkedModel):
     script_location = 'survey/js/step_or_auditor/my_example.js'
     data_model = _DataModel
     has_custom_admin = False
@@ -161,14 +161,6 @@ class _EventAndSubmissionModel(Model):
             processed_data = [processed_data]
         return processed_data
 
-    @classmethod
-    def is_user_alterable_model_field(cls, field_name):
-        try:
-            cls.data_model._meta.get_field(field_name)
-        except FieldDoesNotExist:
-            return False
-        return True
-
     def save_processed_data_to_model(self, processed_data,
                                      task_interaction_model):
         """
@@ -178,29 +170,27 @@ class _EventAndSubmissionModel(Model):
         are values to be saved on those fields. Not appropriate for all
         situations but fits many, especially with auditors.
         """
-        for dictionary in processed_data:
-            for key in dictionary.keys():
-                if not self.is_user_alterable_model_field(key):
-                    raise ValidationError(
-                        _('processed_data contains dictionaries'
-                          'without matching fields'))
 
         processed_data = self.processed_data_to_list(processed_data)
-        data_models = []
         for dictionary in processed_data:
             model_instance = self.data_model()
             for key, value in dictionary.items():
+                try:
+                    field = type(self).data_model._meta.get_field(key)
+                except FieldDoesNotExist:
+                    raise ValidationError(
+                        _('processed_data contains dictionaries '
+                          'without matching fields'))
+                if type(field) is models.ForeignKey:
+                    try:
+                        value = field.related_model.objects.get(pk=value)
+                    except field.related_model.DoesNotExist:
+                        raise ValidationError(_('Related Field Not Found'))
                 setattr(model_instance, key, value)
             model_instance.general_model = self
             model_instance.task_interaction_model = task_interaction_model
-            data_models.append(model_instance)
-        for model in data_models:
-            model.full_clean()
-        else:
-            # better for performance to not be creating these one by one and
-            # blocking for large periods of time. we would rather send one
-            # big SQL statement.
-            self.data_model.objects.bulk_create(data_models)
+            model_instance.full_clean()
+            model_instance.save()
 
     def handle_submission_data(self, data, task_interaction_model):
         raise NotImplementedError()
@@ -212,11 +202,24 @@ class _EventAndSubmissionModel(Model):
                 self.task,
                 self.updated.strftime('Updated: %B %d, %Y'))
 
+    # TODO: Move clean methods higher up the inheritance chain
+    def clean(self):
+        # if step/auditor object's task already has user data
+        # we can't let them alter it or auditors/steps
+        if self.task.taskinteraction_set.count() > 0:
+            raise ValidationError (
+                _('Steps and Auditors for %s may not be changed '
+                  'or added because it already has '
+                  'user interactions and data gathered would '
+                  'be invalidated') % self.task
+            )
+        super().clean()
+
     class Meta:
         abstract = True
 
 
-class Step(_EventAndSubmissionModel, _TaskLinkedModel):
+class Step(_EventAndSubmissionModel):
     """
     Your step should include some way to distinguish it from another instance of
     the same class in its template code, because the user may make multiple
@@ -251,12 +254,16 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
         directly matches your data model, and so can be passed directly to
         save_processed_data_to_model without validation or translation.
         """
-        self.save_processed_data_to_model(data[self.pk],
+        self.save_processed_data_to_model(data[str(self.pk)],
                                           task_interaction_model)
 
-    def get_template_code(self):
+    def get_template_code(self, additional_context=None):
+        if additional_context is None:
+            additional_context = dict()
+        context = {'step_instance': self}
+        context.update(additional_context)
         return render_to_string(self.template_file,
-                                {'step_instance': self})
+                                context)
 
     @property
     def template_code(self):
@@ -272,7 +279,7 @@ class Step(_EventAndSubmissionModel, _TaskLinkedModel):
         ordering = ['task', 'step_num', '-updated', '-created']
 
 
-class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
+class Auditor(_EventAndSubmissionModel):
     # https://docs.djangoproject.com/en/1.9/ref/models/instances/#validating-objects
     def clean(self):
         # it is not valid to create two auditors for the same task
@@ -284,6 +291,7 @@ class Auditor(_EventAndSubmissionModel, _TaskLinkedModel):
                                     'same auditor for each task'))
         except type(self).DoesNotExist:
             pass  # this is what we want
+        super().clean()
 
     def handle_submission_data(self, data, task_interaction_model):
         """
