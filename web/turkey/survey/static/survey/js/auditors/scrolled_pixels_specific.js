@@ -10,13 +10,13 @@ var AuditorScrolledPixelsSpecific = {
         // horizontal
         var current_position_h = $(window).scrollLeft();
         var raw_amount_h = current_position_h - previous_position_h;
-        var horizontal = { 'position' : current_position_h, 'change' : raw_amount_h };
+        var horizontal = { 'position_h' : current_position_h, 'change_h' : raw_amount_h };
         previous_position_h = current_position_h;
 
         // vertical
         var current_position_v = $(window).scrollTop();
         var raw_amount_v = current_position_v - previous_position_v;
-        var vertical = { 'position' : current_position_v, 'change' : raw_amount_v };
+        var vertical = { 'position_v' : current_position_v, 'change_v' : raw_amount_v };
         previous_position_v = current_position_v;
 
         this.scrolled_pixels_specific.push(

@@ -197,6 +197,14 @@ class AuditorMouseMovementTotal(Auditor):
 #mouse_movement_specific
 class AuditorMouseMovementSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorMouseMovementSpecific')
+    x = models.IntegerField(
+        verbose_name=_('mouse movement x coordinate')
+        help_text=_('ending x coordinate of mouse whenever user moves mouse')
+    )
+    y = models.IntegerField(
+        verbose_name=_('mouse movement y coordinate')
+        help_text=_('ending y coordinate of mouse whenever user moves mouse')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -235,6 +243,10 @@ class AuditorOnFocusTime(Auditor):
 #pastes_total
 class AuditorPastesTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorPastesTotal')
+    count = models.IntegerField(
+        verbose_name=_('pastes total')
+        help_text=_('number of times a user pastes something (^V)')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -252,6 +264,10 @@ class AuditorPastesTotal(Auditor):
 #pastes_specific
 class AuditorPastesSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorPastesSpecific')
+    data = models.TextField(
+        verbose_name=_('pastes specific')
+        help_text=_('specific content pasted by the user')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -315,6 +331,24 @@ class AuditorScrolledPixelsTotal(Auditor):
 #scrolled_pixels_specific
 class AuditorScrolledPixelsSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorScrolledPixelsSpecific')
+    #horizontal = 
+    #vertical =
+    position_h = models.IntegerField(
+        verbose_name=_('horizontal scrolled pixels position')
+        help_text=_('horizontal position on page after scrolling')
+    )
+    change_h = models.IntegerField(
+        verbose_name=_('horizontal scrolled pixels change')
+        help_text=_('horizontal change in position on page after scrolling')
+    )
+    position_v = models.IntegerField(
+        verbose_name=_('vertical scrolled pixels position')
+        help_text=_('vertical position on page after scrolling')
+    )
+    change_v = models.IntegerField(
+        verbose_name=_('vertical scrolled pixels change')
+        help_text=_('vertical change in position on page after scrolling')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
