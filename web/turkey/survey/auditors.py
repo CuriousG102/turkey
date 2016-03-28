@@ -76,7 +76,26 @@ class AuditorClicksTotal(Auditor):
 #clicks_specific
 class AuditorClicksSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorClicksSpecific')
-    #id = models.TextField
+    _type = models.TextField(
+        verbose_name=_('clicks specific type')
+        help_text=_('DOM type of element that was clicked')
+    )
+    _id = models.TextField(
+        verbose_name=_('clicks specific id')
+        help_text=_('DOM ID of element that was clicked')
+        null=True
+    )
+    _class = models.TextField(
+        verbose_name=_('clicks specific id')
+        help_text=_('DOM class of element that was clicked')
+        null=True
+    )
+    _name = models.TextField(
+        verbose_name=_('clicks specific id')
+        help_text=_('DOM name of element that was clicked')
+        null=True
+    )
+
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -94,6 +113,10 @@ class AuditorClicksSpecific(Auditor):
 #focus_changes
 class AuditorFocusChangesData(AuditorData):
     general_model = models.ForeignKey('AuditorFocusChanges')
+    time = models.IntegerField(
+        verbose_name=_('focus changes times')
+        help_text=_('timestamps of whenever the user switches out of focus')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -132,6 +155,10 @@ class AuditorKeypressesTotal(Auditor):
 #keypresses_specific
 class AuditorKeypressesSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorKeypressesSpecific')
+    key = models.TextField(
+        verbose_name=_('keypresses specific')
+        help_text=_('specific keys pressed by the user')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
