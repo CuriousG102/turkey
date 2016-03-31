@@ -17,9 +17,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-
-        ##########################################
-
         migrations.CreateModel(
             name='AuditorBeforeTypingDelay',
             fields=[
@@ -244,9 +241,6 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
-
-        ##########################################
-
         migrations.CreateModel(
             name='AuditorData',
             fields=[
@@ -334,9 +328,6 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Task Interaction',
             },
         ),
-
-        ##########################################
-
         migrations.CreateModel(
             name='AuditorBeforeTypingDelayData',
             fields=[
@@ -529,7 +520,7 @@ class Migration(migrations.Migration):
             name='AuditorWithinTypingDelayData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('within_delay', models.TextField(help_text='whether the user typed within the delay period', verbose_name='wihtin typing delay')),
+                ('within_delay', models.TextField(help_text='whether the user typed within the delay period', null=True, blank=True, verbose_name='within typing delay')),
             ],
             options={
                 'abstract': False,
@@ -537,9 +528,6 @@ class Migration(migrations.Migration):
             },
             bases=('survey.auditordata',),
         ),
-
-        ##########################################
-
         migrations.CreateModel(
             name='StepMultipleChoiceData',
             fields=[
@@ -561,9 +549,6 @@ class Migration(migrations.Migration):
             name='task_interaction_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.TaskInteraction'),
         ),
-
-        ##########################################
-
         migrations.AddField(
             model_name='auditorbeforetypingdelay',
             name='task',
@@ -644,9 +629,6 @@ class Migration(migrations.Migration):
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
-
-        ##########################################
-
         migrations.AddField(
             model_name='auditordata',
             name='task_interaction_model',
@@ -662,9 +644,6 @@ class Migration(migrations.Migration):
             name='response',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.StepMultipleChoiceResponse'),
         ),
-
-        #########################################
-
         migrations.AddField(
             model_name='auditorbeforetypingdelaydata',
             name='general_model',
@@ -745,6 +724,4 @@ class Migration(migrations.Migration):
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorTotalTaskTime'),
         ),
-
-        ##########################################
     ]
