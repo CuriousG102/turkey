@@ -49,6 +49,20 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='AuditorClicksSpecific',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
+                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
+            ],
+            options={
+                'verbose_name_plural': 'Clicks Total Auditors',
+                'verbose_name': 'Clicks Total Auditor',
+                'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
             name='AuditorTotalTaskTime',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -179,7 +193,21 @@ class Migration(migrations.Migration):
             },
             bases=('survey.auditordata',),
         ),
-
+        migrations.CreateModel(
+            name='AuditorClicksSpecificData',
+            fields=[
+                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
+                ('type_', models.TextField(help_text='DOM type of element that was clicked', verbose_name='clicks specific type')),
+                ('id_', models.TextField(help_text='DOM ID of element that was clicked', verbose_name='clicks specific id')),
+                ('class_', models.TextField(help_text='DOM class of element that was clicked', verbose_name='clicks specific class')),
+                ('name_', models.TextField(help_text='DOM name of element that was clicked', verbose_name='clicks specific name')),
+            ],
+            options={
+                'abstract': False,
+                'ordering': ['-updated', '-created'],
+            },
+            bases=('survey.auditordata',),
+        ),
         migrations.CreateModel(
             name='AuditorTotalTaskTimeData',
             fields=[
@@ -230,6 +258,11 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
         migrations.AddField(
+            model_name='auditorclicksspecific',
+            name='task',
+            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
+        ),
+        migrations.AddField(
             model_name='auditortotaltasktime',
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
@@ -266,10 +299,15 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
         ),
         migrations.AddField(
+            model_name='auditorclicksspecificdata',
+            name='general_model',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
+        ),
+        migrations.AddField(
             model_name='auditortotaltasktimedata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorTotalTaskTime'),
-        )
+        ),
 
         ##########################################
     ]
