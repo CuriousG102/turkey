@@ -389,7 +389,7 @@ class AuditorTotalTaskTime(Auditor):
 #within_typing_delay
 class AuditorWithinTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorWithinTypingDelay')
-    milliseconds = models.IntegerField(
+    within_delay = models.TextField( # 'true' or 'false'
         verbose_name=_('within typing delay'),
         help_text=_('whether the user typed within the delay period'),
         null=True
