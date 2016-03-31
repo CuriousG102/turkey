@@ -443,7 +443,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
         ),
         migrations.AddField(
-            model_name='auditormousemovementdata',
+            model_name='auditormousemovementtotaldata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
         ),
