@@ -147,6 +147,20 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='AuditorPastesTotal',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
+                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
+            ],
+            options={
+                'verbose_name_plural': 'Pastes Total Auditors',
+                'verbose_name': 'Pastes Total Auditor',
+                'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
             name='AuditorTotalTaskTime',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -366,6 +380,18 @@ class Migration(migrations.Migration):
             bases=('survey.auditordata',),
         ),
         migrations.CreateModel(
+            name='AuditorPastesTotalData',
+            fields=[
+                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
+                ('count', models.IntegerField(help_text='number of times a user pastes something (^V)', verbose_name='pastes total')),
+            ],
+            options={
+                'abstract': False,
+                'ordering': ['-updated', '-created'],
+            },
+            bases=('survey.auditordata',),
+        ),
+        migrations.CreateModel(
             name='AuditorTotalTaskTimeData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
@@ -450,6 +476,11 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
         migrations.AddField(
+            model_name='auditorpastestotal',
+            name='task',
+            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
+        ),
+        migrations.AddField(
             model_name='auditortotaltasktime',
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
@@ -517,6 +548,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='auditoronfocustimedata',
+            name='general_model',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
+        ),
+        migrations.AddField(
+            model_name='auditoronpastestotaldata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
         ),
