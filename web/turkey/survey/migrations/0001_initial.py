@@ -173,7 +173,7 @@ class Migration(migrations.Migration):
             name='AuditorBeforeTypingDelayData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user took before typing', null=True, verbose_name='total task time')),
+                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user took before typing', null=True, blank=True, verbose_name='total task time')),
             ],
             options={
                 'abstract': False,
@@ -197,10 +197,10 @@ class Migration(migrations.Migration):
             name='AuditorClicksSpecificData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('type_', models.TextField(help_text='DOM type of element that was clicked', verbose_name='clicks specific type')),
-                ('id_', models.TextField(help_text='DOM ID of element that was clicked', verbose_name='clicks specific id')),
-                ('class_', models.TextField(help_text='DOM class of element that was clicked', verbose_name='clicks specific class')),
-                ('name_', models.TextField(help_text='DOM name of element that was clicked', verbose_name='clicks specific name')),
+                ('type_', models.TextField(help_text='DOM type of element that was clicked', null=True, blank=True, verbose_name='clicks specific type')),
+                ('id_', models.TextField(help_text='DOM ID of element that was clicked', null=True, blank=True, verbose_name='clicks specific id')),
+                ('class_', models.TextField(help_text='DOM class of element that was clicked', null=True, blank=True, verbose_name='clicks specific class')),
+                ('name_', models.TextField(help_text='DOM name of element that was clicked', null=True, blank=True, verbose_name='clicks specific name')),
             ],
             options={
                 'abstract': False,
