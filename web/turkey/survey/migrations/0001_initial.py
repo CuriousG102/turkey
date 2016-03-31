@@ -28,8 +28,22 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
             ],
             options={
-                'verbose_name_plural': 'Auditors: Before Typing Delay',
-                'verbose_name': 'Auditor: Before Typing Delay',
+                'verbose_name_plural': 'Before Typing Delay Auditors',
+                'verbose_name': 'Before Typing Delay Auditor',
+                'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='AuditorClicksTotal',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
+                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
+            ],
+            options={
+                'verbose_name_plural': 'Clicks Total Auditors',
+                'verbose_name': 'Clicks Total Auditor',
                 'ordering': ['task', '-updated', '-created'],
                 'abstract': False,
             },
@@ -42,8 +56,8 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
             ],
             options={
-                'verbose_name_plural': 'Auditors: Total Task Time',
-                'verbose_name': 'Auditor: Total Task Time',
+                'verbose_name_plural': 'Total Task Time Auditors',
+                'verbose_name': 'Total Task Time Auditor',
                 'ordering': ['task', '-updated', '-created'],
                 'abstract': False,
             },
@@ -145,7 +159,7 @@ class Migration(migrations.Migration):
             name='AuditorBeforeTypingDelayData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the usertook before typing', null=True, verbose_name='total task time')),
+                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user took before typing', null=True, verbose_name='total task time')),
             ],
             options={
                 'abstract': False,
@@ -154,10 +168,23 @@ class Migration(migrations.Migration):
             bases=('survey.auditordata',),
         ),
         migrations.CreateModel(
+            name='AuditorClicksTotalData',
+            fields=[
+                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
+                ('count', models.IntegerField(help_text='total number of times a user clicked', verbose_name='clicks total')),
+            ],
+            options={
+                'abstract': False,
+                'ordering': ['-updated', '-created'],
+            },
+            bases=('survey.auditordata',),
+        ),
+
+        migrations.CreateModel(
             name='AuditorTotalTaskTimeData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the userspent on the task page', verbose_name='total task time')),
+                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user spent on the task page', verbose_name='total task time')),
             ],
             options={
                 'abstract': False,
@@ -198,6 +225,11 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
         migrations.AddField(
+            model_name='auditorclickstotal',
+            name='task',
+            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
+        ),
+        migrations.AddField(
             model_name='auditortotaltasktime',
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
@@ -227,6 +259,11 @@ class Migration(migrations.Migration):
             model_name='auditorbeforetypingdelaydata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorBeforeTypingDelay'),
+        ),
+        migrations.AddField(
+            model_name='auditorclickstotaldata',
+            name='general_model',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
         ),
         migrations.AddField(
             model_name='auditortotaltasktimedata',
