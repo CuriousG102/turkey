@@ -17,6 +17,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+
+        ##########################################
+
         migrations.CreateModel(
             name='AuditorBeforeTypingDelay',
             fields=[
@@ -32,18 +35,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='AuditorData',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-        ),
-        migrations.CreateModel(
             name='AuditorTotalTaskTime',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -55,6 +46,21 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Auditor: Total Task Time',
                 'ordering': ['task', '-updated', '-created'],
                 'abstract': False,
+            },
+        ),
+
+        ##########################################
+
+        migrations.CreateModel(
+            name='AuditorData',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
+                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
+            ],
+            options={
+                'abstract': False,
+                'ordering': ['-updated', '-created'],
             },
         ),
         migrations.CreateModel(
@@ -132,6 +138,9 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Task Interaction',
             },
         ),
+
+        ##########################################
+
         migrations.CreateModel(
             name='AuditorBeforeTypingDelayData',
             fields=[
@@ -156,6 +165,9 @@ class Migration(migrations.Migration):
             },
             bases=('survey.auditordata',),
         ),
+
+        ##########################################
+
         migrations.CreateModel(
             name='StepMultipleChoiceData',
             fields=[
@@ -177,20 +189,26 @@ class Migration(migrations.Migration):
             name='task_interaction_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.TaskInteraction'),
         ),
+
+        ##########################################
+
+        migrations.AddField(
+            model_name='auditorbeforetypingdelay',
+            name='task',
+            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
+        ),
         migrations.AddField(
             model_name='auditortotaltasktime',
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
+
+        ##########################################
+
         migrations.AddField(
             model_name='auditordata',
             name='task_interaction_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.TaskInteraction'),
-        ),
-        migrations.AddField(
-            model_name='auditorbeforetypingdelay',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
         migrations.AddField(
             model_name='stepmultiplechoicedata',
@@ -202,14 +220,19 @@ class Migration(migrations.Migration):
             name='response',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.StepMultipleChoiceResponse'),
         ),
-        migrations.AddField(
-            model_name='auditortotaltasktimedata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorTotalTaskTime'),
-        ),
+
+        #########################################
+
         migrations.AddField(
             model_name='auditorbeforetypingdelaydata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorBeforeTypingDelay'),
         ),
+        migrations.AddField(
+            model_name='auditortotaltasktimedata',
+            name='general_model',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorTotalTaskTime'),
+        )
+
+        ##########################################
     ]
