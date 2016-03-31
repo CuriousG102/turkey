@@ -335,8 +335,6 @@ class AuditorScrolledPixelsTotal(Auditor):
 #scrolled_pixels_specific
 class AuditorScrolledPixelsSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorScrolledPixelsSpecific')
-    #horizontal = 
-    #vertical =
     position_h = models.IntegerField(
         verbose_name=_('horizontal scrolled pixels position')
         help_text=_('horizontal position on page after scrolling')
