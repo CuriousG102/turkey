@@ -2,12 +2,12 @@ var AuditorClicksSpecifics = {
     clicks_specifics: [],
     log_click_content: function (e) {
         var dom = {
-            '_type'  :   e.target.nodeName.toLowerCase(),
-            '_id'    :   e.target.id != '' && e.target.id != undefined 
+            'type_' :   e.target.nodeName.toLowerCase(),
+            'id_'   :   e.target.id != '' && e.target.id != undefined 
                             ? e.target.id : null,
-            '_class' :   e.target.class != '' && e.target.class != undefined 
+            'class_':   e.target.class != '' && e.target.class != undefined 
                             ? e.target.class : null,
-            '_name'  :   e.target.name != '' && e.target.name != undefined 
+            'name_' :   e.target.name != '' && e.target.name != undefined 
                             ? e.target.name : null                
         };
         this.clicks_specifics.push(dom);
