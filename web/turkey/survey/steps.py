@@ -18,7 +18,7 @@ class StepMultipleChoiceData(StepData):
     def clean(self):
         # TODO: Write a test for this
         if self.response not in \
-                self.general_model.stepmultiplechoiceresponse_set:
+                self.general_model.stepmultiplechoiceresponse_set.all():
             raise ValidationError(
                 _('Response that is not in the set of responses'))
         super().clean()
@@ -30,7 +30,7 @@ class StepMultipleChoiceData(StepData):
 class StepMultipleChoice(Step):
     inlines = ['StepMultipleChoiceResponse']
     script_location = 'survey/js/steps/multiple_choice.js'
-    template_file = 'survey/multiple_choice.html'
+    template_file = 'survey/steps/multiple_choice.html'
     data_model = StepMultipleChoiceData
     title = models.CharField(
         max_length=144,
@@ -60,27 +60,14 @@ class StepMultipleChoice(Step):
         default=False
     )
 
-    def get_template_code(self):
+    def get_template_code(self, additional_context=None):
+        if additional_context is None:
+            additional_context = dict()
         responses = self.stepmultiplechoiceresponse_set.all()
         if self.randomize_order:
             responses = responses.order_by('?')
-        return render_to_string(self.template_file,
-                                {'step_instance': self,
-                                 'responses': responses})
-
-    # TODO: Move clean methods higher up the inheritance chain
-    def clean(self):
-        # if object is not new and already has user data
-        if self.pk:
-            if self.stepmultiplechoicedata_set.all().count():
-                raise ValidationError(
-                    _('You are attempting to modify a '
-                      'Step Multiple Choice that already has '
-                      'responses. It is necessary to make '
-                      'another as all previous data for this '
-                      'Step Multiple Choice will be '
-                      'invalidated.'))
-        super().clean()
+        additional_context.update({'responses': responses})
+        return super().get_template_code(additional_context)
 
     class Meta(Step.Meta):
         verbose_name = _('Multiple Choice Step')
@@ -108,18 +95,6 @@ class StepMultipleChoiceResponse(Model):
         null=True,
         blank=True
     )
-
-    def clean(self):
-        # if linked StepMultipleChoice already has user data
-        if self.multiple_choice_model.stepmultiplechoicedata_set.all().count():
-            raise ValidationError(
-                _('You are attempting to modify or create a response '
-                  'option for a Step Multiple Choice that already has data'
-                  'from users. It is necessary to make '
-                  'another Step Multiple Choice as all previous data for the '
-                  'Step Multiple Choice will be invalidated.')
-            )
-        super().clean()
 
     class Meta(Step.Meta):
         verbose_name = _('Multiple Choice Step Response')

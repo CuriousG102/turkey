@@ -1,0 +1,9 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}
+  {{ title }} | {% trans "Hit Server Admin" %}
+{% endblock %}
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{% trans "HIT Server" %}</a></h1>
+{% endblock %}

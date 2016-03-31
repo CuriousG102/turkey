@@ -8,14 +8,14 @@
 
     <title>{{ task.survey_name }}</title>
 
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="{% static "survey/js/globals/jquery.ba-throttle-debounce.min.js" %}"></script>
     <script>
       // TODO: Replace placholder
       var NEXT_PAGE = "http://www.google.com";
-      var SUBMISSION_ENDPOINT = {% url 'recordSubmission' pk=task_interaction_model.pk %};
+      var SUBMISSION_ENDPOINT = "{% url 'recordSubmission' pk=task_interaction_model.pk %}";
     </script>
     <script src="{% static "survey/js/globals/visibility_changes.js" %}"></script>
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
@@ -35,6 +35,11 @@
           </div>
         </div>
       {% endfor %}
+      <div class="row">
+        <div class="col-md-12">
+          <input class="btn btn-primary" type="submit" id="submit" value="Submit">
+        </div>
+      </div>
     </div>
   </body>
 </html>

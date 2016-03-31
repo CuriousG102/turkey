@@ -1,6 +1,10 @@
 from django.apps import apps
 from django.db import transaction
+from django.http import Http404
 from django.template.response import TemplateResponse
+from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -16,16 +20,10 @@ from .models import Task, TaskInteraction
 class RecordSubmission(APIView):
     def save_data_to_mapped_models(self, data, map,
                                    task_interaction_model):
-        associated_models = []
         task = task_interaction_model.task
-        # model fetch step
         for name, model_data in data.items():
-            associated_models.append(apps.get_model('survey', map[name])
-                                     .objects.filter(task=task))
-
-        # save step
-        for name, model_data, associated_models in zip(data.items(),
-                                                       associated_models):
+            associated_models = apps.get_model('survey', map[name]) \
+                .objects.filter(task=task)
             for model in associated_models:
                 model.handle_submission_data(model_data,
                                              task_interaction_model)
@@ -35,7 +33,7 @@ class RecordSubmission(APIView):
         # TODO: What to do when it's not found?
         try:
             task_interaction_model = TaskInteraction.objects \
-                .get(pk=kwargs['pk'])
+                .get(pk=int(kwargs['pk']))
         except TaskInteraction.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
@@ -53,9 +51,13 @@ class RecordSubmission(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class TaskView(View):
     def get(self, request, **kwargs):
-        task = Task.objects.get(pk=kwargs['pk'])
+        try:
+            task = Task.objects.get(pk=kwargs['pk'])
+        except Task.DoesNotExist:
+            raise Http404(_('No such task'))
         if task.number_simultaneous_users > 1:
             # TODO: Support for lobby
             raise Exception('Support for simultaneous users '
@@ -86,8 +88,7 @@ class TaskView(View):
         step_script_locations = list(
             set([step.script_location for step in steps]))
 
-        task_interaction_model = TaskInteraction(task=task)
-        task_interaction_model.save()
+        task_interaction_model = TaskInteraction.objects.create(task=task)
 
         return TemplateResponse(
             request, task.survey_wrap_template,
