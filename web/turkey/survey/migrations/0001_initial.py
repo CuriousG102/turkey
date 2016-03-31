@@ -105,6 +105,20 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='AuditorMouseMovementTotal',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
+                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
+            ],
+            options={
+                'verbose_name_plural': 'Mouse Movement Total Auditors',
+                'verbose_name': 'Mouse Movement Total Auditor',
+                'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
             name='AuditorTotalTaskTime',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -287,6 +301,18 @@ class Migration(migrations.Migration):
             bases=('survey.auditordata',),
         ),
         migrations.CreateModel(
+            name='AuditorMouseMovementTotalData',
+            fields=[
+                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
+                ('amount', models.IntegerField(help_text='total number of pixels traversed by the cursor due to user moving mouse', verbose_name='mouse movement total')),
+            ],
+            options={
+                'abstract': False,
+                'ordering': ['-updated', '-created'],
+            },
+            bases=('survey.auditordata',),
+        ),
+        migrations.CreateModel(
             name='AuditorTotalTaskTimeData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
@@ -356,6 +382,11 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
         migrations.AddField(
+            model_name='auditormousemovementtotal',
+            name='task',
+            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
+        ),
+        migrations.AddField(
             model_name='auditortotaltasktime',
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
@@ -408,6 +439,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='auditorkeypressesspecificdata',
+            name='general_model',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
+        ),
+        migrations.AddField(
+            model_name='auditormousemovementdata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
         ),
