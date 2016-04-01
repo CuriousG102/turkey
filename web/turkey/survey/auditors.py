@@ -167,7 +167,7 @@ class AuditorKeypressesSpecificData(AuditorData):
     class Meta(AuditorData.Meta):
         abstract = False
 
-class Auditor_(Auditor):
+class AuditorKeypressesSpecific(Auditor):
     script_location = 'survey/js/auditors/keypresses_specific.js'
     data_model = AuditorKeypressesSpecificData
 
