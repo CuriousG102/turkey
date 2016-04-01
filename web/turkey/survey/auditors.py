@@ -77,23 +77,23 @@ class AuditorClicksTotal(Auditor):
 #clicks_specific
 class AuditorClicksSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorClicksSpecific')
-    type_ = models.TextField(
+    dom_type = models.TextField(
         verbose_name=_('clicks specific type'),
         help_text=_('DOM type of element that was clicked')
     )
-    id_ = models.TextField(
+    dom_id = models.TextField(
         verbose_name=_('clicks specific id'),
         help_text=_('DOM ID of element that was clicked'),
         null=True,
         blank=True
     )
-    class_ = models.TextField(
+    dom_class = models.TextField(
         verbose_name=_('clicks specific id'),
         help_text=_('DOM class of element that was clicked'),
         null=True,
         blank=True
     )
-    name_ = models.TextField(
+    dom_name = models.TextField(
         verbose_name=_('clicks specific id'),
         help_text=_('DOM name of element that was clicked'),
         null=True,
