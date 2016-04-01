@@ -38,9 +38,10 @@ var auditor_scrolled_pixels_total = Object.create(AuditorScrolledPixelsTotal);
 auditor_scrolled_pixels_total.setup();
 
 $(window).scroll(
-    $(window).scroll(auditor_scrolled_pixels_total
-        .log_scroll_event
-        .bind(auditor_scrolled_pixels_total);
+    $.debounce(250, function(e) { 
+        auditor_scrolled_pixels_total
+            .log_scroll_event
+            .bind(auditor_scrolled_pixels_total);
     });
 );
 
