@@ -1,8 +1,7 @@
 var AuditorMouseMovementTotal = {
     mouse_movement_total: 0,
     log_mousemove_event: function (e) {
-            this.mouse_movement_total += 1;
-        }
+        this.mouse_movement_total += 1;
     },
     submit_callable: function () {
         return {
