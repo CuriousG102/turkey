@@ -36,7 +36,7 @@ class AuditorBeforeTypingDelayData(AuditorData):
     milliseconds = models.IntegerField(
         verbose_name=_('before typing delay'),
         help_text=_('total time in milliseconds that the user took before typing'),
-        null=True  # can be null because user might never type
+        null=True,  # can be null because user might never type
         blank=True
     )
 
@@ -78,25 +78,25 @@ class AuditorClicksTotal(Auditor):
 class AuditorClicksSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorClicksSpecific')
     type_ = models.TextField(
-        verbose_name=_('clicks specific type')
+        verbose_name=_('clicks specific type'),
         help_text=_('DOM type of element that was clicked')
     )
     id_ = models.TextField(
-        verbose_name=_('clicks specific id')
-        help_text=_('DOM ID of element that was clicked')
-        null=True
+        verbose_name=_('clicks specific id'),
+        help_text=_('DOM ID of element that was clicked'),
+        null=True,
         blank=True
     )
     class_ = models.TextField(
-        verbose_name=_('clicks specific id')
-        help_text=_('DOM class of element that was clicked')
-        null=True
+        verbose_name=_('clicks specific id'),
+        help_text=_('DOM class of element that was clicked'),
+        null=True,
         blank=True
     )
     name_ = models.TextField(
-        verbose_name=_('clicks specific id')
-        help_text=_('DOM name of element that was clicked')
-        null=True
+        verbose_name=_('clicks specific id'),
+        help_text=_('DOM name of element that was clicked'),
+        null=True,
         blank=True
     )
 
@@ -118,7 +118,7 @@ class AuditorClicksSpecific(Auditor):
 class AuditorFocusChangesData(AuditorData):
     general_model = models.ForeignKey('AuditorFocusChanges')
     time = models.IntegerField(
-        verbose_name=_('focus changes times')
+        verbose_name=_('focus changes times'),
         help_text=_('timestamps of whenever the user switches out of focus')
     )
 
@@ -160,7 +160,7 @@ class AuditorKeypressesTotal(Auditor):
 class AuditorKeypressesSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorKeypressesSpecific')
     key = models.TextField(
-        verbose_name=_('keypresses specific')
+        verbose_name=_('keypresses specific'),
         help_text=_('specific keys pressed by the user')
     )
 
@@ -202,11 +202,11 @@ class AuditorMouseMovementTotal(Auditor):
 class AuditorMouseMovementSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorMouseMovementSpecific')
     x = models.IntegerField(
-        verbose_name=_('mouse movement x coordinate')
+        verbose_name=_('mouse movement x coordinate'),
         help_text=_('ending x coordinate of mouse whenever user moves mouse')
     )
     y = models.IntegerField(
-        verbose_name=_('mouse movement y coordinate')
+        verbose_name=_('mouse movement y coordinate'),
         help_text=_('ending y coordinate of mouse whenever user moves mouse')
     )
 
@@ -248,7 +248,7 @@ class AuditorOnFocusTime(Auditor):
 class AuditorPastesTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorPastesTotal')
     count = models.IntegerField(
-        verbose_name=_('pastes total')
+        verbose_name=_('pastes total'),
         help_text=_('number of times a user pastes something (^V)')
     )
 
@@ -269,7 +269,7 @@ class AuditorPastesTotal(Auditor):
 class AuditorPastesSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorPastesSpecific')
     data = models.TextField(
-        verbose_name=_('pastes specific')
+        verbose_name=_('pastes specific'),
         help_text=_('specific content pasted by the user')
     )
 
@@ -336,19 +336,19 @@ class AuditorScrolledPixelsTotal(Auditor):
 class AuditorScrolledPixelsSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorScrolledPixelsSpecific')
     position_h = models.IntegerField(
-        verbose_name=_('horizontal scrolled pixels position')
+        verbose_name=_('horizontal scrolled pixels position'),
         help_text=_('horizontal position on page after scrolling')
     )
     change_h = models.IntegerField(
-        verbose_name=_('horizontal scrolled pixels change')
+        verbose_name=_('horizontal scrolled pixels change'),
         help_text=_('horizontal change in position on page after scrolling')
     )
     position_v = models.IntegerField(
-        verbose_name=_('vertical scrolled pixels position')
+        verbose_name=_('vertical scrolled pixels position'),
         help_text=_('vertical position on page after scrolling')
     )
     change_v = models.IntegerField(
-        verbose_name=_('vertical scrolled pixels change')
+        verbose_name=_('vertical scrolled pixels change'),
         help_text=_('vertical change in position on page after scrolling')
     )
 
@@ -392,7 +392,7 @@ class AuditorWithinTypingDelayData(AuditorData):
     milliseconds = models.IntegerField(
         verbose_name=_('within typing delay'),
         help_text=_('whether the user typed within the delay period'),
-        null=True
+        null=True,
         blank=True
     )
 
