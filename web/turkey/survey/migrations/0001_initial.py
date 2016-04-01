@@ -25,218 +25,8 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
             ],
             options={
-                'verbose_name_plural': 'Before Typing Delay Auditors',
-                'verbose_name': 'Before Typing Delay Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorClicksTotal',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Clicks Total Auditors',
-                'verbose_name': 'Clicks Total Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorClicksSpecific',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Clicks Specific Auditors',
-                'verbose_name': 'Clicks Specific Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorFocusChanges',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Focus Changes Auditors',
-                'verbose_name': 'Focus Changes Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorKeypressesTotal',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Keypresses Total Auditors',
-                'verbose_name': 'Keypresses Total Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorKeypressesSpecific',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Keypresses Specific Auditors',
-                'verbose_name': 'Keypresses Specific Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorMouseMovementTotal',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Mouse Movement Total Auditors',
-                'verbose_name': 'Mouse Movement Total Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorMouseMovementSpecific',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Mouse Movement Specific Auditors',
-                'verbose_name': 'Mouse Movement Specific Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorOnFocusTime',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'On Focus Time Auditors',
-                'verbose_name': 'On Focus Time Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorPastesTotal',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Pastes Total Auditors',
-                'verbose_name': 'Pastes Total Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorPastesSpecific',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Pastes Specific Auditors',
-                'verbose_name': 'Pastes Specific Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorRecordedTimeDisparity',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Recorded Time Disparity Auditors',
-                'verbose_name': 'Recorded Time Disparity Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorScrolledPixelsTotal',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Scrolled Pixels Total Auditors',
-                'verbose_name': 'Scrolled Pixels Total Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorScrolledPixelsSpecific',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Scrolled Pixels Specific Auditors',
-                'verbose_name': 'Scrolled Pixels Specific Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorTotalTaskTime',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Total Task Time Auditors',
-                'verbose_name': 'Total Task Time Auditor',
-                'ordering': ['task', '-updated', '-created'],
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AuditorWithinTypingDelay',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
-            ],
-            options={
-                'verbose_name_plural': 'Within Typing Delay Auditors',
-                'verbose_name': 'Within Typing Delay Auditor',
+                'verbose_name_plural': 'Auditors: Before Typing Delay',
+                'verbose_name': 'Auditor: Before Typing Delay',
                 'ordering': ['task', '-updated', '-created'],
                 'abstract': False,
             },
@@ -251,6 +41,20 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
                 'ordering': ['-updated', '-created'],
+            },
+        ),
+        migrations.CreateModel(
+            name='AuditorTotalTaskTime',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
+                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
+            ],
+            options={
+                'verbose_name_plural': 'Auditors: Total Task Time',
+                'verbose_name': 'Auditor: Total Task Time',
+                'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
             },
         ),
         migrations.CreateModel(
@@ -332,171 +136,7 @@ class Migration(migrations.Migration):
             name='AuditorBeforeTypingDelayData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user took before typing', null=True, blank=True, verbose_name='total task time')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorClicksTotalData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('count', models.IntegerField(help_text='total number of times a user clicked', verbose_name='clicks total')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorClicksSpecificData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('type_', models.TextField(help_text='DOM type of element that was clicked', null=True, blank=True, verbose_name='clicks specific type')),
-                ('id_', models.TextField(help_text='DOM ID of element that was clicked', null=True, blank=True, verbose_name='clicks specific id')),
-                ('class_', models.TextField(help_text='DOM class of element that was clicked', null=True, blank=True, verbose_name='clicks specific class')),
-                ('name_', models.TextField(help_text='DOM name of element that was clicked', null=True, blank=True, verbose_name='clicks specific name')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorFocusChangesData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('time', models.IntegerField(help_text='timestamps of whenever the user switches out of focus', verbose_name='focus changes times')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorKeypressesTotalData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('count', models.IntegerField(help_text='total number of times a user pressed a key', verbose_name='keypresses total')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorKeypressesSpecificData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('key', models.TextField(help_text='specific keys pressed by the user', verbose_name='keypresses specific')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorMouseMovementTotalData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('amount', models.IntegerField(help_text='total number of pixels traversed by the cursor due to user moving mouse', verbose_name='mouse movement total')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorMouseMovementSpecificData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('x', models.IntegerField(help_text='ending x coordinate of mouse whenever user moves mouse', verbose_name='mouse movement x coordinate')),
-                ('y', models.IntegerField(help_text='ending y coordinate of mouse whenever user moves mouse', verbose_name='mouse movement y coordinate')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorOnFocusTimeData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user spent on focus', verbose_name='on focus time')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorPastesTotalData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('count', models.IntegerField(help_text='number of times a user pastes something (^V)', verbose_name='pastes total')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorPastesSpecificData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('data', models.TextField(help_text='specific content pasted by the user', verbose_name='pastes specific')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorRecordedTimeDisparityData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('milliseconds', models.TextField(help_text='total time in milliseconds that the user spent off focus', verbose_name='recorded time disparity')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorScrolledPixelsTotalData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('horizontal', models.IntegerField(help_text='total number of pixels scrolled horizontally by the user', verbose_name='scrolled horizontal pixels total')),
-                ('vertical', models.IntegerField(help_text='total number of pixels scrolled vertically by the user', verbose_name='scrolled vertical pixels total')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorScrolledPixelsSpecificData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('position_h', models.IntegerField(help_text='horizontal position on page after scrolling', verbose_name='horizontal scrolled pixels position')),
-                ('change_h', models.IntegerField(help_text='horizontal change in position on page after scrolling', verbose_name='horizontal scrolled pixels change')),
-                ('position_v', models.IntegerField(help_text='vertical position on page after scrolling', verbose_name='vertical scrolled pixels position')),
-                ('change_v', models.IntegerField(help_text='vertical change in position on page after scrolling', verbose_name='vertical scrolled pixels change')),
+                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the usertook before typing', null=True, verbose_name='total task time')),
             ],
             options={
                 'abstract': False,
@@ -508,19 +148,7 @@ class Migration(migrations.Migration):
             name='AuditorTotalTaskTimeData',
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user spent on the task page', verbose_name='total task time')),
-            ],
-            options={
-                'abstract': False,
-                'ordering': ['-updated', '-created'],
-            },
-            bases=('survey.auditordata',),
-        ),
-        migrations.CreateModel(
-            name='AuditorWithinTypingDelayData',
-            fields=[
-                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
-                ('within_delay', models.TextField(help_text='whether the user typed within the delay period', null=True, blank=True, verbose_name='within typing delay')),
+                ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the userspent on the task page', verbose_name='total task time')),
             ],
             options={
                 'abstract': False,
@@ -550,82 +178,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.TaskInteraction'),
         ),
         migrations.AddField(
-            model_name='auditorbeforetypingdelay',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorclickstotal',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorclicksspecific',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorfocuschanges',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorkeypressestotal',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorkeypressesspecific',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditormousemovementtotal',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditormousemovementspecific',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditoronfocustime',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorpastestotal',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorpastesspecific',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorrecordedtimedisparity',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorscrolledpixelstotal',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorscrolledpixelsspecific',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
             model_name='auditortotaltasktime',
-            name='task',
-            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
-        ),
-        migrations.AddField(
-            model_name='auditorwithintypingdelay',
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
@@ -633,6 +186,11 @@ class Migration(migrations.Migration):
             model_name='auditordata',
             name='task_interaction_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.TaskInteraction'),
+        ),
+        migrations.AddField(
+            model_name='auditorbeforetypingdelay',
+            name='task',
+            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
         migrations.AddField(
             model_name='stepmultiplechoicedata',
@@ -645,83 +203,13 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.StepMultipleChoiceResponse'),
         ),
         migrations.AddField(
-            model_name='auditorbeforetypingdelaydata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorBeforeTypingDelay'),
-        ),
-        migrations.AddField(
-            model_name='auditorclickstotaldata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditorclicksspecificdata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditorfocuschangesdata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditorkeypressestotaldata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditorkeypressesspecificdata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditormousemovementtotaldata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditormousemovementspecificdata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditoronfocustimedata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditoronpastestotaldata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditoronpastesspecificdata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditorrecordedtimedisparitydata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditorscrolledpixelstotaldata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
-            model_name='auditorscrolledpixelsspecificdata',
-            name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorClicksTotal'),
-        ),
-        migrations.AddField(
             model_name='auditortotaltasktimedata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorTotalTaskTime'),
         ),
         migrations.AddField(
-            model_name='auditorwithintypingdelaydata',
+            model_name='auditorbeforetypingdelaydata',
             name='general_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorTotalTaskTime'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorBeforeTypingDelay'),
         ),
     ]
