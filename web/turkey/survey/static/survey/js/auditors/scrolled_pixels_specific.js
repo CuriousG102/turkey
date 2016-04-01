@@ -5,7 +5,7 @@ var AuditorScrolledPixelsSpecific = {
     setup: function() {
         this.previous_position_h = $(window).scrollLeft();
         this.previous_position_v = $(window).scrollTop();
-    }
+    },
     log_scroll_specific: function () {
         // horizontal
         var current_position_h = $(window).scrollLeft();
@@ -39,7 +39,7 @@ $(window).scroll(
         auditor_scrolled_pixels_specific
             .log_scroll_specific
             .bind(auditor_scrolled_pixels_specific);
-    });
+    })
 );
 
 overlord.register_auditor('scrolled_pixels_specific',

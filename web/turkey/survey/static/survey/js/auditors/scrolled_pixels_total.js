@@ -42,7 +42,7 @@ $(window).scroll(
         auditor_scrolled_pixels_total
             .log_scroll_event
             .bind(auditor_scrolled_pixels_total);
-    });
+    })
 );
 
 overlord.register_auditor('scrolled_pixels_total',

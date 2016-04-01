@@ -13,7 +13,7 @@ var auditor_pastes_specific = Object.create(AuditorPastesSpecific);
 $(document).ready(function() {
     $(document).bind("paste", auditor_pastes_specific
                                 .log_paste_content
-                                .bind(auditor_pastes_specific);
+                                .bind(auditor_pastes_specific));
 });
 
 overlord.register_auditor('pastes_specific',
