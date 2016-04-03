@@ -60,6 +60,14 @@ class StepMultipleChoice(Step):
         default=False
     )
 
+    def serialize_info_to_dict(self):
+        serialized_info = super().serialize_info_to_dict()
+        responses = []
+        for response in self.stepmultiplechoiceresponse_set.all():
+            responses.append(response.serialize_info_to_dict())
+        serialized_info['responses'] = responses
+        return serialized_info
+
     def get_template_code(self, additional_context=None):
         if additional_context is None:
             additional_context = dict()
