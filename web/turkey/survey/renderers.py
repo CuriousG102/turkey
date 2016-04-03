@@ -12,7 +12,7 @@ class XMLBodyRenderer(BaseRenderer):
     format = 'xml'
     charset = 'utf-8'
 
-    def __init__(self, item_tag_name='list-item', root_tag_name=None, body=True):
+    def __init__(self, item_tag_name='list_item', root_tag_name=None, body=True):
         """
         item_tag_name controls name of list elements, root_tag_name controls
         whether or not there is a root tag and what it's name is. if body

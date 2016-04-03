@@ -96,11 +96,15 @@ class StepMultipleChoiceResponse(Model):
         blank=True
     )
 
+    def clean(self):
+        # trip a validation error if there are already responses
+        self.multiple_choice_model.clean()
+        super().clean()
+
     class Meta(Step.Meta):
         verbose_name = _('Multiple Choice Step Response')
         abstract = False
         ordering = ['order']
-
 
 # class StepTextResponseData(StepData):
 #     general_model = models.ForeignKey('StepTextResponse')
