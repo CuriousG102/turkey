@@ -1,6 +1,9 @@
 from django.apps import apps
+from django.core import serializers
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db import transaction
-from django.http import Http404
+from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -17,6 +20,9 @@ from .models import Task, TaskInteraction
 
 
 # TODO: Authentication
+from survey.renderers import XMLBodyRenderer
+
+
 class RecordSubmission(APIView):
     def save_data_to_mapped_models(self, data, map,
                                    task_interaction_model):
@@ -99,3 +105,162 @@ class TaskView(View):
                      'task_interaction_model': task_interaction_model,
                      'auditor_script_locations': auditor_script_locations,
                      'step_script_locations': step_script_locations})
+
+
+class TasksExport(LoginRequiredMixin, APIView):
+    NUMBER_RECORDS_PER_QUERY = 5 * 10 ** 2
+    XML_OPENING_LINE = '<?xml version="1.0" encoding="UTF-8"?>'
+
+    def _get_related_auditors(self, task):
+        auditors = dict()
+        for auditor_name, auditor in NAME_TO_AUDITOR.items():
+            auditor = apps.get_model('survey', auditor)
+            try:
+                auditors[auditor_name] = auditor.objects.get(task=task)
+            except auditor.DoesNotExist:
+                pass
+        return auditors
+
+    def _get_related_steps(self, task):
+        steps = dict()
+        for step_name, step_model in NAME_TO_STEP.items():
+            step = apps.get_model('survey', step_model)
+            step_models = step.objects.filter(task=task)
+            if step_models.count() > 0:
+                steps[step_name] = step_models
+        return steps
+
+    def _render_auditors_meta_xml(self, request, task):
+        # get instances in a dict of the auditors that are actually
+        # attached to our task
+        auditors = self._get_related_auditors(task)
+
+        serialized_auditors = []
+        for auditor_name, auditor in auditors.items():
+            serialized_auditor = serializers.serialize('python', auditor)[0]
+            serialized_auditor.pop('model')
+            serialized_auditor['name'] = auditor_name
+            serialized_auditors.append(serialized_auditor)
+
+        # assemble a string, our auditors xml
+        auditors_xml = XMLBodyRenderer(root_tag_name='auditors_meta',
+                                       item_tag_name='auditor_meta')
+        return auditors_xml.render(serialized_auditors)
+
+    def _render_steps_meta_xml(self, request, task):
+        steps = self._get_related_steps(task)
+
+        serialized_steps = []
+        for step_name, step in steps.items():
+            serialized_step_models = \
+                {'instances': serializers.serialize('python', step),
+                 'name': step_name}
+            for serialized_model in serialized_step_models['instances']:
+                serialized_model.pop('model')
+            serialized_steps.append(serialized_step_models)
+
+        steps_xml = XMLBodyRenderer(root_tag_name='steps_meta',
+                                    item_tag_name='step_meta')
+        return steps_xml.render(serialized_steps)
+
+    def _render_task_meta_xml(self, request, task):
+        auditors_xml = self._render_auditors_meta_xml(request, task)
+        steps_xml = self._render_steps_meta_xml(request, task)
+        return ''.join([auditors_xml, steps_xml])
+
+    def _get_auditors_dict(self, interaction, auditors):
+        auditors_serialized = dict()
+        for auditor_name, auditor in auditors.items():
+            data = getattr(
+                interaction,
+                '%s_set' % auditor.data_model._meta.default_related_name
+            ).all()
+            data_serialized = [
+                serializers.serialize('python', datum) for datum in data
+                ]
+            for datum in data_serialized:
+                datum.pop('model')
+            auditors_serialized[auditor_name] = data_serialized
+        return auditors_serialized
+
+    def _get_steps_dict(self, interaction, steps):
+        steps_serialized = dict()
+        for step_name, step_list in steps.items():
+            data = getattr(
+                interaction,
+                '%s_set' % step_list[0] \
+                .data_model._meta.default_related_name
+            ).all()
+            step_dict = dict()
+            for step in step_list:
+                step_dict[step.pk] = []
+            for datum in data:
+                datum.pop('model')
+        return steps_serialized
+
+    def _render_task_interactions(self, request, task_interactions):
+        if task_interactions.count() == 0:
+            return ''
+
+        auditors = self._get_related_auditors(task_interactions[0].task)
+        steps = self._get_related_steps(task_interactions[0].task)
+
+        step_related_names = []
+        for step_list in steps.values():
+            step_related_names.append(
+                '%s_set' % step_list[0].data_model._meta.default_related_name
+            )
+        auditor_related_names = [
+            '%s_set' % auditor.data_model._meta.default_related_name for
+            auditor in auditors.values()
+            ]
+        # TODO: Test that this is preventing queries in the for loop below
+        task_interactions = task_interactions \
+            .prefetch_related(auditor_related_names) \
+            .prefetch_related(step_related_names)
+
+        interactions = []
+        for interaction in task_interactions:
+            interaction = serializers.serialize('python', interaction)[0]
+            interaction.pop('model')
+            interaction = {'task_interaction': interaction}
+            interaction['auditors'] = self._get_auditors_dict(interaction,
+                                                              auditors)
+            interaction['steps'] = self._get_steps_dict(interaction,
+                                                        steps)
+            interactions.append(interaction)
+
+
+def _get_response_iterator(self, request, tasks):
+    yield self.XML_OPENING_LINE
+    for task in tasks:
+        yield '<task>'
+        yield '<pk>%d</pk>' % task.pk
+        yield '<metadata>'
+        yield self._render_task_meta_xml(request, task)
+        yield '</metadata>'
+        yield '<task_interactions>'
+        paginator = Paginator(task.taskinteraction_set.all(),
+                              self.NUMBER_RECORDS_PER_QUERY)
+        # annoyingly, Django's Paginator was only designed with templates
+        # in mind, despite its utility for breaking up large queries.
+        # The generator expression
+        # (paginator.page(n).object_list for n in paginator.page_range)
+        # creates a generator of page sized object lists
+        for task_interactions in (paginator.page(n).object_list for n in
+                                  paginator.page_range):
+            yield self._render_task_interactions(request,
+                                                 task_interactions)
+        yield '</task_interactions>'
+        yield '</task>'
+
+
+def get(self, request, primary_keys):
+    primary_keys = [int(n) for n in primary_keys.split(',')]
+    # "trust but verify"
+    tasks = Task.objects.filter(pk__in=primary_keys)
+    if tasks.count() != len(primary_keys):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    response_iterator = self._get_response_iterator(request, tasks)
+    return StreamingHttpResponse(response_iterator,
+                                 content_type='text/xml')

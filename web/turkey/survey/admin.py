@@ -190,3 +190,7 @@ class TaskAdmin(admin.ModelAdmin):
             'task_id': task.pk if task is not None else 0
         })
         return super().render_change_form(request, context, **kwargs)
+
+    def export_tasks_data(self, request, queryset):
+        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+        return redirect('survey:export_tasks', ','.join(selected))
