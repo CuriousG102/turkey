@@ -1,5 +1,4 @@
 from django.apps import apps
-from django.core import serializers
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import transaction
