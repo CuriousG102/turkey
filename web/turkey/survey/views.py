@@ -220,9 +220,9 @@ class TasksExport(LoginRequiredMixin, APIView):
         for task in tasks:
             yield '<task>'
             yield '<pk>%d</pk>' % task.pk
-            yield '<metadata>'
+            yield '<meta>'
             yield self._render_task_meta_xml(request, task)
-            yield '</metadata>'
+            yield '</meta>'
             yield '<task_interactions>'
             paginator = Paginator(task.taskinteraction_set.all(),
                                   self.NUMBER_RECORDS_PER_QUERY)
