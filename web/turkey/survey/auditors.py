@@ -7,32 +7,29 @@ from .models import Auditor, AuditorData
 
 # Some inspiration: http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf
 NAME_TO_AUDITOR = {
-    'total_task_time': 'AuditorTotalTaskTime',
     'before_typing_delay': 'AuditorBeforeTypingDelay',
-    # 'on_focus_time': '',
-    # 'within_typing_delay': '',
-    # 'recorded_time_disparity': '',
-    # 'clicks_total': '',
-    # 'clicks_specific': '',  # specific positions and (hopefully) elements clicked inside of
-    # 'keypresses_total': '',
-    # # There are fields total tabs, total
-    # # backspaces, and count of unique characters
-    # # in the paper above, but these can
-    # # be extracted from aggregations on
-    # # keypresses_specific
-    # 'keypresses_specific': '',
-    # 'mouse_movement_total': '',
-    # 'mouse_movement_specific': '',
-    # 'pastes_total': '',
-    # 'pastes_specific': '',
-    # 'scrolled_vertical_pixels_total': '',  # total of position changes via scroll (absolute values)
-    # 'scrolled_horizontal_pixels_total': '',
-    # 'scrolled_vertical_pixels_specific': '',  # breakdown of specific_scrolled_pixels in time intervals
-    # 'scrolled_horizontal_pixels_specific': '',
-    # 'focus_changes': '',  # timestamped
+    'clicks_total': 'AuditorClicksTotal',
+    'clicks_specific': 'AuditorClicksSpecific',
+    'focus_changes': 'AuditorFocusChanges',  # timestamped
+    # There are fields total tabs, total
+    # backspaces, and count of unique characters
+    # in the paper above, but these can
+    # be extracted from aggregations on
+    # keypresses_specific
+    'keypresses_total': 'AuditorKeypressesTotal',
+    'keypresses_specific': 'AuditorKeypressesSpecific',
+    'mouse_movement_total': 'AuditorMouseMovementTotal',
+    'mouse_movement_specific': 'AuditorMouseMovementSpecific',
+    'on_focus_time': 'AuditorOnFocusTime',
+    'pastes_total': 'AuditorPastesTotal',
+    'pastes_specific': 'AuditorPastesSpecific',
+    'recorded_time_disparity': 'AuditorRecordedTimeDisparity',
+    'scrolled_pixels_total': 'AuditorScrolledPixelsTotal', 
+    'scrolled_pixels_specific': 'AuditorScrolledPixelsSpecific',
+    'within_typing_delay': 'AuditorWithinTypingDelay',
+    'total_task_time': 'AuditorTotalTaskTime',
 }
 
-<<<<<<< HEAD
 #before_typing_delay
 class AuditorBeforeTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorBeforeTypingDelay')
@@ -369,9 +366,6 @@ class AuditorScrolledPixelsSpecific(Auditor):
 
 
 #total_task_time
-=======
-
->>>>>>> 0b4ffb7af545e3d2d8caa92361d0ef859bdc288f
 class AuditorTotalTaskTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorTotalTaskTime')
     milliseconds = models.IntegerField(
@@ -397,16 +391,9 @@ class AuditorTotalTaskTime(Auditor):
 class AuditorBeforeTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorBeforeTypingDelay')
     milliseconds = models.IntegerField(
-<<<<<<< HEAD
         verbose_name=_('within typing delay'),
         help_text=_('whether the user typed within the delay period'),
         null=True,
-=======
-        verbose_name=_('total task time'),
-        help_text=_('total time in milliseconds that the user'
-                    'took before typing'),
-        null=True,  # can be null because user might never type
->>>>>>> 0b4ffb7af545e3d2d8caa92361d0ef859bdc288f
         blank=True
     )
 
