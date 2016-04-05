@@ -1,5 +1,5 @@
-var AuditorClicksSpecifics = {
-    clicks_specifics: [],
+var AuditorClicksSpecific = {
+    clicks_specific: [],
     log_click_content: function (e) {
         var dom = {
             'dom_type' :   e.target.nodeName.toLowerCase(),
@@ -10,22 +10,22 @@ var AuditorClicksSpecifics = {
             'dom_name' :   e.target.name != '' && e.target.name != undefined 
                             ? e.target.name : null                
         };
-        this.clicks_specifics.push(dom);
+        this.clicks_specific.push(dom);
     },
     submit_callable: function () {
-        return this.clicks_specifics;
+        return this.clicks_specific;
     }
 };
 
-var auditor_clicks_specifics = Object.create(AuditorClicksSpecifics);
+var auditor_clicks_specific = Object.create(AuditorClicksSpecific);
 
 $(document).ready(function() {
-    $(document).click(auditor_clicks_specifics
+    $(document).click(auditor_clicks_specific
                             .log_click_content
-                            .bind(auditor_clicks_specifics));
+                            .bind(auditor_clicks_specific));
 });
 
-overlord.register_auditor('clicks_specifics',
-                          auditor_clicks_specifics
+overlord.register_auditor('clicks_specific',
+                          auditor_clicks_specific
                             .submit_callable
-                            .bind(auditor_clicks_specifics));
+                            .bind(auditor_clicks_specific));
