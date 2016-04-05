@@ -17,7 +17,7 @@ $(window).mousemove(
         auditor_mouse_movement_total
             .log_mousemove_event
             .bind(auditor_mouse_movement_total);
-    });
+    })
 );
 
 overlord.register_auditor('mouse_movement_total',
