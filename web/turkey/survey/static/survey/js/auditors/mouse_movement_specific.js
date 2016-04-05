@@ -20,7 +20,7 @@ $(window).mousemove(
         auditor_mouse_movement_specific
             .log_mousemove_specific
             .bind(auditor_mouse_movement_specific);
-    });
+    })
 );
 
 overlord.register_auditor('mouse_movement_specific',
