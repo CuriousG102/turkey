@@ -7,7 +7,7 @@ var AuditorClicksSpecific = {
                             ? e.target.id : null,
             'dom_class':   e.target.class != '' && e.target.class != undefined 
                             ? e.target.class : null,
-            'dom_name' :   e.target.name != '' && e.target.name != undefined 
+            'dom_name' :   e.target.name != '' && e.target.name != undefined
                             ? e.target.name : null                
         };
         this.clicks_specific.push(dom);
