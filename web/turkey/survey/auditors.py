@@ -370,13 +370,11 @@ class AuditorTotalTaskTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorTotalTaskTime')
     milliseconds = models.IntegerField(
         verbose_name=_('total task time'),
-        help_text=_('total time in milliseconds that the user'
-                    'spent on the task page')
+        help_text=_('total time in milliseconds that the user spent on the task page')
     )
 
     class Meta(AuditorData.Meta):
         abstract = False
-
 
 class AuditorTotalTaskTime(Auditor):
     script_location = 'survey/js/auditors/total_task_time.js'
@@ -384,12 +382,13 @@ class AuditorTotalTaskTime(Auditor):
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Total Task Time')
-        verbose_name_plural = _('Auditors: Total Task Time')
+        verbose_name = _('Total Task Time Auditor')
+        verbose_name_plural = _('Total Task Time Auditors')
 
 
-class AuditorBeforeTypingDelayData(AuditorData):
-    general_model = models.ForeignKey('AuditorBeforeTypingDelay')
+#within_typing_delay
+class AuditorWithinTypingDelayData(AuditorData):
+    general_model = models.ForeignKey('AuditorWithinTypingDelay')
     milliseconds = models.IntegerField(
         verbose_name=_('within typing delay'),
         help_text=_('whether the user typed within the delay period'),
@@ -400,12 +399,11 @@ class AuditorBeforeTypingDelayData(AuditorData):
     class Meta(AuditorData.Meta):
         abstract = False
 
-
-class AuditorBeforeTypingDelay(Auditor):
-    script_location = 'survey/js/auditors/before_typing_delay.js'
-    data_model = AuditorBeforeTypingDelayData
+class AuditorWithinTypingDelay(Auditor):
+    script_location = 'survey/js/auditors/within_typing_delay.js'
+    data_model = AuditorWithinTypingDelayData
 
     class Meta(Auditor.Meta):
         abstract = False
-        verbose_name = _('Auditor: Before Typing Delay')
-        verbose_name_plural = _('Auditors: Before Typing Delay')
+        verbose_name = _('Within Typing Delay Auditor')
+        verbose_name_plural = _('Within Typing Delay Auditors')
