@@ -105,22 +105,22 @@ class StepTextInputData(StepData):
     data_model = models.ForeignKey('StepTextInput')
     response = models.TextField(verbose_name=_('StepTextInputResponse'),
                                 help_text=_('User\'s text response'))
-    text = models.TextField(
-        verbose_name=_('Text Response Prompt'),
-        help_text=_(
-            'The text to go along with your response '
-            'choice prompt. Choose carefully. This and associated '
-            'responses are not allowed to change after the first '
-            'user has responded to this multiple choice step. Then, '
-            'you must create a new Multiple'
-        )
-    )
+#     text = models.TextField(
+#         verbose_name=_('Text Response Prompt'),
+#         help_text=_(
+#             'The text to go along with your response '
+#             'choice prompt. Choose carefully. This and associated '
+#             'responses are not allowed to change after the first '
+#             'user has responded to this multiple choice step. Then, '
+#             'you must create a new Multiple'
+#         )
+#     )
 
     class Meta(StepData.Meta):
         abstract = False
 
 class StepTextInput(Step):
-    inlines = ['StepTextResponse']
+    inlines = ['StepTextInput']
     script_location = 'survey/js/steps/text_input.js'
     template_file = 'survey/steps/text_input.html'
     data_model = StepTextInputData
@@ -172,19 +172,19 @@ class StepTextInputResponse(Step):
         'StepTextInput',
         verbose_name=_('Associated Text Input Step for Response')
     )
-    prompt = models.TextField(verbose_name=_('Prompt'))
-    order = models.IntegerField(
-        verbose_name=_('Response Number'),
-        help_text=_(
-            'Controls the order that responses linked to a '
-            'Text Input Step are to be rendered. The field can be left '
-            'blank but this only really makes sense if you randomize order of '
-            'responses in the Text Input Step'),
-        null=True,
-        blank=True
-    )
+#     prompt = models.TextField(verbose_name=_('Prompt'))
+#     order = models.IntegerField(
+#         verbose_name=_('Response Number'),
+#         help_text=_(
+#             'Controls the order that responses linked to a '
+#             'Text Input Step are to be rendered. The field can be left '
+#             'blank but this only really makes sense if you randomize order of '
+#             'responses in the Text Input Step'),
+#         null=True,
+#         blank=True
+#     )
 
     class Meta(Step.Meta):
         verbose_name = _('Step Text Input Response')
         abstract = False
-        ordering = ['order']
+        # ordering = ['order']
