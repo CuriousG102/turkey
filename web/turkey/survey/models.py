@@ -16,7 +16,7 @@ class Model(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
 
     def serialize_info_to_dict(self):
-        return serializers.serialize('python', self)
+        return serializers.serialize('python', [self])[0]
 
     def __str__(self):
         return self.updated.strftime(str(_('Updated: %B %d, %Y')))
@@ -140,6 +140,8 @@ class TaskInteraction(_TaskLinkedModel):
     completing our HITs
     """
 
+    # TODO: Uncomment this field and make migrations to protect against double submissions
+    # completed = models.BooleanField(default=False)
     class Meta:
         verbose_name = _('Task Interaction')
 
@@ -200,19 +202,10 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
         raise NotImplementedError()
 
     def serialize_data(self, task_interaction):
-        # this may seem backwards and more difficult than simply
-        # filtering our data model on the task_interaction and ourself.
-        # We're doing it this way because the, the task_interaction
-        # can have linked data models prefetched, keeping us from doing
-        # a new query every time this method is called
-        data = getattr(task_interaction,
-                       '%s_set' % self.data_model._meta.default_related_name
-                       ).all()
-        data_filtered = [datum for datum in data if
-                         datum.general_model == self]
-        data_serialized = [datum.serialize_info_to_dict() for datum in
-                           data_filtered]
-        return data_serialized
+        # TODO: Implement prefetching
+        return [datum.serialize_info_to_dict() for datum in
+                self.data_model.objects.filter(
+                    task_interaction_model=task_interaction)]
 
     def __str__(self):
         return _('%s for: [%s] %s') % \

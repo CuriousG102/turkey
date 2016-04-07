@@ -2,7 +2,7 @@ from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.http import Http404, StreamingHttpResponse
+from django.http import Http404, StreamingHttpResponse, HttpResponse
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -36,11 +36,15 @@ class RecordSubmission(APIView):
     def post(self, request, **kwargs):
         submission = request.data
         # TODO: What to do when it's not found?
+
         try:
             task_interaction_model = TaskInteraction.objects \
                 .get(pk=int(kwargs['pk']))
         except TaskInteraction.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        # TODO: Fix ability of user to submit twice by uncommenting this and field on model
+        # if task_interaction_model.completed:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
             # if we fail validation or anything else all is well and nothing
             # is committed
@@ -51,6 +55,8 @@ class RecordSubmission(APIView):
                 self.save_data_to_mapped_models(submission['steps'],
                                                 NAME_TO_STEP,
                                                 task_interaction_model)
+                task_interaction_model.completed = True
+                task_interaction_model.save()
             return Response(status=status.HTTP_201_CREATED)
         except ValidationError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -130,8 +136,6 @@ class TasksExport(LoginRequiredMixin, APIView):
         return steps
 
     def _render_auditors_meta_xml(self, request, task):
-        # get instances in a dict of the auditors that are actually
-        # attached to our task
         auditors = self._get_related_auditors(task)
 
         serialized_auditors = []
@@ -178,7 +182,7 @@ class TasksExport(LoginRequiredMixin, APIView):
             serialized_steps = []
             for step in step_list:
                 serialized_steps.append({'pk': step.pk,
-                                         'data': step.serialize_data()})
+                                         'data': step.serialize_data(interaction)})
             steps_serialized[step_name] = serialized_steps
         return steps_serialized
 
@@ -189,29 +193,16 @@ class TasksExport(LoginRequiredMixin, APIView):
         auditors = self._get_related_auditors(task_interactions[0].task)
         steps = self._get_related_steps(task_interactions[0].task)
 
-        step_related_names = []
-        for step_list in steps.values():
-            step_related_names.append(
-                '%s_set' % step_list[0].data_model._meta.default_related_name
-            )
-        auditor_related_names = [
-            '%s_set' % auditor.data_model._meta.default_related_name for
-            auditor in auditors.values()
-            ]
-        # TODO: Test that this is preventing queries in the for loop below
-        task_interactions = task_interactions \
-            .prefetch_related(auditor_related_names) \
-            .prefetch_related(step_related_names)
-
+        # TODO: Implement prefetching to keep this loop from making multiple queries per interaction
         renderer = XMLBodyRenderer(root_tag_name='interaction')
         interactions = []
         for interaction in task_interactions:
-            interaction = {'meta': interaction.serialize_info_to_dict()}
-            interaction['auditors'] = self._get_auditors_dict(interaction,
-                                                              auditors)
-            interaction['steps'] = self._get_steps_dict(interaction,
-                                                        steps)
-            interactions.append(renderer.render(interaction))
+            serialized = {'meta': interaction.serialize_info_to_dict()}
+            serialized['auditors'] = self._get_auditors_dict(interaction,
+                                                             auditors)
+            serialized['steps'] = self._get_steps_dict(interaction,
+                                                       steps)
+            interactions.append(renderer.render(serialized))
         return ''.join(interactions)
 
     def _get_response_iterator(self, request, tasks):
@@ -237,7 +228,9 @@ class TasksExport(LoginRequiredMixin, APIView):
             yield '</task_interactions>'
             yield '</task>'
 
-    def get(self, request, primary_keys):
+    def get(self, request, primary_keys=None):
+        if not primary_keys:
+            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
         primary_keys = [int(n) for n in primary_keys.split(',')]
         # "trust but verify"
         tasks = Task.objects.filter(pk__in=primary_keys)

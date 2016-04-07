@@ -6,6 +6,6 @@ urlpatterns = [
         name='recordSubmission'),
     url(r'^task/(?P<pk>[0-9]+)/$', views.TaskView.as_view(),
         name='TaskPage'),
-    url(r'^export_tasks/([0-9]+,)*[0-9]+/$', views.TasksExport.as_view(),
+    url(r'^export_tasks/(?P<primary_keys>(\d+,)*\d+)/export.xml', views.TasksExport.as_view(),
         name='export_tasks')
 ]
