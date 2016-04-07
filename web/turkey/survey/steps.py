@@ -120,7 +120,7 @@ class StepTextInputData(StepData):
         abstract = False
 
 class StepTextInput(Step):
-    inlines = ['StepTextInput']
+    # inlines = ['StepTextInput']
     script_location = 'survey/js/steps/text_input.js'
     template_file = 'survey/steps/text_input.html'
     data_model = StepTextInputData
