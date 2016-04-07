@@ -1,7 +1,7 @@
 var AuditorKeypressesSpecific = {
     keypresses_specific: [],
     log_keypress_content: function (e) {
-        this.keypresses_specific.push(String.fromCharCode(e.which));
+        this.keypresses_specific.push({ 'key' : String.fromCharCode(e.which) });
     },
     submit_callable: function () {
         return this.keypresses_specific;
