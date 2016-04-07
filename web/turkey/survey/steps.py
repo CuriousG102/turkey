@@ -82,9 +82,7 @@ class StepMultipleChoiceResponse(Model):
     )
     text = models.TextField(
         verbose_name=_('Multiple Choice Response Text'),
-        help_text=_(
-            'Text for one of the responses to a Multiple Choice Step'
-        )
+        help_text=_('Text for one of the responses to a Multiple Choice Step')
     )
     order = models.IntegerField(
         verbose_name=_('Response Number'),
@@ -104,8 +102,8 @@ class StepMultipleChoiceResponse(Model):
 
 
 class StepTextInputData(StepData):
-    general_model = models.ForeignKey('StepTextInput')
-    response = models.TextField(verbose_name=_('Response'),
+    data_model = models.ForeignKey('StepTextInput')
+    response = models.TextField(verbose_name=_('StepTextInputResponse'),
                                 help_text=_('User\'s text response'))
     text = models.TextField(
         verbose_name=_('Text Response Prompt'),
@@ -170,8 +168,23 @@ class StepTextInput(Step):
 
 
 class StepTextInputResponse(Step):
-    data_model = StepTextResponseData
+    text_input_model = models.ForeignKey(
+        'StepTextInput',
+        verbose_name=_('Associated Text Input Step for Response')
+    )
     prompt = models.TextField(verbose_name=_('Prompt'))
+    order = models.IntegerField(
+        verbose_name=_('Response Number'),
+        help_text=_(
+            'Controls the order that responses linked to a '
+            'Text Input Step are to be rendered. The field can be left '
+            'blank but this only really makes sense if you randomize order of '
+            'responses in the Text Input Step'),
+        null=True,
+        blank=True
+    )
 
     class Meta(Step.Meta):
+        verbose_name = _('Step Text Input Response')
         abstract = False
+        ordering = ['order']
