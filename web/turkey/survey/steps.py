@@ -60,6 +60,14 @@ class StepMultipleChoice(Step):
         default=False
     )
 
+    def serialize_info_to_dict(self):
+        serialized_info = super().serialize_info_to_dict()
+        responses = []
+        for response in self.stepmultiplechoiceresponse_set.all():
+            responses.append(response.serialize_info_to_dict())
+        serialized_info['responses'] = responses
+        return serialized_info
+
     def get_template_code(self, additional_context=None):
         if additional_context is None:
             additional_context = dict()
@@ -96,11 +104,15 @@ class StepMultipleChoiceResponse(Model):
         blank=True
     )
 
+    def clean(self):
+        # trip a validation error if there are already responses
+        self.multiple_choice_model.clean()
+        super().clean()
+
     class Meta(Step.Meta):
         verbose_name = _('Multiple Choice Step Response')
         abstract = False
         ordering = ['order']
-
 
 # class StepTextResponseData(StepData):
 #     general_model = models.ForeignKey('StepTextResponse')

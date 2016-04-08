@@ -84,6 +84,7 @@ create_step_or_auditor_admins(NAME_TO_AUDITOR.values())
 class TaskAdmin(admin.ModelAdmin):
     step_add_template = 'survey/admin/step_add.html'
     auditor_add_template = 'survey/admin/auditor_add.html'
+    actions = ['export_tasks_data']
 
     def get_urls(self):
         urls = super().get_urls()
@@ -190,3 +191,7 @@ class TaskAdmin(admin.ModelAdmin):
             'task_id': task.pk if task is not None else 0
         })
         return super().render_change_form(request, context, **kwargs)
+
+    def export_tasks_data(self, request, queryset):
+        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+        return redirect('survey:export_tasks', primary_keys=','.join(selected))
