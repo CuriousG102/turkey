@@ -19,14 +19,12 @@ var AuditorRecordedTimeDisparity = {
 };
 
 var auditor_recorded_time_disparity = Object.create(AuditorRecordedTimeDisparity);
+auditor_recorded_time_disparity.hidden = hidden;
 
 document.addEventListener(  visibility_change,
-                            function() {
-                                auditor_recorded_time_disparity.hidden = hidden;
-                                auditor_recorded_time_disparity
-                                    .log_recorded_time_disparity
-                                    .bind(auditor_recorded_time_disparity);
-                            },
+                            auditor_recorded_time_disparity
+                                .log_recorded_time_disparity
+                                .bind(auditor_recorded_time_disparity),
                             false);
 
 overlord.register_auditor('recorded_time_disparity',
