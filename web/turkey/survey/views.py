@@ -42,9 +42,8 @@ class RecordSubmission(APIView):
                 .get(pk=int(kwargs['pk']))
         except TaskInteraction.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        # TODO: Fix ability of user to submit twice by uncommenting this and field on model
-        # if task_interaction_model.completed:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
+        if task_interaction_model.completed:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
             # if we fail validation or anything else all is well and nothing
             # is committed
@@ -69,14 +68,6 @@ class TaskView(View):
             task = Task.objects.get(pk=kwargs['pk'])
         except Task.DoesNotExist:
             raise Http404(_('No such task'))
-        if task.number_simultaneous_users > 1:
-            # TODO: Support for lobby
-            raise Exception('Support for simultaneous users '
-                            'has not yet been coded')
-        if task.task_dependencies.count() > 0:
-            # TODO: Support for checking if user has completed previous tasks
-            raise Exception('Support for interdependent tasks '
-                            'has not yet been coded')
 
         # TODO: Find a way to cut down on the number of queries these two for loops will have to make
         auditors = []

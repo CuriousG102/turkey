@@ -34,19 +34,6 @@ def not_less_than_one(value):
 
 # Create your models here.
 class Task(Model):
-    number_simultaneous_users = models.IntegerField(
-        verbose_name=_('Number of simultaneous users'),
-        help_text=_('Number of users who need to be in the lobby and ready '
-                    'to begin before they may start the task'),
-        validators=[not_less_than_one]
-    )
-    task_dependencies = models.ManyToManyField(
-        'Task',
-        blank=True,
-        verbose_name=_('Task Dependencies'),
-        help_text=_(
-            'Tasks that must be completed before this task by a given user')
-    )
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
     owners = models.ManyToManyField(
@@ -140,8 +127,7 @@ class TaskInteraction(_TaskLinkedModel):
     completing our HITs
     """
 
-    # TODO: Uncomment this field and make migrations to protect against double submissions
-    # completed = models.BooleanField(default=False)
+    completed = models.BooleanField(default=False)
     class Meta:
         verbose_name = _('Task Interaction')
 
