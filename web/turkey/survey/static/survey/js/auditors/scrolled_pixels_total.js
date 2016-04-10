@@ -41,7 +41,7 @@ $(window).scroll(
     $.debounce(250, function(e) { 
         auditor_scrolled_pixels_total
             .log_scroll_event
-            .bind(auditor_scrolled_pixels_total);
+            .bind(auditor_scrolled_pixels_total)();
     })
 );
 

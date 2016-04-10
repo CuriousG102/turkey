@@ -38,7 +38,7 @@ $(window).scroll(
     $.debounce(250, function(e) { 
         auditor_scrolled_pixels_specific
             .log_scroll_specific
-            .bind(auditor_scrolled_pixels_specific);
+            .bind(auditor_scrolled_pixels_specific)();
     })
 );
 
