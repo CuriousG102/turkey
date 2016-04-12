@@ -10,20 +10,20 @@ var AuditorScrolledPixelsTotal = {
     log_scroll_event: function () {
         // horizontal
         var current_position_h = $(window).scrollLeft();
-        if(current_position_h != previous_position_h) {
-            var raw_amount_h = current_position_h - previous_position_h;
+        if(current_position_h != this.previous_position_h) {
+            var raw_amount_h = current_position_h - this.previous_position_h;
             var amount_h = Math.abs(raw_amount_h);
             this.scrolled_pixels_total_h += amount_h;
-            previous_position_h = current_position_h;
+            this.previous_position_h = current_position_h;
         }
 
         // vertical
         var current_position_v = $(window).scrollTop();
-        if(current_position_v != previous_position_v) {
-            var raw_amount_v = current_position_v - previous_position_v;
+        if(current_position_v != this.previous_position_v) {
+            var raw_amount_v = current_position_v - this.previous_position_v;
             var amount_v = Math.abs(raw_amount_v);
             this.scrolled_pixels_total_v += amount_v;
-            previous_position_v = current_position_v;
+            this.previous_position_v = current_position_v;
         }
     },
     submit_callable: function () {
