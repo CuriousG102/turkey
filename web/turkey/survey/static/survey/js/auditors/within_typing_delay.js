@@ -17,8 +17,8 @@ var AuditorWithinTypingDelay = {
         return {
             'within_delay': this.first_typing_event_date
                             ?
-                            (this.first_typing_event_date.getTime() -
-                                this.start_date.getTime()) < this.typing_delay
+                            ((this.first_typing_event_date.getTime() -
+                                this.start_date.getTime()) < this.typing_delay).toString()
                             :
                             null
         };
