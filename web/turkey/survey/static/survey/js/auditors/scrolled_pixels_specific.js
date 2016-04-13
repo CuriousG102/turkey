@@ -10,19 +10,23 @@ var AuditorScrolledPixelsSpecific = {
         // horizontal
         var current_position_h = $(window).scrollLeft();
         var raw_amount_h = current_position_h - this.previous_position_h;
-        var horizontal = { 'position_h' : current_position_h, 'change_h' : raw_amount_h };
+        // var horizontal = { 'position_h' : current_position_h, 'change_h' : raw_amount_h };
         this.previous_position_h = current_position_h;
 
         // vertical
         var current_position_v = $(window).scrollTop();
         var raw_amount_v = current_position_v - this.previous_position_v;
-        var vertical = { 'position_v' : current_position_v, 'change_v' : raw_amount_v };
+        // var vertical = { 'position_v' : current_position_v, 'change_v' : raw_amount_v };
         this.previous_position_v = current_position_v;
 
         this.scrolled_pixels_specific.push(
             {
-                'horizontal'    : horizontal,
-                'vertical'      : vertical
+                // 'horizontal'    : horizontal,
+                // 'vertical'      : vertical
+                'position_h': current_position_h,
+                'change_h'  : raw_amount_h,
+                'position_v': current_position_v,
+                'change_v'  : raw_amount_v
             }
         );
     },
