@@ -335,19 +335,19 @@ class AuditorScrolledPixelsTotal(Auditor):
 #scrolled_pixels_specific
 class AuditorScrolledPixelsSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorScrolledPixelsSpecific')
-    position_h = models.IntegerField(
+    horizontal_position = models.IntegerField(
         verbose_name=_('horizontal scrolled pixels position'),
         help_text=_('horizontal position on page after scrolling')
     )
-    change_h = models.IntegerField(
+    horizontal_change = models.IntegerField(
         verbose_name=_('horizontal scrolled pixels change'),
         help_text=_('horizontal change in position on page after scrolling')
     )
-    position_v = models.IntegerField(
+    vertical_position = models.IntegerField(
         verbose_name=_('vertical scrolled pixels position'),
         help_text=_('vertical position on page after scrolling')
     )
-    change_v = models.IntegerField(
+    vertical_change = models.IntegerField(
         verbose_name=_('vertical scrolled pixels change'),
         help_text=_('vertical change in position on page after scrolling')
     )
@@ -389,7 +389,7 @@ class AuditorTotalTaskTime(Auditor):
 #within_typing_delay
 class AuditorWithinTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorWithinTypingDelay')
-    milliseconds = models.IntegerField(
+    within_delay = models.TextField(
         verbose_name=_('within typing delay'),
         help_text=_('whether the user typed within the delay period'),
         null=True,
