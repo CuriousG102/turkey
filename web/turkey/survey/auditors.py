@@ -26,8 +26,9 @@ NAME_TO_AUDITOR = {
     'recorded_time_disparity': 'AuditorRecordedTimeDisparity',
     'scrolled_pixels_total': 'AuditorScrolledPixelsTotal', 
     'scrolled_pixels_specific': 'AuditorScrolledPixelsSpecific',
-    'within_typing_delay': 'AuditorWithinTypingDelay',
     'total_task_time': 'AuditorTotalTaskTime',
+    'within_typing_delay': 'AuditorWithinTypingDelay',
+    'user_agent' : 'AuditorUserAgent'
 }
 
 #before_typing_delay
@@ -396,6 +397,27 @@ class AuditorTotalTaskTime(Auditor):
         abstract = False
         verbose_name = _('Total Task Time Auditor')
         verbose_name_plural = _('Total Task Time Auditors')
+
+
+#user_agent
+class AuditorUserAgentData(AuditorData):
+    general_model = models.ForeignKey('AuditorWithinTypingDelay')
+    user_agent = models.TextField(
+        verbose_name=_('User Agent'),
+        help_text=_('User Agent of the browser being used')
+    )
+
+    class Meta(AuditorData.Meta):
+        abstract = False
+
+class AuditorUserAgent(Auditor):
+    script_location = 'survey/js/auditors/user_agent.js'
+    data_model = AuditorUserAgentData
+
+    class Meta(Auditor.Meta):
+        abstract = False
+        verbose_name = _('User Agent Auditor')
+        verbose_name_plural = _('User Agent Auditors')
 
 
 #within_typing_delay
