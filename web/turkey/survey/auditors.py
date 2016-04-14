@@ -99,6 +99,10 @@ class AuditorClicksSpecificData(AuditorData):
         null=True,
         blank=True
     )
+    time = models.IntegerField(
+        verbose_name=('clicks specific timestamp'),
+        help_text=_('timestamp of this click event')
+    )
 
 
     class Meta(AuditorData.Meta):
@@ -272,6 +276,10 @@ class AuditorPastesSpecificData(AuditorData):
         verbose_name=_('pastes specific'),
         help_text=_('specific content pasted by the user')
     )
+    time = models.IntegerField(
+        verbose_name=('pastes specific timestamp'),
+        help_text=_('timestamp of this paste event')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -350,6 +358,10 @@ class AuditorScrolledPixelsSpecificData(AuditorData):
     vertical_change = models.IntegerField(
         verbose_name=_('vertical scrolled pixels change'),
         help_text=_('vertical change in position on page after scrolling')
+    )
+    time = models.IntegerField(
+        verbose_name=('scrolled pixels specific timestamp'),
+        help_text=_('timestamp of this scroll event')
     )
 
     class Meta(AuditorData.Meta):
