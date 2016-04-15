@@ -162,8 +162,7 @@ class StepTextInput(Step):
 
 class StepMultipleAnswersData(StepData):
     general_model = models.ForeignKey('StepMultipleAnswers')
-    response = models.TextField(verbose_name=_('StepMultipleAnswersResponse'),
-                                help_text=_('User\'s checkbox responses as a single string'))
+    response = models.ForeignKey('StepMultipleAnswersResponse')
 
     class Meta(StepData.Meta):
         abstract = False
@@ -200,6 +199,23 @@ class StepMultipleAnswers(Step):
                     'to the user under a Multiple Answers Step if selected'),
         default=False
     )
+
+    def serialize_info_to_dict(self):
+        serialized_info = super().serialize_info_to_dict()
+        responses = []
+        for response in self.stepmultipleanswersresponse_set.all():
+            responses.append(response.serialize_info_to_dict())
+        serialized_info['responses'] = responses
+        return serialized_info
+
+    def get_template_code(self, additional_context=None):
+        if additional_context is None:
+            additional_context = dict()
+        responses = self.stepmultipleanswersresponse_set.all()
+        if self.randomize_order:
+            responses = responses.order_by('?')
+        additional_context.update({'responses': responses})
+        return super().get_template_code(additional_context)
 
     class Meta(Step.Meta):
         verbose_name = _('Multiple Answers Step')
