@@ -14,7 +14,7 @@
     <script src="{% static "survey/js/globals/jquery.ba-throttle-debounce.min.js" %}"></script>
     <script>
       // TODO: Replace placholder
-      var NEXT_PAGE = "http://www.google.com";
+      var NEXT_PAGE = window.location.href;
       var SUBMISSION_ENDPOINT = "{% url 'survey:recordSubmission' pk=task_interaction_model.pk %}";
     </script>
     <script src="{% static "survey/js/globals/visibility_changes.js" %}"></script>
