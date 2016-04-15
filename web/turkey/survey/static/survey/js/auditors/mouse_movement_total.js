@@ -16,7 +16,7 @@ $(window).mousemove(
     $.debounce(250, function(e) { 
         auditor_mouse_movement_total
             .log_mousemove_event
-            .bind(auditor_mouse_movement_total);
+            .bind(auditor_mouse_movement_total)();
     })
 );
 

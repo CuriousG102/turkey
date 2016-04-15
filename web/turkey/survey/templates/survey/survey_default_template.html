@@ -15,7 +15,7 @@
     <script>
       // TODO: Replace placholder
       var NEXT_PAGE = "http://www.google.com";
-      var SUBMISSION_ENDPOINT = "{% url 'recordSubmission' pk=task_interaction_model.pk %}";
+      var SUBMISSION_ENDPOINT = "{% url 'survey:recordSubmission' pk=task_interaction_model.pk %}";
     </script>
     <script src="{% static "survey/js/globals/visibility_changes.js" %}"></script>
     <script src="{% static "survey/js/submission_handler.js" %}"></script>

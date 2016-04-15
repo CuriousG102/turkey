@@ -5,7 +5,7 @@ var AuditorFocusChanges = {
     log_focus_changes: function (e) {
         if(document[this.hidden]) {
             var focus_change_time = (new Date()).getTime();
-            focus_changes.push({ 'time' : focus_change_time - start_date.getTime() });
+            this.focus_changes.push({ 'time' : focus_change_time - this.start_date.getTime() });
         }
     },
     submit_callable: function () {
@@ -14,14 +14,12 @@ var AuditorFocusChanges = {
 };
 
 var auditor_focus_changes = Object.create(AuditorFocusChanges);
+auditor_focus_changes.hidden = hidden;
 
 document.addEventListener(  visibility_change,
-                            function() {
-                                auditor_focus_changes.hidden = hidden;
-                                auditor_focus_changes
-                                    .log_focus_changes
-                                    .bind(auditor_focus_changes);
-                            },
+                            auditor_focus_changes
+                                .log_focus_changes
+                                .bind(auditor_focus_changes),
                             false);
 
 overlord.register_auditor('focus_changes',

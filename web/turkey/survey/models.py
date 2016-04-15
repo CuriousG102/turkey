@@ -1,3 +1,4 @@
+from django.core import serializers
 from django.db import models
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 from django.template.loader import render_to_string
@@ -13,6 +14,9 @@ class Model(models.Model):
     created = models.DateTimeField(auto_now_add=True,
                                    verbose_name=_('Created At'))
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
+
+    def serialize_info_to_dict(self):
+        return serializers.serialize('python', [self])[0]
 
     def __str__(self):
         return self.updated.strftime(str(_('Updated: %B %d, %Y')))
@@ -30,19 +34,6 @@ def not_less_than_one(value):
 
 # Create your models here.
 class Task(Model):
-    number_simultaneous_users = models.IntegerField(
-        verbose_name=_('Number of simultaneous users'),
-        help_text=_('Number of users who need to be in the lobby and ready '
-                    'to begin before they may start the task'),
-        validators=[not_less_than_one]
-    )
-    task_dependencies = models.ManyToManyField(
-        'Task',
-        blank=True,
-        verbose_name=_('Task Dependencies'),
-        help_text=_(
-            'Tasks that must be completed before this task by a given user')
-    )
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
     owners = models.ManyToManyField(
@@ -136,6 +127,7 @@ class TaskInteraction(_TaskLinkedModel):
     completing our HITs
     """
 
+    completed = models.BooleanField(default=False)
     class Meta:
         verbose_name = _('Task Interaction')
 
@@ -162,7 +154,7 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
         return processed_data
 
     def save_processed_data_to_model(self, processed_data,
-                                     task_interaction_model):
+                                     task_interaction):
         """
         Simple helper function. Takes a list of dictionaries or a single
         dictionary in the parameter processed_data, where the keys
@@ -188,12 +180,18 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
                         raise ValidationError(_('Related Field Not Found'))
                 setattr(model_instance, key, value)
             model_instance.general_model = self
-            model_instance.task_interaction_model = task_interaction_model
+            model_instance.task_interaction_model = task_interaction
             model_instance.full_clean()
             model_instance.save()
 
-    def handle_submission_data(self, data, task_interaction_model):
+    def handle_submission_data(self, data, task_interaction):
         raise NotImplementedError()
+
+    def serialize_data(self, task_interaction):
+        # TODO: Implement prefetching
+        return [datum.serialize_info_to_dict() for datum in
+                self.data_model.objects.filter(
+                    task_interaction_model=task_interaction)]
 
     def __str__(self):
         return _('%s for: [%s] %s') % \
@@ -207,7 +205,7 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
         # if step/auditor object's task already has user data
         # we can't let them alter it or auditors/steps
         if self.task.taskinteraction_set.count() > 0:
-            raise ValidationError (
+            raise ValidationError(
                 _('Steps and Auditors for %s may not be changed '
                   'or added because it already has '
                   'user interactions and data gathered would '
@@ -235,7 +233,7 @@ class Step(_EventAndSubmissionModel):
                     'taken in by the user')
     )
 
-    def handle_submission_data(self, data, task_interaction_model):
+    def handle_submission_data(self, data, task_interaction):
         """
         Parameter data will be created directly from the JSON sent via
         step code for submission. How you handle it here is up
@@ -255,7 +253,7 @@ class Step(_EventAndSubmissionModel):
         save_processed_data_to_model without validation or translation.
         """
         self.save_processed_data_to_model(data[str(self.pk)],
-                                          task_interaction_model)
+                                          task_interaction)
 
     def get_template_code(self, additional_context=None):
         if additional_context is None:
@@ -293,7 +291,7 @@ class Auditor(_EventAndSubmissionModel):
             pass  # this is what we want
         super().clean()
 
-    def handle_submission_data(self, data, task_interaction_model):
+    def handle_submission_data(self, data, task_interaction):
         """
         Parameter data will be created directly from the JSON sent via
         auditor code for submission. How you handle it here is up
@@ -311,7 +309,7 @@ class Auditor(_EventAndSubmissionModel):
         and so can be passed directly to save_processed_data_to_model without
         validation or translation.
         """
-        self.save_processed_data_to_model(data, task_interaction_model)
+        self.save_processed_data_to_model(data, task_interaction)
 
     class Meta:
         abstract = True

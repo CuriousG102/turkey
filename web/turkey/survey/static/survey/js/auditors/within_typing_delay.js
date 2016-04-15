@@ -15,10 +15,10 @@ var AuditorWithinTypingDelay = {
     },
     submit_callable: function () {
         return {
-            'milliseconds': this.first_typing_event_date
+            'within_delay': this.first_typing_event_date
                             ?
-                            (this.first_typing_event_date.getTime() -
-                                this.start_date.getTime()) < typing_delay
+                            ((this.first_typing_event_date.getTime() -
+                                this.start_date.getTime()) < this.typing_delay).toString()
                             :
                             null
         };

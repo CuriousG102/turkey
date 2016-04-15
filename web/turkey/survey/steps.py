@@ -61,6 +61,14 @@ class StepMultipleChoice(Step):
         default=False
     )
 
+    def serialize_info_to_dict(self):
+        serialized_info = super().serialize_info_to_dict()
+        responses = []
+        for response in self.stepmultiplechoiceresponse_set.all():
+            responses.append(response.serialize_info_to_dict())
+        serialized_info['responses'] = responses
+        return serialized_info
+
     def get_template_code(self, additional_context=None):
         if additional_context is None:
             additional_context = dict()
@@ -95,6 +103,11 @@ class StepMultipleChoiceResponse(Model):
         blank=True
     )
 
+    def clean(self):
+        # trip a validation error if there are already responses
+        self.multiple_choice_model.clean()
+        super().clean()
+
     class Meta(Step.Meta):
         verbose_name = _('Multiple Choice Step Response')
         abstract = False
@@ -105,16 +118,6 @@ class StepTextInputData(StepData):
     data_model = models.ForeignKey('StepTextInput')
     response = models.TextField(verbose_name=_('StepTextInputResponse'),
                                 help_text=_('User\'s text response'))
-#     text = models.TextField(
-#         verbose_name=_('Text Response Prompt'),
-#         help_text=_(
-#             'The text to go along with your response '
-#             'choice prompt. Choose carefully. This and associated '
-#             'responses are not allowed to change after the first '
-#             'user has responded to this multiple choice step. Then, '
-#             'you must create a new Multiple'
-#         )
-#     )
 
     class Meta(StepData.Meta):
         abstract = False
