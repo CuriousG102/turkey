@@ -123,7 +123,6 @@ class StepTextInputData(StepData):
         abstract = False
 
 class StepTextInput(Step):
-    # inlines = ['StepTextInput']
     script_location = 'survey/js/steps/text_input.js'
     template_file = 'survey/steps/text_input.html'
     data_model = StepTextInputData
@@ -190,4 +189,3 @@ class StepTextInputResponse(Step):
     class Meta(Step.Meta):
         verbose_name = _('Step Text Input Response')
         abstract = False
-        # ordering = ['order']
