@@ -28,6 +28,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Before Typing Delay Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Before Typing Delay Auditors',
             },
         ),
         migrations.CreateModel(
@@ -42,6 +44,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Clicks Specific Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Clicks Specific Auditors',
             },
         ),
         migrations.CreateModel(
@@ -56,6 +60,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Clicks Total Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Clicks Total Auditors',
             },
         ),
         migrations.CreateModel(
@@ -82,6 +88,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Focus Changes Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Focus Changes Auditors',
             },
         ),
         migrations.CreateModel(
@@ -96,6 +104,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Keypresses Specific Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Keypresses Specific Auditors',
             },
         ),
         migrations.CreateModel(
@@ -110,6 +120,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Keypresses Total Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Keypresses Total Auditors',
             },
         ),
         migrations.CreateModel(
@@ -124,6 +136,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Mouse Movement Specific Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Mouse Movement Specific Auditors',
             },
         ),
         migrations.CreateModel(
@@ -138,6 +152,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Mouse Movement Total Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Mouse Movement Total Auditors',
             },
         ),
         migrations.CreateModel(
@@ -152,6 +168,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'On Focus Time Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'On Focus Time Auditors',
             },
         ),
         migrations.CreateModel(
@@ -166,6 +184,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Pastes Specific Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Pastes Specific Auditors',
             },
         ),
         migrations.CreateModel(
@@ -180,6 +200,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Pastes Total Auditors',
                 'abstract': False,
                 'ordering': ['-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Pastes Total Auditors',
             },
         ),
         migrations.CreateModel(
@@ -194,6 +216,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Recorded Time Disparity Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Recorded Time Disparity Auditors',
             },
         ),
         migrations.CreateModel(
@@ -208,6 +232,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Scrolled Pixels Specific Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Scrolled Pixels Specific Auditors',
             },
         ),
         migrations.CreateModel(
@@ -222,6 +248,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Scrolled Pixels Total Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Scrolled Pixels Total Auditors',
             },
         ),
         migrations.CreateModel(
@@ -236,6 +264,22 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Total Task Time Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Total Task Time Auditors',
+            },
+        ),
+        migrations.CreateModel(
+            name='AuditorUserAgent',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
+                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated At')),
+            ],
+            options={
+                'verbose_name': 'User Agent Auditor',
+                'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'User Agent Auditors',
             },
         ),
         migrations.CreateModel(
@@ -250,6 +294,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Within Typing Delay Auditors',
                 'abstract': False,
                 'ordering': ['task', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Within Typing Delay Auditors',
             },
         ),
         migrations.CreateModel(
@@ -280,6 +326,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Steps',
                 'abstract': False,
                 'ordering': ['task', 'step_num', '-updated', '-created'],
+                'abstract': False,
+                'verbose_name_plural': 'Steps',
             },
         ),
         migrations.CreateModel(
@@ -297,6 +345,8 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Steps',
                 'abstract': False,
                 'ordering': ['order'],
+                'abstract': False,
+                'verbose_name_plural': 'Steps',
             },
         ),
         migrations.CreateModel(
@@ -379,6 +429,7 @@ class Migration(migrations.Migration):
                 ('dom_id', models.TextField(blank=True, help_text='DOM ID of element that was clicked', null=True, verbose_name='clicks specific id')),
                 ('dom_class', models.TextField(blank=True, help_text='DOM class of element that was clicked', null=True, verbose_name='clicks specific id')),
                 ('dom_name', models.TextField(blank=True, help_text='DOM name of element that was clicked', null=True, verbose_name='clicks specific id')),
+                ('time', models.IntegerField(help_text='timestamp of this click event', verbose_name='clicks specific timestamp')),
             ],
             options={
                 'ordering': ['-updated', '-created'],
@@ -476,6 +527,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
                 ('data', models.TextField(help_text='specific content pasted by the user', verbose_name='pastes specific')),
+                ('time', models.IntegerField(help_text='timestamp of this paste event', verbose_name='pastes specific timestamp')),
             ],
             options={
                 'ordering': ['-updated', '-created'],
@@ -515,6 +567,7 @@ class Migration(migrations.Migration):
                 ('horizontal_change', models.IntegerField(help_text='horizontal change in position on page after scrolling', verbose_name='horizontal scrolled pixels change')),
                 ('vertical_position', models.IntegerField(help_text='vertical position on page after scrolling', verbose_name='vertical scrolled pixels position')),
                 ('vertical_change', models.IntegerField(help_text='vertical change in position on page after scrolling', verbose_name='vertical scrolled pixels change')),
+                ('time', models.IntegerField(help_text='timestamp of this scroll event', verbose_name='scrolled pixels specific timestamp')),
             ],
             options={
                 'ordering': ['-updated', '-created'],
@@ -540,6 +593,18 @@ class Migration(migrations.Migration):
             fields=[
                 ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
                 ('milliseconds', models.IntegerField(help_text='total time in milliseconds that the user spent on the task page', verbose_name='total task time')),
+            ],
+            options={
+                'ordering': ['-updated', '-created'],
+                'abstract': False,
+            },
+            bases=('survey.auditordata',),
+        ),
+        migrations.CreateModel(
+            name='AuditorUserAgentData',
+            fields=[
+                ('auditordata_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='survey.AuditorData')),
+                ('user_agent', models.TextField(help_text='User Agent of the browser being used', verbose_name='User Agent')),
             ],
             options={
                 'ordering': ['-updated', '-created'],
@@ -609,6 +674,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='auditorwithintypingdelay',
+            name='task',
+            field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
+        ),
+        migrations.AddField(
+            model_name='auditoruseragent',
             name='task',
             field=models.ForeignKey(help_text='Task that this is linked to', on_delete=django.db.models.deletion.CASCADE, to='survey.Task', verbose_name='Associated Task'),
         ),
@@ -711,6 +781,11 @@ class Migration(migrations.Migration):
             model_name='auditorwithintypingdelaydata',
             name='general_model',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorWithinTypingDelay'),
+        ),
+        migrations.AddField(
+            model_name='auditoruseragentdata',
+            name='general_model',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.AuditorUserAgent'),
         ),
         migrations.AddField(
             model_name='auditortotaltasktimedata',
