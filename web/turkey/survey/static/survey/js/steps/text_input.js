@@ -12,15 +12,12 @@ var StepTextInput = {
                 successful = false;
                 // TODO: Error message added to DOM for user
             } else {
-                var response_split = response.split('-');
-                response = Number(response_split[response_split.length-1]);
                 step_tis[pk] = {'response': response};
             }
         });
 
         if (!successful) throw NOT_READY_TO_SUBMIT;
 
-        console.log(step_tis);
         return step_tis;
     }
 };

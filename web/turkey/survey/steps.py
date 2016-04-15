@@ -115,7 +115,7 @@ class StepMultipleChoiceResponse(Model):
 
 
 class StepTextInputData(StepData):
-    data_model = models.ForeignKey('StepTextInput')
+    general_model = models.ForeignKey('StepTextInput')
     response = models.TextField(verbose_name=_('StepTextInputResponse'),
                                 help_text=_('User\'s text response'))
 
