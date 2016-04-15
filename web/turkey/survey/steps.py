@@ -158,25 +158,3 @@ class StepTextInput(Step):
         verbose_name = _('Text Input Step')
         abstract = False
 
-
-
-class StepTextInputResponse(Step):
-    text_input_model = models.ForeignKey(
-        'StepTextInput',
-        verbose_name=_('Associated Text Input Step for Response')
-    )
-#     prompt = models.TextField(verbose_name=_('Prompt'))
-#     order = models.IntegerField(
-#         verbose_name=_('Response Number'),
-#         help_text=_(
-#             'Controls the order that responses linked to a '
-#             'Text Input Step are to be rendered. The field can be left '
-#             'blank but this only really makes sense if you randomize order of '
-#             'responses in the Text Input Step'),
-#         null=True,
-#         blank=True
-#     )
-
-    class Meta(Step.Meta):
-        verbose_name = _('Step Text Input Response')
-        abstract = False
