@@ -7,7 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Step, StepData, Model
 
 NAME_TO_STEP = {
-    'multiple_choice': 'StepMultipleChoice'
+    'multiple_choice': 'StepMultipleChoice',
+    'text_input': 'StepTextInput'
 }
 
 
@@ -89,9 +90,7 @@ class StepMultipleChoiceResponse(Model):
     )
     text = models.TextField(
         verbose_name=_('Multiple Choice Response Text'),
-        help_text=_(
-            'Text for one of the responses to a Multiple Choice Step'
-        )
+        help_text=_('Text for one of the responses to a Multiple Choice Step')
     )
     order = models.IntegerField(
         verbose_name=_('Response Number'),
@@ -114,28 +113,48 @@ class StepMultipleChoiceResponse(Model):
         abstract = False
         ordering = ['order']
 
-# class StepTextResponseData(StepData):
-#     general_model = models.ForeignKey('StepTextResponse')
-#     response = models.TextField(verbose_name=_('Response'),
-#                                 help_text=_('User\'s text response'))
-#     text = models.TextField(
-#         verbose_name=_('Text Response Prompt'),
-#         help_text=_(
-#             'The text to go along with your response '
-#             'choice prompt. Choose carefully. This and associated '
-#             'responses are not allowed to change after the first '
-#             'user has responded to this multiple choice step. Then, '
-#             'you must create a new Multiple'
-#         )
-#     )
-#
-#     class Meta(StepData.Meta):
-#         abstract = False
-#
-#
-# class StepTextResponse(Step):
-#     data_model = StepTextResponseData
-#     prompt = models.TextField(verbose_name=_('Prompt'))
-#
-#     class Meta(Step.Meta):
-#         abstract = False
+
+class StepTextInputData(StepData):
+    general_model = models.ForeignKey('StepTextInput')
+    response = models.TextField(verbose_name=_('StepTextInputResponse'),
+                                help_text=_('User\'s text response'))
+
+    class Meta(StepData.Meta):
+        abstract = False
+
+class StepTextInput(Step):
+    script_location = 'survey/js/steps/text_input.js'
+    template_file = 'survey/steps/text_input.html'
+    data_model = StepTextInputData
+    title = models.CharField(
+        max_length=144,
+        verbose_name=_('Title'),
+        help_text=_(
+            'Title for text input prompt. Choose carefully. '
+            'This and associated '
+            'responses are not allowed to change after the first '
+            'user has responded to this text input step. Then, '
+            'you must create a new Text Input Step'
+        )
+    )
+    text = models.TextField(
+        verbose_name=_('Text Input Text'),
+        help_text=_(
+            'The text to go along with your text '
+            'input prompt. Choose carefully. This and associated '
+            'responses are not allowed to change after the first '
+            'user has responded to this text input step. Then, '
+            'you must create a new Text Input Step'
+        )
+    )
+    randomize_order = models.BooleanField(
+        verbose_name=_('TODO!!!!!!!!!!!!'),
+        help_text=_('TODO: This is not needed for this step but it is required '
+                    'by the db.....'),
+        default=False
+    )
+
+    class Meta(Step.Meta):
+        verbose_name = _('Text Input Step')
+        abstract = False
+

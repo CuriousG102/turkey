@@ -92,6 +92,7 @@ var Overlord = {
                     console.error(xhr);
                     error_func();
                 }
+                // window.alert("Success!");
                 window.location.replace(NEXT_PAGE);
             }.bind(this),
             error: function (data) {

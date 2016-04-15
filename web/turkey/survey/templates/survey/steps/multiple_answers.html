@@ -1,0 +1,28 @@
+<!-- ma = multiple answers -->
+<div class="step-ma" id="step-ma-{{ step_instance.pk }}">
+  <div class="row">
+    <div class="col-md-12">
+      <h3>{{ step_instance.title }}</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <p>{{ step_instance.text }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      {% for response in responses %}
+        <div class="checkbox step-ma-response" id="step-ma-response-{{ response.pk }}">
+          <label>
+            <input type="checkbox" name="step-ma-{{ step_instance.pk }}"
+                   id="step-ma-response-{{ response.pk }}"
+                   value="step-ma-response-{{ response.pk }}">
+            {{ response.text }}
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
