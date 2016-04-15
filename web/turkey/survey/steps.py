@@ -148,20 +148,11 @@ class StepTextInput(Step):
         )
     )
     randomize_order = models.BooleanField(
-        verbose_name=_('Randomize Response Order'),
-        help_text=_('Randomizes the order in which responses are presented '
-                    'to the user under a Multiple Choice Step if selected'),
+        verbose_name=_('TODO!!!!!!!!!!!!'),
+        help_text=_('TODO: This is not needed for this step but it is required '
+                    'by the db.....'),
         default=False
     )
-
-    def get_template_code(self, additional_context=None):
-        if additional_context is None:
-            additional_context = dict()
-        responses = self.steptextinputresponse_set.all()
-        if self.randomize_order:
-            responses = responses.order_by('?')
-        additional_context.update({'responses': responses})
-        return super().get_template_code(additional_context)
 
     class Meta(Step.Meta):
         verbose_name = _('Text Input Step')
