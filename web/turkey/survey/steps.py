@@ -8,7 +8,8 @@ from .models import Step, StepData, Model
 
 NAME_TO_STEP = {
     'multiple_choice': 'StepMultipleChoice',
-    'text_input': 'StepTextInput'
+    'text_input': 'StepTextInput',
+    'multiple_answers': 'StepMultipleAnswers'
 }
 
 
