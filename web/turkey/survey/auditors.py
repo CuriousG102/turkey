@@ -401,7 +401,7 @@ class AuditorTotalTaskTime(Auditor):
 
 #user_agent
 class AuditorUserAgentData(AuditorData):
-    general_model = models.ForeignKey('AuditorWithinTypingDelay')
+    general_model = models.ForeignKey('AuditorUserAgent')
     user_agent = models.TextField(
         verbose_name=_('User Agent'),
         help_text=_('User Agent of the browser being used')

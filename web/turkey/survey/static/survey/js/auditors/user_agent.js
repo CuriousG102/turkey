@@ -1,7 +1,8 @@
 var AuditorUserAgent = {
     // ua = {},
+    uas: "",
     get_user_agent: function() {
-        var uas = navigator.userAgent;
+        this.uas = navigator.userAgent;
         // uas = encodeURI(uas);
 
         // var url = "http://www.useragentstring.com/?uas="
@@ -21,7 +22,7 @@ var AuditorUserAgent = {
     },
     submit_callable: function() {
         return {
-            "user_agent" : uas
+            "user_agent" : this.uas
         };
     }
 }
