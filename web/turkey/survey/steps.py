@@ -158,3 +158,40 @@ class StepTextInput(Step):
         verbose_name = _('Text Input Step')
         abstract = False
 
+
+class StepMultipleAnswers(Step):
+    script_location = 'survey/js/steps/multiple_answers.js'
+    template_file = 'survey/steps/multiple_answers.html'
+    data_model = StepMultipleAnswersData
+    title = models.CharField(
+        max_length=144,
+        verbose_name=_('Title'),
+        help_text=_(
+            'Title for multiple answers prompt. Choose carefully. '
+            'This and associated '
+            'responses are not allowed to change after the first '
+            'user has responded to this multiple answers step. Then, '
+            'you must create a new Multiple Answers Step'
+        )
+    )
+    text = models.TextField(
+        verbose_name=_('Multiple Answers Text'),
+        help_text=_(
+            'The text to go along with your text '
+            'input prompt. Choose carefully. This and associated '
+            'responses are not allowed to change after the first '
+            'user has responded to this multiple answers step. Then, '
+            'you must create a new Multiple Answers Step'
+        )
+    )
+    randomize_order = models.BooleanField(
+        verbose_name=_('Randomize Response Order'),
+        help_text=_('Randomizes the order in which responses are presented '
+                    'to the user under a Multiple Answers Step if selected'),
+        default=False
+    )
+
+    class Meta(Step.Meta):
+        verbose_name = _('Multiple Answers Step')
+        abstract = False
+
