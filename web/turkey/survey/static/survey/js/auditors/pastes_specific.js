@@ -1,7 +1,11 @@
 var AuditorPastesSpecific = {
+    start_date: new Date(),
     pastes_specific: [],
     log_paste_content: function (e) {
-        this.pastes_specific.push({ 'data' : e.originalEvent.clipboardData.getData('text') });
+        this.pastes_specific.push({
+            'data' : e.originalEvent.clipboardData.getData('text'),
+            'time' : (new Date()).getTime() - this.start_date.getTime()
+        });
     },
     submit_callable: function () {
         return this.pastes_specific;

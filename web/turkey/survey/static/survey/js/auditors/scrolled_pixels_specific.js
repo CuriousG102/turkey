@@ -1,4 +1,5 @@
 var AuditorScrolledPixelsSpecific = {
+    start_date: new Date(),
     scrolled_pixels_specific: [],
     previous_position_h: 0,
     previous_position_v: 0,
@@ -26,7 +27,8 @@ var AuditorScrolledPixelsSpecific = {
                 'horizontal_position'   : current_position_h,
                 'horizontal_change'     : raw_amount_h,
                 'vertical_position'     : current_position_v,
-                'vertical_change'       : raw_amount_v
+                'vertical_change'       : raw_amount_v,
+                'time'                  : (new Date()).getTime() - this.start_date.getTime()
             }
         );
     },

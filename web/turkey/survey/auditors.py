@@ -26,8 +26,9 @@ NAME_TO_AUDITOR = {
     'recorded_time_disparity': 'AuditorRecordedTimeDisparity',
     'scrolled_pixels_total': 'AuditorScrolledPixelsTotal', 
     'scrolled_pixels_specific': 'AuditorScrolledPixelsSpecific',
-    'within_typing_delay': 'AuditorWithinTypingDelay',
     'total_task_time': 'AuditorTotalTaskTime',
+    'within_typing_delay': 'AuditorWithinTypingDelay',
+    'user_agent' : 'AuditorUserAgent'
 }
 
 #before_typing_delay
@@ -98,6 +99,10 @@ class AuditorClicksSpecificData(AuditorData):
         help_text=_('DOM name of element that was clicked'),
         null=True,
         blank=True
+    )
+    time = models.IntegerField(
+        verbose_name=('clicks specific timestamp'),
+        help_text=_('timestamp of this click event')
     )
 
 
@@ -272,6 +277,10 @@ class AuditorPastesSpecificData(AuditorData):
         verbose_name=_('pastes specific'),
         help_text=_('specific content pasted by the user')
     )
+    time = models.IntegerField(
+        verbose_name=('pastes specific timestamp'),
+        help_text=_('timestamp of this paste event')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -351,6 +360,10 @@ class AuditorScrolledPixelsSpecificData(AuditorData):
         verbose_name=_('vertical scrolled pixels change'),
         help_text=_('vertical change in position on page after scrolling')
     )
+    time = models.IntegerField(
+        verbose_name=('scrolled pixels specific timestamp'),
+        help_text=_('timestamp of this scroll event')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
@@ -384,6 +397,27 @@ class AuditorTotalTaskTime(Auditor):
         abstract = False
         verbose_name = _('Total Task Time Auditor')
         verbose_name_plural = _('Total Task Time Auditors')
+
+
+#user_agent
+class AuditorUserAgentData(AuditorData):
+    general_model = models.ForeignKey('AuditorUserAgent')
+    user_agent = models.TextField(
+        verbose_name=_('User Agent'),
+        help_text=_('User Agent of the browser being used')
+    )
+
+    class Meta(AuditorData.Meta):
+        abstract = False
+
+class AuditorUserAgent(Auditor):
+    script_location = 'survey/js/auditors/user_agent.js'
+    data_model = AuditorUserAgentData
+
+    class Meta(Auditor.Meta):
+        abstract = False
+        verbose_name = _('User Agent Auditor')
+        verbose_name_plural = _('User Agent Auditors')
 
 
 #within_typing_delay
