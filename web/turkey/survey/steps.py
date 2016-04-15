@@ -159,6 +159,14 @@ class StepTextInput(Step):
         abstract = False
 
 
+class StepMultipleAnswersData(StepData):
+    general_model = models.ForeignKey('StepMultipleAnswers')
+    response = models.TextField(verbose_name=_('StepMultipleAnswersResponse'),
+                                help_text=_('User\'s checkbox responses as a single string'))
+
+    class Meta(StepData.Meta):
+        abstract = False
+
 class StepMultipleAnswers(Step):
     script_location = 'survey/js/steps/multiple_answers.js'
     template_file = 'survey/steps/multiple_answers.html'

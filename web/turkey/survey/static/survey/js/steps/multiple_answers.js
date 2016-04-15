@@ -17,7 +17,7 @@ var StepMultipleAnswers = {
             } else {
                 // var response_split = response.split('-');
                 // response = Number(response_split[response_split.length-1]);
-                step_mas[pk] = {'response': response};
+                step_mas[pk] = {'response': response.toString()};
             }
         });
 
