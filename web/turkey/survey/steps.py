@@ -169,6 +169,7 @@ class StepMultipleAnswersData(StepData):
         abstract = False
 
 class StepMultipleAnswers(Step):
+    inlines = ['StepMultipleAnswersResponse']
     script_location = 'survey/js/steps/multiple_answers.js'
     template_file = 'survey/steps/multiple_answers.html'
     data_model = StepMultipleAnswersData
@@ -203,4 +204,30 @@ class StepMultipleAnswers(Step):
     class Meta(Step.Meta):
         verbose_name = _('Multiple Answers Step')
         abstract = False
+
+class StepMultipleAnswersResponse(Model):
+    multiple_answers_model = models.ForeignKey(
+        'StepMultipleAnswers',
+        verbose_name=_('Associated Multiple Answers Step for Response')
+    )
+    text = models.TextField(
+        verbose_name=_('Multiple Answers Response Text'),
+        help_text=_('Text for one of the responses to a Multiple Answers Step')
+    )
+    order = models.IntegerField(
+        verbose_name=_('Response Number'),
+        help_text=_(
+            'Controls the order that responses linked to a '
+            'Multiple Answers Step are to be rendered. The field can be left '
+            'blank but this only really makes sense if you randomize order of '
+            'responses in the Multiple Answers Step'),
+        null=True,
+        blank=True
+    )
+
+    class Meta(Step.Meta):
+        verbose_name = _('Multiple Answers Step Response')
+        abstract = False
+        ordering = ['order']
+
 
