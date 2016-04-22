@@ -18,7 +18,7 @@ var StepMultipleAnswers = {
                 successful = false;
                 // TODO: Error message added to DOM for user
             } else {
-                step_mas[pk] = {'response': response.toString()};
+                step_mas[pk] = {'response': response};
             }
         });
 
