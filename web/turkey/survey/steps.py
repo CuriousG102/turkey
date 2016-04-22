@@ -148,12 +148,6 @@ class StepTextInput(Step):
             'you must create a new Text Input Step'
         )
     )
-    randomize_order = models.BooleanField(
-        verbose_name=_('TODO!!!!!!!!!!!!'),
-        help_text=_('TODO: This is not needed for this step but it is required '
-                    'by the db.....'),
-        default=False
-    )
 
     class Meta(Step.Meta):
         verbose_name = _('Text Input Step')
