@@ -164,6 +164,14 @@ class StepMultipleAnswersData(StepData):
     general_model = models.ForeignKey('StepMultipleAnswers')
     response = models.ForeignKey('StepMultipleAnswersResponse')
 
+    def clean(self):
+        # TODO: Write a test for this
+        if self.response not in \
+                self.general_model.stepmultipleanswersresponse_set.all():
+            raise ValidationError(
+                _('Response that is not in the set of responses'))
+        super().clean()
+
     class Meta(StepData.Meta):
         abstract = False
 
@@ -240,6 +248,11 @@ class StepMultipleAnswersResponse(Model):
         null=True,
         blank=True
     )
+
+    def clean(self):
+        # trip a validation error if there are already responses
+        self.multiple_answers_model.clean()
+        super().clean()
 
     class Meta(Step.Meta):
         verbose_name = _('Multiple Answers Step Response')
