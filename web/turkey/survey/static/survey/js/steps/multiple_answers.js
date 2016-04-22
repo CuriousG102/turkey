@@ -12,13 +12,13 @@ var StepMultipleAnswers = {
                 var r = $(this).val();
                 var response_split = r.split('-');
                 r = Number(response_split[response_split.length-1]);
-                response.push(r);
+                response.push({ 'response' : r });
             });
             if (response == []) {
                 successful = false;
                 // TODO: Error message added to DOM for user
             } else {
-                step_mas[pk] = {'response': response};
+                step_mas[pk] = response;
             }
         });
 
