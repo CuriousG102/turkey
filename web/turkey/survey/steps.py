@@ -175,6 +175,7 @@ class StepMultipleAnswersData(StepData):
     class Meta(StepData.Meta):
         abstract = False
 
+
 class StepMultipleAnswers(Step):
     inlines = ['StepMultipleAnswersResponse']
     script_location = 'survey/js/steps/multiple_answers.js'
@@ -229,6 +230,7 @@ class StepMultipleAnswers(Step):
         verbose_name = _('Multiple Answers Step')
         abstract = False
 
+
 class StepMultipleAnswersResponse(Model):
     multiple_answers_model = models.ForeignKey(
         'StepMultipleAnswers',
@@ -258,5 +260,3 @@ class StepMultipleAnswersResponse(Model):
         verbose_name = _('Multiple Answers Step Response')
         abstract = False
         ordering = ['order']
-
-

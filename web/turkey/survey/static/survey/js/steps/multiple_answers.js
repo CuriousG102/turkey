@@ -9,14 +9,15 @@ var StepMultipleAnswers = {
             var pk = Number(name_split[name_split.length-1]);
             var response = [];
             $('input[name='+name+']:checked').each(function() {
-                response.push($(this).val());
+                var r = $(this).val();
+                var response_split = r.split('-');
+                r = Number(response_split[response_split.length-1]);
+                response.push(r);
             });
             if (response == []) {
                 successful = false;
                 // TODO: Error message added to DOM for user
             } else {
-                // var response_split = response.split('-');
-                // response = Number(response_split[response_split.length-1]);
                 step_mas[pk] = {'response': response.toString()};
             }
         });
