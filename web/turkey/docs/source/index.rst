@@ -1,0 +1,28 @@
+.. Turkey documentation master file, created by
+   sphinx-quickstart on Thu May  5 22:08:01 2016.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Turkey
+======
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   overview
+   authors
+   setup
+   taskcreation
+   data
+   extending
+   license
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
