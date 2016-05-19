@@ -6,7 +6,6 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
-GH_PAGES_SOURCES = source
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -233,10 +232,10 @@ dummy:
 gh-pages:
 	git checkout gh-pages
 	rm -rf build _sources _static
-	git checkout miles-sphinx $(GH_PAGES_SOURCES)
+	git checkout miles-sphinx source
 	git reset HEAD
 	make html
 	mv -fv build/html/* ./
-	rm -rf $(GH_PAGES_SOURCES) build
+	rm -rf source build
 	git add -A
 	git commit -m "Generated gh-pages for `git log miles-sphinx -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout miles-sphinx
