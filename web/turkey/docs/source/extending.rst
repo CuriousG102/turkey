@@ -30,10 +30,6 @@ Python
 ++++++
 Models for steps are in
 
-.. automodule:: survey.steps
-   :members:
-   :undoc-members:
-
 Add your step to the dictionary `NAME_TO_STEP` at the top of the file. You will need to write two classes,
 one for the step's data and one for the step itself. The data class will have a "general_models" field with
 the foreign key being the name of your step and a "response" field specifying the type of response your database
@@ -54,8 +50,10 @@ is clicked.
 
 Auditors
 ========
+Models for auditors are in
+
 Inspired by the work of
-`Jeff Rzeszotarski and Aniket Kittur<http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf>`_, the
+`Jeff Rzeszotarski and Aniket Kittur <http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf>`_, the
 framework provides auditors objects that record a worker's interactions with a task from the moment they start until
 they submits their responses or closes out of the page. Auditor data can be used to analyze the merit of a worker
 and estimate the quality of their responses. Doing this can help filter out bad response data and potentially identify
