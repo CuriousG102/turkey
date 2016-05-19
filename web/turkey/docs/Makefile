@@ -235,7 +235,7 @@ gh-pages:
 	git checkout miles-sphinx source
 	git reset HEAD
 	make html
-	mv -fv build/html/* ./
+	mv -fv build/html/* ../../../..
 	rm -rf source build
 	git add -A
 	git commit -m "Generated gh-pages for `git log miles-sphinx -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout miles-sphinx
