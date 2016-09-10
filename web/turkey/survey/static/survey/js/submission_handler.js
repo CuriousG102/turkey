@@ -1,3 +1,6 @@
+/**
+ * Created by Miles on 9/10/16.
+ */
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
@@ -31,83 +34,65 @@ $.ajaxSetup({
 
 var NOT_READY_TO_SUBMIT = "whoops";
 
-var Overlord = {
-    steps: [],
-    auditors: [],
-    posting: false,
-
-    register_step: function(name, callback) {
-        this.steps.push([name, callback]);
-    },
-
-    register_auditor: function(name, callback) {
-        this.auditors.push([name, callback]);
-    },
-    
-    submit: function() {
-        if (this.posting) {
-            window.alert('Submission in progress, please wait.');
-            return;
-        }
-
-        this.posting = true;
-        var submission = {
-            'auditors': {},
-            'steps': {}
-        };
-
-        var error_func = function() {
-            window.alert('Submission failed. Please try again.')
-        };
-
-        var unsuccessful = false;
-        $.each(this.steps, function(i, el) {
-            var name = el[0], callback = el[1];
-            try {
-                submission['steps'][name] = callback();
-            } catch (err) {
-                unsuccessful = true;
-                if (err !== NOT_READY_TO_SUBMIT) ; // TODO
-            }
-        });
-
-        if (unsuccessful) {
-            this.posting = false;
-            return;
-        }
-
-        $.each(this.auditors, function(i, el) {
-            var name = el[0], callback = el[1];
-            submission['auditors'][name] = callback();
-        });
-
-        $.post({
-            url: SUBMISSION_ENDPOINT,
-            contentType:"application/json; charset=utf-8",
-            data: JSON.stringify(submission),
-            success: function (data, txt, xhr) {
-                this.posting = false;
-                if (xhr.status !== 201) {
-                    console.error(data);
-                    console.error(xhr);
-                    error_func();
-                }
-                // window.alert("Success!");
-                window.location.replace(NEXT_PAGE);
-            }.bind(this),
-            error: function (data) {
-                console.error(data);
-                this.posting = false;
-                error_func();
-            }.bind(this)
-        })
-    }
+var SubmissionHandler = function(endpoint, next_page, task_id) {
+    this.submission_endpoint = endpoint;
+    this.steps = [];
+    this.posting = false;
 };
 
-var overlord = Object.create(Overlord);
+SubmissionHandler.prototype.register_step = function(name, callback) {
+    this.steps.push([name, callback]);
+};
 
-$(document).ready(function() {
-    $('#submit').click(function() {
-        overlord.submit();
+SubmissionHandler.prototype.submit = function() {
+    if (this.posting) {
+        window.alert('Submission in progress, please wait.');
+        return;
+    }
+
+    this.posting = true;
+    var submission = {
+        'steps': {}
+    };
+
+    var error_func = function() {
+        window.alert('Submission failed. Please try again.');
+    };
+
+    var unsuccessful = false;
+    $.each(this.steps, function(i, el) {
+        var name = el[0], callback = el[1];
+        try {
+            submission['steps'][name] = callback();
+        } catch (err) {
+            unsuccessful = true;
+        }
     });
-});
+
+    if (unsuccessful) {
+        this.posting = false;
+        error_func();
+        return;
+    }
+
+    $.post({
+        url: this.submission_endpoint,
+        contentType:"application/json; charset=utf-8",
+        data: JSON.stringify(submission),
+        success: function (data, txt, xhr) {
+            this.posting = false;
+            if (xhr.status !== 201) {
+                console.error(data);
+                console.error(xhr);
+                error_func();
+            }
+            // window.alert("Success!");
+            window.location.replace(this.next_page);
+        }.bind(this),
+        error: function (data) {
+            console.error(data);
+            this.posting = false;
+            error_func();
+        }.bind(this)
+    });
+};

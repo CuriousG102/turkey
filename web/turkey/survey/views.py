@@ -17,9 +17,8 @@ from .auditors import NAME_TO_AUDITOR
 from .steps import NAME_TO_STEP
 from .models import Task, TaskInteraction
 
-
 # TODO: Authentication
-from survey.renderers import XMLBodyRenderer
+from .renderers import XMLBodyRenderer
 
 
 class RecordSubmission(APIView):
@@ -54,8 +53,9 @@ class RecordSubmission(APIView):
                 self.save_data_to_mapped_models(submission['steps'],
                                                 NAME_TO_STEP,
                                                 task_interaction_model)
-                task_interaction_model.completed = True
-                task_interaction_model.save()
+                if not task_interaction_model.task.external:
+                    task_interaction_model.completed = True
+                    task_interaction_model.save()
             return Response(status=status.HTTP_201_CREATED)
         except ValidationError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -69,11 +69,7 @@ class TaskView(View):
         except Task.DoesNotExist:
             raise Http404(_('No such task'))
 
-        # TODO: Find a way to cut down on the number of queries these two for loops will have to make
-        auditors = []
-        for auditor_model_name in NAME_TO_AUDITOR.values():
-            auditor_model = apps.get_model('survey', auditor_model_name)
-            auditors.extend(auditor_model.objects.filter(task=task))
+        # TODO: Find a way to cut down on the number of queries these loops will have to make
 
         steps = []
         for step_model_name in NAME_TO_STEP.values():
@@ -81,26 +77,47 @@ class TaskView(View):
             steps.extend(step_model.objects.filter(task=task))
         steps.sort(key=lambda x: x.step_num)
 
-        auditor_script_locations = [auditor.script_location for auditor in
-                                    auditors]
-
         # serves to only get one instance of each script
         # needed for steps, since it is valid
         # for a user to have multiple steps (e.g. multiple choice)
         step_script_locations = list(
             set([step.script_location for step in steps]))
 
-        task_interaction_model = TaskInteraction.objects.create(task=task)
+        task_interaction_model = TaskInteraction.objects.create(task=task,
+                                                                completed=False)
 
         return TemplateResponse(
             request, task.survey_wrap_template,
             status=status.HTTP_200_OK,
-            context={'auditors': auditors,
-                     'steps': steps,
+            context={'steps': steps,
                      'task': task,
                      'task_interaction_model': task_interaction_model,
-                     'auditor_script_locations': auditor_script_locations,
                      'step_script_locations': step_script_locations})
+
+
+class AuditorScriptsView(APIView):
+    def get(self, request, task_pk=None):
+        if not task_pk:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            task_pk = int(task_pk)
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            task = Task.objects.get(pk=task_pk)
+        except Task.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        auditor_script_locations = []
+        for auditor_model_name in NAME_TO_AUDITOR.values():
+            auditor_model = apps.get_model('survey', auditor_model_name)
+            try:
+                auditor = auditor_model.objects.get(task=task)
+                auditor_script_locations.append(auditor.script_location)
+            except auditor_model.DoesNotExist:
+                pass
+
+        return Response({'auditor_script_locations': auditor_script_locations})
 
 
 class TasksExport(LoginRequiredMixin, APIView):
@@ -221,8 +238,11 @@ class TasksExport(LoginRequiredMixin, APIView):
 
     def get(self, request, primary_keys=None):
         if not primary_keys:
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
-        primary_keys = [int(n) for n in primary_keys.split(',')]
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            primary_keys = [int(n) for n in primary_keys.split(',')]
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         # "trust but verify"
         tasks = Task.objects.filter(pk__in=primary_keys)
         if tasks.count() != len(primary_keys):

@@ -17,11 +17,9 @@
       var NEXT_PAGE = window.location.href;
       var SUBMISSION_ENDPOINT = "{% url 'survey:recordSubmission' pk=task_interaction_model.pk %}";
     </script>
+    <script></script>
     <script src="{% static "survey/js/globals/visibility_changes.js" %}"></script>
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
-    {% for auditor_loc in auditor_script_locations %}
-      <script src="{% static auditor_loc %}"></script>
-    {% endfor %}
     {% for step_loc in step_script_locations %}
       <script src="{% static step_loc %}"></script>
     {% endfor %}

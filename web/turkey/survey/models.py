@@ -25,13 +25,6 @@ class Model(models.Model):
         abstract = True
 
 
-def not_less_than_one(value):
-    if value < 1:
-        raise ValidationError(
-            _('If number_simultaneous_users is < 1, the value makes no sense.')
-        )
-
-
 # Create your models here.
 class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
@@ -43,9 +36,24 @@ class Task(Model):
     )
     survey_name = models.CharField(max_length=144,
                                    verbose_name=_('Survey Name'),
-                                   help_text=(
+                                   help_text=_(
                                        'This is exposed to the user: Name of '
-                                       'the survey they\'re taking'))
+                                       'the survey they\'re taking. It is an '
+                                       'optional field, as it is not relevant '
+                                       'if this is an external task.'),
+                                   blank=True,
+                                   null=True
+                                   )
+
+    external = models.BooleanField(default=False,
+                                   verbose_name=_('External Hit'),
+                                   help_text=_(
+                                       'If the task is not external, we will host it'
+                                       'and you can design it on our platform. If it is'
+                                       'external, you should mark this true, and we will'
+                                       'provide you with embed code to use on your HIT '
+                                       'with your selected auditors.')
+                                   )
 
     def __str__(self):
         return ' '.join(['%s: ' % self._meta.verbose_name, self.survey_name,
@@ -56,8 +64,17 @@ class Task(Model):
             original = type(self).objects.get(pk=self.pk)
             if self.survey_name != original.survey_name:
                 return ValidationError(_('Can\'t change the name of the '
-                                         'survey as there are already '
+                                         'HIT as there are already '
                                          'responses'))
+            if self.external != original.external:
+                return ValidationError(_('Can\'t change whether the HIT is '
+                                         'internal or external because there '
+                                         'is already collected data'))
+
+        if not self.external and not self.survey_name:
+            return ValidationError(_('%s cannot be blank because this is not '
+                                     'an external HIT') %
+                                   self._meta.get_field('survey_name').verbose_name)
 
     class Meta:
         verbose_name = _('Interactive Task')
@@ -127,7 +144,9 @@ class TaskInteraction(_TaskLinkedModel):
     completing our HITs
     """
 
-    completed = models.BooleanField(default=False)
+    # completed only applies when this is an internal HIT
+    completed = models.NullBooleanField(default=False)
+
     class Meta:
         verbose_name = _('Task Interaction')
 
@@ -143,11 +162,7 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
 
     @staticmethod
     def processed_data_to_list(processed_data):
-        try:
-            assert (
-                type(processed_data) == list or type(processed_data) == dict
-            )
-        except AssertionError:
+        if not (type(processed_data == list or type(processed_data == dict))):
             raise ValidationError(_('processed_data is not list or dict'))
         if type(processed_data) != list:
             processed_data = [processed_data]
@@ -198,9 +213,8 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
                (self._meta.verbose_name or
                 '%s object' % self.__class__.__name__,
                 self.task,
-                self.updated.strftime('Updated: %B %d, %Y'))
+                self.updated.strftime(_('Updated: %B %d, %Y')))
 
-    # TODO: Move clean methods higher up the inheritance chain
     def clean(self):
         # if step/auditor object's task already has user data
         # we can't let them alter it or auditors/steps
@@ -269,6 +283,11 @@ class Step(_EventAndSubmissionModel):
         # call without having to understand how @property or the template
         # system works in its entirety
         return self.get_template_code()
+
+    def clean(self):
+        if self.task.external:
+            raise ValidationError(_('Can\'t create step for external HIT'))
+        super().clean()
 
     class Meta:
         abstract = True
