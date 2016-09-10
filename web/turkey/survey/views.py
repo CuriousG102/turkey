@@ -2,7 +2,7 @@ from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.http import Http404, StreamingHttpResponse, HttpResponse
+from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -22,6 +22,9 @@ from .renderers import XMLBodyRenderer
 
 
 class RecordSubmission(APIView):
+    class SubmissionProcessingException(Exception):
+        pass
+
     def save_data_to_mapped_models(self, data, map,
                                    task_interaction_model):
         task = task_interaction_model.task
@@ -32,33 +35,48 @@ class RecordSubmission(APIView):
                 model.handle_submission_data(model_data,
                                              task_interaction_model)
 
-    def post(self, request, **kwargs):
-        submission = request.data
-        # TODO: What to do when it's not found?
-
+    def get_task_interaction(self, interaction_pk):
+        task_interaction = None
         try:
-            task_interaction_model = TaskInteraction.objects \
-                .get(pk=int(kwargs['pk']))
+            task_interaction = TaskInteraction.objects.get(pk=int(interaction_pk))
+        except ValueError:
+            pass
         except TaskInteraction.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        if task_interaction_model.completed:
+            pass
+
+        return task_interaction
+
+    def process_submission(self, submission_data, task_interaction):
+        raise NotImplementedError()
+
+    def post(self, request, **kwargs):
+        task_interaction_model = self.get_task_interaction(kwargs['pk'])
+        if not task_interaction_model:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            # if we fail validation or anything else all is well and nothing
-            # is committed
-            with transaction.atomic():
-                self.save_data_to_mapped_models(submission['auditors'],
-                                                NAME_TO_AUDITOR,
-                                                task_interaction_model)
-                self.save_data_to_mapped_models(submission['steps'],
-                                                NAME_TO_STEP,
-                                                task_interaction_model)
-                if not task_interaction_model.task.external:
-                    task_interaction_model.completed = True
-                    task_interaction_model.save()
+            self.process_submission(request.data, task_interaction_model)
             return Response(status=status.HTTP_201_CREATED)
         except ValidationError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class StepSubmission(RecordSubmission):
+    def process_submission(self, submission_data, task_interaction):
+        with transaction.atomic():
+            self.save_data_to_mapped_models(submission_data['steps'],
+                                            NAME_TO_STEP,
+                                            task_interaction)
+            if not task_interaction.task.external:
+                task_interaction.completed = True
+                task_interaction.save()
+
+
+class AuditorSubmission(RecordSubmission):
+    def process_submission(self, submission_data, task_interaction):
+        with transaction.atomic():
+            self.save_data_to_mapped_models(submission_data['auditors'],
+                                            NAME_TO_AUDITOR,
+                                            task_interaction)
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
@@ -67,7 +85,7 @@ class TaskView(View):
         try:
             task = Task.objects.get(pk=kwargs['pk'])
         except Task.DoesNotExist:
-            raise Http404(_('No such task'))
+           raise Http404(_('No such task'))
 
         # TODO: Find a way to cut down on the number of queries these loops will have to make
 

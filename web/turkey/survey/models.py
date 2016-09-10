@@ -144,7 +144,8 @@ class TaskInteraction(_TaskLinkedModel):
     completing our HITs
     """
 
-    # completed only applies when this is an internal HIT
+    # completed only applies when this is an internal HIT, and marks that
+    # the task submitted its steps successfully
     completed = models.NullBooleanField(default=False)
 
     class Meta:
