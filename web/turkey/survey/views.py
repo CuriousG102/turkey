@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db import DatabaseError
 from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
@@ -27,18 +28,32 @@ class RecordSubmission(APIView):
 
     def save_data_to_mapped_models(self, data, map,
                                    task_interaction_model):
-        task = task_interaction_model.task
-        for name, model_data in data.items():
-            associated_models = apps.get_model('survey', map[name]) \
-                .objects.filter(task=task)
-            for model in associated_models:
-                model.handle_submission_data(model_data,
-                                             task_interaction_model)
+        model_to_name = {v: k for k, v in map.items()}
+        associated_models = self.get_associated_models(map, task_interaction_model)
+        for model in associated_models:
+            model_class_name = type(model).__name__
+            try:
+                model_data = data[model_to_name[model_class_name]]
+            except KeyError:
+                raise ValidationError(_('Missing or invalid data'
+                                        'from one or more steps or auditors'))
+            model.handle_submission_data(model_data, task_interaction_model)
 
     def get_task_interaction(self, interaction_pk):
+        """
+        Helper function to get a task interaction from a potentially invalid
+        string representing interaction_pk. Must be called from within a
+        transaction because it locks the task interaction using
+        "select_for_update" method on the queryset.
+
+        If string is invalid it returns None.
+        """
         task_interaction = None
         try:
-            task_interaction = TaskInteraction.objects.get(pk=int(interaction_pk))
+            task_interaction = TaskInteraction.objects \
+                .select_for_update() \
+                .select_related('task') \
+                .get(pk=int(interaction_pk))
         except ValueError:
             pass
         except TaskInteraction.DoesNotExist:
@@ -49,34 +64,65 @@ class RecordSubmission(APIView):
     def process_submission(self, submission_data, task_interaction):
         raise NotImplementedError()
 
+    def get_associated_models(self, map, task_interaction):
+        """
+        Get models of steps or auditors that apply to the task
+        linked to by task_interaction
+        """
+        associated_models = []
+
+        for model_name in map.values():
+            model = apps.get_model('survey', model_name)
+            associated_models.extend(model.objects.filter(task=task_interaction.task))
+
+        return associated_models
+
+    def associated_models_have_data(self, map, task_interaction):
+        """
+        Find out if the models associated with a task_interaction
+        already have data instances. This serves to show us whether there has
+        already been a submission or not
+        """
+        associated_models = self.get_associated_models(map, task_interaction)
+        for model in associated_models:
+            if model.has_data_for_task_interaction(task_interaction):
+                return True
+
+        return False
+
     def post(self, request, **kwargs):
-        task_interaction_model = self.get_task_interaction(kwargs['pk'])
-        if not task_interaction_model:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        try:
-            self.process_submission(request.data, task_interaction_model)
-            return Response(status=status.HTTP_201_CREATED)
-        except ValidationError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        with transaction.atomic():
+            task_interaction_model = self.get_task_interaction(kwargs['pk'])
+            if not task_interaction_model:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            try:
+                self.process_submission(request.data, task_interaction_model)
+                return Response(status=status.HTTP_201_CREATED)
+            except ValidationError:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class StepSubmission(RecordSubmission):
     def process_submission(self, submission_data, task_interaction):
-        with transaction.atomic():
-            self.save_data_to_mapped_models(submission_data['steps'],
-                                            NAME_TO_STEP,
-                                            task_interaction)
-            if not task_interaction.task.external:
-                task_interaction.completed = True
-                task_interaction.save()
+        if task_interaction.task.external:
+            raise ValidationError(_('Submitting steps on an internal HIT'))
+
+        if self.associated_models_have_data(NAME_TO_STEP, task_interaction):
+            raise ValidationError(_('Step data already submitted for this task'))
+
+        self.save_data_to_mapped_models(submission_data['steps'],
+                                        NAME_TO_STEP,
+                                        task_interaction)
 
 
 class AuditorSubmission(RecordSubmission):
     def process_submission(self, submission_data, task_interaction):
-        with transaction.atomic():
-            self.save_data_to_mapped_models(submission_data['auditors'],
-                                            NAME_TO_AUDITOR,
-                                            task_interaction)
+        if self.associated_models_have_data(NAME_TO_AUDITOR, task_interaction):
+            raise ValidationError(_('Auditor data already submitted for this task'))
+
+        self.save_data_to_mapped_models(submission_data['auditors'],
+                                        NAME_TO_AUDITOR,
+                                        task_interaction)
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
@@ -85,7 +131,7 @@ class TaskView(View):
         try:
             task = Task.objects.get(pk=kwargs['pk'])
         except Task.DoesNotExist:
-           raise Http404(_('No such task'))
+            raise Http404(_('No such task'))
 
         # TODO: Find a way to cut down on the number of queries these loops will have to make
 
@@ -101,8 +147,7 @@ class TaskView(View):
         step_script_locations = list(
             set([step.script_location for step in steps]))
 
-        task_interaction_model = TaskInteraction.objects.create(task=task,
-                                                                completed=False)
+        task_interaction_model = TaskInteraction.objects.create(task=task)
 
         return TemplateResponse(
             request, task.survey_wrap_template,

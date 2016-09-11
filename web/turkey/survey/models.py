@@ -91,6 +91,10 @@ class _DataModel(Model):
     """
     task_interaction_model = models.ForeignKey('TaskInteraction')
 
+    @classmethod
+    def has_instances_for_task_interaction(cls, task_interaction):
+        return cls.objects.filter(task_interaction_model=task_interaction).exists()
+
     def __str__(self):
         return ' '.join(
             [self._meta.verbose_name or
@@ -141,12 +145,8 @@ class TaskInteraction(_TaskLinkedModel):
     associated with.
 
     The other consideration: We can see what percentage of people are
-    completing our HITs
+    completing our HITs by calculating (task interactions with linked submitted steps)/(task interactions)
     """
-
-    # completed only applies when this is an internal HIT, and marks that
-    # the task submitted its steps successfully
-    completed = models.NullBooleanField(default=False)
 
     class Meta:
         verbose_name = _('Task Interaction')
@@ -160,6 +160,9 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
     # to be edited for their step or auditor and still
     # autogenerate admin page
     inlines = []
+
+    def has_data_for_task_interaction(self, task_interaction):
+        return self.data_model.has_instances_for_task_interaction(task_interaction)
 
     @staticmethod
     def processed_data_to_list(processed_data):
