@@ -15,14 +15,22 @@
     <script>
       // TODO: Replace placholder
       var NEXT_PAGE = window.location.href;
-      var SUBMISSION_ENDPOINT = "{% url 'survey:recordSubmission' pk=task_interaction_model.pk %}";
     </script>
     <script></script>
     <script src="{% static "survey/js/globals/visibility_changes.js" %}"></script>
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
+    <script>
+      var overlord = new SubmissionHandler(
+          "{% url 'survey:step_submission' pk=task_interaction_model.pk %}",
+          window.location.href
+      );
+    </script>
     {% for step_loc in step_script_locations %}
       <script src="{% static step_loc %}"></script>
     {% endfor %}
+    {% static 'survey/js/mmm_turkey.js' as embed_uri %}
+    {% url 'survey:auditor_submission' pk=task_interaciton_model.pk as server_uri %}
+    {% include 'survey/admin/embed_template.html' with embed_uri=embed_uri server_uri=server_uri auditor_uris=auditor_uris%}
   </head>
   <body>
     <div class="container-fluid">

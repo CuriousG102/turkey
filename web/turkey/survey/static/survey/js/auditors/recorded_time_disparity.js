@@ -28,7 +28,7 @@ document.addEventListener(  visibility_change,
                                 .bind(auditor_recorded_time_disparity),
                             false);
 
-overlord.register_auditor('recorded_time_disparity',
+turkey.register_auditor('recorded_time_disparity',
                           auditor_recorded_time_disparity
                             .submit_callable
                             .bind(auditor_recorded_time_disparity));

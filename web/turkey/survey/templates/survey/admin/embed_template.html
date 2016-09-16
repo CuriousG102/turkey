@@ -1,0 +1,10 @@
+{% load static %}
+<!-- MmmTurkey embed -->
+<script src="{{ embed_uri }}"></script>
+<script>
+  var turkey = new AuditorHandler({{ server_uri }});
+</script>
+{% for auditor_uri in auditor_uris %}
+  <script src="{{ auditor_uri }}"></script>
+{% endfor %}
+<!-- MmmTurkey embed -->

@@ -1,7 +1,6 @@
-var AuditorHandler = function (endpoint, task_id) {
+var AuditorHandler = function (endpoint) {
     this.auditors = [];
     this.submission_endpoint = endpoint;
-    this.task_id = task_id;
     $(window).on('unload', function() {
         this.submit();
     })

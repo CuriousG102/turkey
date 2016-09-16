@@ -1,7 +1,7 @@
 from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.paginator import Paginator
-from django.db import DatabaseError
 from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
@@ -11,6 +11,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -23,6 +24,8 @@ from .renderers import XMLBodyRenderer
 
 
 class RecordSubmission(APIView):
+    permission_classes = (AllowAny, )
+
     class SubmissionProcessingException(Exception):
         pass
 
@@ -128,10 +131,14 @@ class AuditorSubmission(RecordSubmission):
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class TaskView(View):
     def get(self, request, **kwargs):
+        TASK_NOT_FOUND = Http404(_('No such task'))
         try:
             task = Task.objects.get(pk=kwargs['pk'])
         except Task.DoesNotExist:
-            raise Http404(_('No such task'))
+            raise TASK_NOT_FOUND
+
+        if task.external:
+            raise TASK_NOT_FOUND
 
         # TODO: Find a way to cut down on the number of queries these loops will have to make
 
@@ -147,6 +154,15 @@ class TaskView(View):
         step_script_locations = list(
             set([step.script_location for step in steps]))
 
+        auditor_uris = []
+        for auditor_model_name in NAME_TO_AUDITOR.values():
+            auditor_model = apps.get_model('survey', auditor_model_name)
+            try:
+                auditor = auditor_model.objects.get(task=task)
+                auditor_uris.append(auditor.script_location)
+            except auditor_model.DoesNotExist:
+                pass
+
         task_interaction_model = TaskInteraction.objects.create(task=task)
 
         return TemplateResponse(
@@ -155,19 +171,16 @@ class TaskView(View):
             context={'steps': steps,
                      'task': task,
                      'task_interaction_model': task_interaction_model,
-                     'step_script_locations': step_script_locations})
+                     'step_script_locations': step_script_locations,
+                     'auditor_uris': auditor_uris})
 
 
 class AuditorScriptsView(APIView):
     def get(self, request, task_pk=None):
-        if not task_pk:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            task_pk = int(task_pk)
+            task = Task.objects.get(pk=int(task_pk))
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        try:
-            task = Task.objects.get(pk=task_pk)
         except Task.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

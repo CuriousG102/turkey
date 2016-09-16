@@ -8,7 +8,7 @@ var AuditorTotalTaskTime = {
 };
 
 var auditor_total_task_time = Object.create(AuditorTotalTaskTime);
-overlord.register_auditor('total_task_time',
+turkey.register_auditor('total_task_time',
                           auditor_total_task_time
                               .submit_callable
                               .bind(auditor_total_task_time));

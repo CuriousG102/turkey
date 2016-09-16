@@ -48,9 +48,9 @@ class Task(Model):
     external = models.BooleanField(default=False,
                                    verbose_name=_('External Hit'),
                                    help_text=_(
-                                       'If the task is not external, we will host it'
-                                       'and you can design it on our platform. If it is'
-                                       'external, you should mark this true, and we will'
+                                       'If the task is not external, we will host it '
+                                       'and you can design it on our platform. If it is '
+                                       'external, you should mark this true, and we will '
                                        'provide you with embed code to use on your HIT '
                                        'with your selected auditors.')
                                    )
@@ -60,7 +60,7 @@ class Task(Model):
                          super().__str__()])
 
     def clean(self):
-        if self.pk and self.taskinteraction_set.count():
+        if self.pk and self.taskinteraction_set.exists():
             original = type(self).objects.get(pk=self.pk)
             if self.survey_name != original.survey_name:
                 return ValidationError(_('Can\'t change the name of the '
@@ -217,7 +217,7 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
                (self._meta.verbose_name or
                 '%s object' % self.__class__.__name__,
                 self.task,
-                self.updated.strftime(_('Updated: %B %d, %Y')))
+                self.updated.strftime(str(_('Updated: %B %d, %Y'))))
 
     def clean(self):
         # if step/auditor object's task already has user data
@@ -262,12 +262,13 @@ class Step(_EventAndSubmissionModel):
         dictionaries to save_processed_data_to_model and it will create
         those data models for you. Alternatively, you can choose to handle
         the model creation on your own. This will be necessary if your data
-        model has relations with models other than the your Step or Auditor
-        model. The base case of this method is written for the simplest
+        model has relations that are not represented by a single foreign key.
+        The base case of this method is written for the simplest
         possible scenario: The data coming in from the submission is a
         dictionary whose keys are ids for instances of your model. The
-        values of those keys are also dictionaries, whose keys and values
-        directly matches your data model, and so can be passed directly to
+        values of those keys is a list of dictionaries or a dictionary,
+        whose keys and values
+        directly match your data model, and so can be passed directly to
         save_processed_data_to_model without validation or translation.
         """
         self.save_processed_data_to_model(data[str(self.pk)],
@@ -325,12 +326,13 @@ class Auditor(_EventAndSubmissionModel):
         dictionaries to save_processed_data_to_model and it will create
         those data models for you. Alternatively, you can choose to handle
         the model creation on your own. This will be necessary if your data
-        model has relations with models other than the your Step or Auditor
-        model. The base case of this method is written for the simplest
+        model has relations that are not represented by a single foreign key.
+        The base case of this method is written for the simplest
         possible scenario: The data coming in from the submission is a
-        dictionary, whose keys and values directly match your data model,
-        and so can be passed directly to save_processed_data_to_model without
-        validation or translation.
+        list of dictionaries or a single dictionary
+        whose keys and values directly
+        match your data model, and so can be passed directly to
+        save_processed_data_to_model without validation or translation.
         """
         self.save_processed_data_to_model(data, task_interaction)
 
