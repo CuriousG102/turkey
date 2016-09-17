@@ -209,7 +209,8 @@ class TaskAdmin(admin.ModelAdmin):
                  'fetch_interaction_endpoint': mark_safe('"%s"' % fetch_interaction_endpoint),
                  'task_pk': mark_safe(str(task_id)),
                  'fetch_data': mark_safe('true'),
-                 'auditor_uris': auditor_uris})
+                 'auditor_uris': auditor_uris},
+                request=request)
         else:
             embed_code = ''
 
