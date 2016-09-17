@@ -1,5 +1,7 @@
 {% load static %}
 <!-- MmmTurkey embed -->
+<script src="{% static "survey/js/globals/jquery.ba-throttle-debounce.min.js" %}"></script>
+<script src="{% static "survey/js/globals/visibility_changes.js" %}"></script>
 <script src="{{ embed_uri }}"></script>
 <script>
   var turkey = new AuditorHandler({{ submission_endpoint }}, {{ fetch_interaction_endpoint }},

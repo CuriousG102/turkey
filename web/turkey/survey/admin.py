@@ -9,6 +9,7 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from .models import Task
 from .steps import NAME_TO_STEP
@@ -198,16 +199,19 @@ class TaskAdmin(admin.ModelAdmin):
             auditor_uris.append(auditor_uri)
 
         fetch_interaction_endpoint = request.build_absolute_uri(
-            reverse('create_interaction'))
+            reverse('survey:create_interaction'))
 
-        embed_code = render_to_string(
-            'survey/admin/embed_template.html',
-            {'embed_uri': embed_uri,
-             'submission_endpoint': 'null',
-             'fetch_interaction_endpoint': '"%s"' % fetch_interaction_endpoint,
-             'task_id': task_id if task_id is not None else 'null',
-             'fetch_interaction': 'true',
-             'auditor_uris': auditor_uris})
+        if task is not None:
+            embed_code = render_to_string(
+                'survey/admin/embed_template.html',
+                {'embed_uri': mark_safe(embed_uri),
+                 'submission_endpoint': mark_safe('null'),
+                 'fetch_interaction_endpoint': mark_safe('"%s"' % fetch_interaction_endpoint),
+                 'task_pk': mark_safe(str(task_id)),
+                 'fetch_data': mark_safe('true'),
+                 'auditor_uris': auditor_uris})
+        else:
+            embed_code = ''
 
         # strip embed_code of its safe status so it is escaped by Django
         # template

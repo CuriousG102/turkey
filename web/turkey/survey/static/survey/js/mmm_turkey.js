@@ -21,9 +21,11 @@ var AuditorHandler = function (submission_endpoint, fetch_interaction_endpoint,
             }
         });
     }
-    $(window).on('unload', function() {
-        this.submit();
-    })
+    $(window).ready(function () {
+        $(window).on('unload', function() {
+            this.submit();
+        }.bind(this));
+    }.bind(this));
 };
 
 AuditorHandler.prototype.register_auditor = function(name, callback) {

@@ -7,6 +7,7 @@ from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
@@ -180,7 +181,7 @@ class TaskView(View):
             auditor_model = apps.get_model('survey', auditor_model_name)
             try:
                 auditor = auditor_model.objects.get(task=task)
-                auditor_uris.append(auditor.script_location)
+                auditor_uris.append(static(auditor.script_location))
             except auditor_model.DoesNotExist:
                 pass
 
@@ -190,7 +191,7 @@ class TaskView(View):
             'survey:auditor_submission',
             kwargs={'pk': task_interaction_model.pk}
         )
-        auditor_submission_endpoint = '"' + auditor_submission_endpoint + '"'
+        auditor_submission_endpoint = '"%s"' % auditor_submission_endpoint
 
         return TemplateResponse(
             request, task.survey_wrap_template,
@@ -199,8 +200,9 @@ class TaskView(View):
                      'task': task,
                      'task_interaction_model': task_interaction_model,
                      'step_script_locations': step_script_locations,
-                     'submission_endpoint': auditor_submission_endpoint,
-                     'auditor_uris': auditor_uris})
+                     'submission_endpoint': mark_safe(auditor_submission_endpoint),
+                     'auditor_uris': auditor_uris,
+                     'embed_uri': static('survey/js/mmm_turkey.js')})
 
 class TasksExport(LoginRequiredMixin, APIView):
     NUMBER_RECORDS_PER_QUERY = 5 * 10 ** 2

@@ -60,19 +60,19 @@ class Task(Model):
                          super().__str__()])
 
     def clean(self):
-        if self.pk and self.taskinteraction_set.exists():
+        if self.pk and self.taskinteraction_set.all().exists():
             original = type(self).objects.get(pk=self.pk)
             if self.survey_name != original.survey_name:
-                return ValidationError(_('Can\'t change the name of the '
+                raise ValidationError(_('Can\'t change the name of the '
                                          'HIT as there are already '
                                          'responses'))
             if self.external != original.external:
-                return ValidationError(_('Can\'t change whether the HIT is '
+                raise ValidationError(_('Can\'t change whether the HIT is '
                                          'internal or external because there '
                                          'is already collected data'))
 
         if not self.external and not self.survey_name:
-            return ValidationError(_('%s cannot be blank because this is not '
+            raise ValidationError(_('%s cannot be blank because this is not '
                                      'an external HIT') %
                                    self._meta.get_field('survey_name').verbose_name)
 
