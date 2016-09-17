@@ -190,19 +190,24 @@ class TaskAdmin(admin.ModelAdmin):
 
         embed_uri = request.build_absolute_uri(
             static('survey/js/mmm_turkey.js'))
-        server_uri = request.build_absolute_uri()
-        task_id = task.pk if task is not None else 0
+        task_id = task.pk if task is not None else None
         auditor_uris = []
         for auditor in related_auditor_models:
             auditor_loc = static(auditor.script_location)
             auditor_uri = request.build_absolute_uri(auditor_loc)
             auditor_uris.append(auditor_uri)
 
-        embed_code = render_to_string('survey/admin/embed_template.html',
-                                      {'embed_uri': embed_uri,
-                                       'server_uri': server_uri,
-                                       'task_id': task_id,
-                                       'auditor_uris': auditor_uris})
+        fetch_interaction_endpoint = request.build_absolute_uri(
+            reverse('create_interaction'))
+
+        embed_code = render_to_string(
+            'survey/admin/embed_template.html',
+            {'embed_uri': embed_uri,
+             'submission_endpoint': 'null',
+             'fetch_interaction_endpoint': '"%s"' % fetch_interaction_endpoint,
+             'task_id': task_id if task_id is not None else 'null',
+             'fetch_interaction': 'true',
+             'auditor_uris': auditor_uris})
 
         # strip embed_code of its safe status so it is escaped by Django
         # template
@@ -211,7 +216,7 @@ class TaskAdmin(admin.ModelAdmin):
         context.update({
             'related_steps': related_steps,
             'related_auditors': related_auditors,
-            'task_id': task_id,
+            'task_id': task_id if task_id is not None else 0,
             'embed_code': embed_code
         })
         return super().render_change_form(request, context, **kwargs)

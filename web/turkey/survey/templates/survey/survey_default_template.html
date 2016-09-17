@@ -29,8 +29,7 @@
       <script src="{% static step_loc %}"></script>
     {% endfor %}
     {% static 'survey/js/mmm_turkey.js' as embed_uri %}
-    {% url 'survey:auditor_submission' pk=task_interaciton_model.pk as server_uri %}
-    {% include 'survey/admin/embed_template.html' with embed_uri=embed_uri server_uri=server_uri auditor_uris=auditor_uris%}
+    {% include 'survey/admin/embed_template.html' with embed_uri=embed_uri submission_endpoint=submission_endpoint task_pk='null' auditor_uris=auditor_uris fetch_data='false' fetch_interaction_endpoint='null' %}
   </head>
   <body>
     <div class="container-fluid">

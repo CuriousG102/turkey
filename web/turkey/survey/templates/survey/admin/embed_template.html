@@ -2,7 +2,8 @@
 <!-- MmmTurkey embed -->
 <script src="{{ embed_uri }}"></script>
 <script>
-  var turkey = new AuditorHandler({{ server_uri }});
+  var turkey = new AuditorHandler({{ submission_endpoint }}, {{ fetch_interaction_endpoint }},
+                                  {{ task_pk }}, {{ fetch_data }});
 </script>
 {% for auditor_uri in auditor_uris %}
   <script src="{{ auditor_uri }}"></script>
