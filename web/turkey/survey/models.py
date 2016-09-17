@@ -29,6 +29,7 @@ class Model(models.Model):
 class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
+    # TODO: Actually enforce this
     owners = models.ManyToManyField(
         User,
         verbose_name=_('Owners'),
