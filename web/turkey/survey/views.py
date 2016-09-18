@@ -6,12 +6,11 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
-from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
 from rest_framework import status
+from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -25,7 +24,14 @@ from .models import Task, TaskInteraction
 from .renderers import XMLBodyRenderer
 
 
+# TODO: Implement token authentication. So when the interaction is created, make a token to identify user...
+class NonAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        pass
+
+
 class RecordSubmission(APIView):
+    authentication_classes = (NonAuthentication,)
     permission_classes = (AllowAny,)
 
     class SubmissionProcessingException(Exception):
@@ -131,6 +137,7 @@ class AuditorSubmission(RecordSubmission):
 
 
 class CreateTaskInteractionView(APIView):
+    authentication_classes = (NonAuthentication,)
     permission_classes = (AllowAny,)
 
     def post(self, request, **kwargs):
@@ -146,7 +153,7 @@ class CreateTaskInteractionView(APIView):
         task_interaction = TaskInteraction.objects.create(task=task)
         return Response(data={'task_interaction': task_interaction.pk,
                               'auditor_submission_url': request.build_absolute_uri(
-                                  reverse('auditor_submission',
+                                  reverse('survey:auditor_submission',
                                           kwargs={'pk': task_interaction.pk}))},
                         status=status.HTTP_201_CREATED)
 
@@ -203,6 +210,7 @@ class TaskView(View):
                      'submission_endpoint': mark_safe(auditor_submission_endpoint),
                      'auditor_uris': auditor_uris,
                      'embed_uri': static('survey/js/mmm_turkey.js')})
+
 
 class TasksExport(LoginRequiredMixin, APIView):
     NUMBER_RECORDS_PER_QUERY = 5 * 10 ** 2
