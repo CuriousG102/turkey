@@ -150,6 +150,9 @@ class CreateTaskInteractionView(APIView):
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        if not task.external:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         task_interaction = TaskInteraction.objects.create(task=task)
         return Response(data={'task_interaction': task_interaction.pk,
                               'auditor_submission_url': request.build_absolute_uri(
