@@ -8,7 +8,6 @@ var AuditorHandler = function (submission_endpoint, fetch_interaction_endpoint,
             url: fetch_interaction_endpoint,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({'task_pk': task_pk}),
-            async: false,
             success: function(data, txt, xhr) {
                if (xhr.status !== 201) {
                     console.error(data);
@@ -47,7 +46,6 @@ AuditorHandler.prototype.submit = function() {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(submission),
         timeout: this.TIMEOUT,
-        async: false,
         success: function(data, txt, xhr) {
            if (xhr.status !== 201) {
                 console.error(data);
