@@ -92,10 +92,6 @@ class _DataModel(Model):
     """
     task_interaction_model = models.ForeignKey('TaskInteraction')
 
-    @classmethod
-    def has_instances_for_task_interaction(cls, task_interaction):
-        return cls.objects.filter(task_interaction_model=task_interaction).exists()
-
     def __str__(self):
         return ' '.join(
             [self._meta.verbose_name or
@@ -161,9 +157,6 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
     # to be edited for their step or auditor and still
     # autogenerate admin page
     inlines = []
-
-    def has_data_for_task_interaction(self, task_interaction):
-        return self.data_model.has_instances_for_task_interaction(task_interaction)
 
     @staticmethod
     def processed_data_to_list(processed_data):
