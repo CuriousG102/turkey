@@ -31,7 +31,7 @@ document.addEventListener(  visibility_change,
                                 .bind(auditor_on_focus_time),
                             false);
 
-overlord.register_auditor('on_focus_time',
+turkey.register_auditor('on_focus_time',
                           auditor_on_focus_time
                             .submit_callable
                             .bind(auditor_on_focus_time));

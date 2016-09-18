@@ -1,36 +1,56 @@
 {% extends 'admin/change_form.html' %}
 
+{% block extrastyle %}{{ block.super }}
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'survey/css/code_block.css' %}" />
+{% endblock %}
+
 {% block after_field_sets %}
   {% load i18n %}
-  <div class="form-row">
-    <p class="help">{% trans 'If you are currently creating a new task, and have not saved, please click Save and continue editing before you use the form elements below' %}</p>
-  </div>
-  <div class="form-row">
-    <h2>{% trans 'Associated Steps:' %}</h2>
-    <ul>
-      {% for url, related_step in related_steps %}
-        <li>
-          <a href="{{ url }}">
-            {% blocktrans with step_num=related_step.step_num step=related_step url=url %}
-              Step #{{ step_num }}: {{ step }}
-            {% endblocktrans %}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-    <a href="{% url 'admin:survey_task_add_step' task_id=task_id %}">{% trans 'Add Step' %}</a>
-  </div>
-  <div class="form-row">
+  {% if task_id == 0 %}
+    <div class="form-row">
+      <h1>{% trans 'Please click Save and continue in order to add tasks and auditors' %}</h1>
+    </div>
+  {% else %}
+    {% if not original.external %}
+      <div class="form-row">
+        <h2>{% trans 'Associated Steps:' %}</h2>
+        <ul>
+          {% for url, related_step in related_steps %}
+            <li>
+              <a href="{{ url }}">
+                {% blocktrans with step_num=related_step.step_num step=related_step url=url %}
+                  Step #{{ step_num }}: {{ step }}
+                {% endblocktrans %}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+        <a href="{% url 'admin:survey_task_add_step' task_id=task_id %}">{% trans 'Add Step' %}</a>
+      </div>
+    {% endif %}
+    <div class="form-row">
+      <h2>{% trans 'Associated Auditors:' %}</h2>
+      <ul>
+        {% for url, related_auditor in related_auditors %}
+          <li>
+            <a href="{{ url }}">{{ related_auditor }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+      <a href="{% url 'admin:survey_task_add_auditor' task_id=task_id %}">{% trans 'Add Auditor' %}</a>
+    </div>
+    {% if original.external %}
+      <div class="form-row">
+        <h2>{% trans 'To embed, copy and paste this code into the head of your page AFTER selecting all the auditors you want:' %}</h2>
+        <h3>{% trans 'If you do not have jQuery embedded on your page, you will need to do so in a tag BEFORE the embed' %}</h3>
+        <div class="code">
+          {% autoescape on %}
+            {{ embed_code }}
+          {% endautoescape %}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
 
-    <!-- TODO: Link to Add View which I am currently figuring out how to add to admin -->
-    <h2>{% trans 'Associated Auditors:' %}</h2>
-    <ul>
-      {% for url, related_auditor in related_auditors %}
-        <li>
-          <a href="{{ url }}">{{ related_auditor }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-    <a href="{% url 'admin:survey_task_add_auditor' task_id=task_id %}">{% trans 'Add Auditor' %}</a>
-  </div>
 {% endblock %}

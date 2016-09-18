@@ -1,0 +1,14 @@
+{% load static %}
+<!-- MmmTurkey embed -->
+<!-- TODO: The request crap is a painful hack till we have our static assets served off-server -->
+<script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/globals/jquery.ba-throttle-debounce.min.js" %}"></script>
+<script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/globals/visibility_changes.js" %}"></script>
+<script src="{{ embed_uri }}"></script>
+<script>
+  var turkey = new AuditorHandler({{ submission_endpoint }}, {{ fetch_interaction_endpoint }},
+                                  {{ task_pk }}, {{ fetch_data }});
+</script>
+{% for auditor_uri in auditor_uris %}
+  <script src="{{ auditor_uri }}"></script>
+{% endfor %}
+<!-- MmmTurkey embed -->
