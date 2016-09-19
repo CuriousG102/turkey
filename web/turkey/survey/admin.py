@@ -3,10 +3,13 @@ from django.contrib import admin
 from django.apps import apps
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
 from django.contrib.admin.utils import unquote, get_deleted_objects
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
+from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from .models import Task
 from .steps import NAME_TO_STEP
@@ -185,10 +188,41 @@ class TaskAdmin(admin.ModelAdmin):
             self.get_models_change_pages(related_auditor_models),
             related_auditor_models
         )
+
+        embed_uri = request.build_absolute_uri(
+            static('survey/js/mmm_turkey.js'))
+        task_id = task.pk if task is not None else None
+        auditor_uris = []
+        for auditor in related_auditor_models:
+            auditor_loc = static(auditor.script_location)
+            auditor_uri = request.build_absolute_uri(auditor_loc)
+            auditor_uris.append(auditor_uri)
+
+        fetch_interaction_endpoint = request.build_absolute_uri(
+            reverse('survey:create_interaction'))
+
+        if task is not None:
+            embed_code = render_to_string(
+                'survey/admin/embed_template.html',
+                {'embed_uri': mark_safe(embed_uri),
+                 'submission_endpoint': mark_safe('null'),
+                 'fetch_interaction_endpoint': mark_safe('"%s"' % fetch_interaction_endpoint),
+                 'task_pk': mark_safe(str(task_id)),
+                 'fetch_data': mark_safe('true'),
+                 'auditor_uris': auditor_uris},
+                request=request)
+        else:
+            embed_code = ''
+
+        # strip embed_code of its safe status so it is escaped by Django
+        # template
+        embed_code = str(embed_code).strip('\n')
+
         context.update({
             'related_steps': related_steps,
             'related_auditors': related_auditors,
-            'task_id': task.pk if task is not None else 0
+            'task_id': task_id if task_id is not None else 0,
+            'embed_code': embed_code
         })
         return super().render_change_form(request, context, **kwargs)
 

@@ -27,7 +27,7 @@ $(document).ready(function() {
                             .bind(auditor_clicks_specific));
 });
 
-overlord.register_auditor('clicks_specific',
+turkey.register_auditor('clicks_specific',
                           auditor_clicks_specific
                             .submit_callable
                             .bind(auditor_clicks_specific));
