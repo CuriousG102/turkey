@@ -168,6 +168,10 @@ class AuditorKeypressesSpecificData(AuditorData):
         verbose_name=_('keypresses specific'),
         help_text=_('specific keys pressed by the user')
     )
+    time = models.IntegerField(
+        verbose_name=('keypresses specific timestamp'),
+        help_text=_('timestamp of this keypress event')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
