@@ -218,6 +218,10 @@ class AuditorMouseMovementSpecificData(AuditorData):
         verbose_name=_('mouse movement y coordinate'),
         help_text=_('ending y coordinate of mouse whenever user moves mouse')
     )
+    time = models.IntegerField(
+        verbose_name=('mouse movement timestamp'),
+        help_text=_('timestamp of this mouse movement')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
