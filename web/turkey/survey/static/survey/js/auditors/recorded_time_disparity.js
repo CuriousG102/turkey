@@ -6,9 +6,9 @@ var AuditorRecordedTimeDisparity = {
     log_recorded_time_disparity: function (e) {
         if(document[this.hidden]) {
             var focus_change_time = (new Date()).getTime();
-            this.on_focus_time += focus_change_time - this.last_focus_time.getTime();  
+            this.on_focus_time += focus_change_time - this.last_focus_time.getTime();
         } else {
-            this.last_focus_time = (new Date()); 
+            this.last_focus_time = (new Date());
         }
     },
     submit_callable: function () {

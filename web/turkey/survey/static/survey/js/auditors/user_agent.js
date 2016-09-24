@@ -8,7 +8,7 @@ var AuditorUserAgent = {
         // var url = "http://www.useragentstring.com/?uas="
         //     + uas
         //     + "&getJSON=all";
-        
+
         // $.ajax({
         //     type: "GET",
         //     url: url,

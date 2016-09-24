@@ -16,7 +16,7 @@ var AuditorMouseMovementSpecific = {
 var auditor_mouse_movement_specific = Object.create(AuditorMouseMovementSpecific);
 
 $(window).mousemove(
-    $.debounce(250, function(e) { 
+    $.debounce(250, function(e) {
         auditor_mouse_movement_specific
             .log_mousemove_specific
             .bind(auditor_mouse_movement_specific)(e);
