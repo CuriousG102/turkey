@@ -1,9 +1,12 @@
+import binascii
+
 from django.core import serializers
 from django.db import models
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from OpenSSL.rand import bytes as generate_bytes
 
 
 class Model(models.Model):
@@ -23,6 +26,46 @@ class Model(models.Model):
 
     class Meta:
         abstract = True
+
+
+# We could go all the way up to standard security practice with these tokens.
+# That would mean not storing the token itself but storing the resulting hash
+# of it and a salt that we keep for each "user", created when a browser
+# requests a token. But since tokens are 1:1 with "users"
+# and these aren't tied to anything besides user tracking, that seems like
+# overkill. The one benefit is if we were hacked we could continue without
+# having to invalidate the currently out tokens, because the malicious actor
+# would only have the hash and salt, not the token. But this risk seems
+# minimal. Also, it fails to protect the most important thing they could
+# steal: Data on user behavior. It only protects us from spurious
+# submissions.
+# If the tradeoff changes in the future, ESPECIALLY if these tokens
+# start getting tied to sensitive stuff for users, then Django Knox is the best
+# place to start for inspiration... Thanks James McMahon for inspiring!
+class TokenManager(models.Manager):
+    TOKEN_NUM_BYTES = 32
+
+    def create(self):
+        token = None
+        while True:
+            token = binascii.hexlify(generate_bytes(self.TOKEN_NUM_BYTES))
+            if not self.filter(token=token).exists():
+                break
+
+        return super().create(token=token)
+
+
+class Token(Model):
+    objects = TokenManager()
+
+    token = models.CharField(max_length=TokenManager.TOKEN_NUM_BYTES * 2, primary_key=True)
+    # built-in switch for us to invalidate compromised tokens, just in case.
+    # With a typical login system, TTL is established, but we want to track
+    # people for as long as possible
+    valid = models.BooleanField(default=True)
+
+    class Meta:
+        pass
 
 
 # Create your models here.
@@ -65,17 +108,17 @@ class Task(Model):
             original = type(self).objects.get(pk=self.pk)
             if self.survey_name != original.survey_name:
                 raise ValidationError(_('Can\'t change the name of the '
-                                         'HIT as there are already '
-                                         'responses'))
+                                        'HIT as there are already '
+                                        'responses'))
             if self.external != original.external:
                 raise ValidationError(_('Can\'t change whether the HIT is '
-                                         'internal or external because there '
-                                         'is already collected data'))
+                                        'internal or external because there '
+                                        'is already collected data'))
 
         if not self.external and not self.survey_name:
             raise ValidationError(_('%s cannot be blank because this is not '
-                                     'an external HIT') %
-                                   self._meta.get_field('survey_name').verbose_name)
+                                    'an external HIT') %
+                                  self._meta.get_field('survey_name').verbose_name)
 
     class Meta:
         verbose_name = _('Interactive Task')
@@ -148,6 +191,8 @@ class TaskInteraction(_TaskLinkedModel):
     The other consideration: We can see what percentage of people are
     completing our HITs by calculating (task interactions with linked submitted steps)/(task interactions)
     """
+
+    token = models.ForeignKey('Token')
 
     class Meta:
         verbose_name = _('Task Interaction')
