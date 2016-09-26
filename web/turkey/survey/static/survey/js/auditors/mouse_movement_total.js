@@ -13,7 +13,7 @@ var AuditorMouseMovementTotal = {
 var auditor_mouse_movement_total = Object.create(AuditorMouseMovementTotal);
 
 $(window).mousemove(
-    $.debounce(250, function(e) { 
+    $.debounce(250, function(e) {
         auditor_mouse_movement_total
             .log_mousemove_event
             .bind(auditor_mouse_movement_total)();

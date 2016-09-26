@@ -41,7 +41,7 @@ var auditor_scrolled_pixels_specific = Object.create(AuditorScrolledPixelsSpecif
 auditor_scrolled_pixels_specific.setup();
 
 $(window).scroll(
-    $.debounce(250, function(e) { 
+    $.debounce(250, function(e) {
         auditor_scrolled_pixels_specific
             .log_scroll_specific
             .bind(auditor_scrolled_pixels_specific)();
