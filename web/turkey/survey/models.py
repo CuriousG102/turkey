@@ -25,7 +25,17 @@ class Model(models.Model):
         abstract = True
 
 
+<<<<<<< HEAD
 # Create your models here.
+=======
+def not_less_than_one(value):
+    if value < 1:
+        raise ValidationError(
+            _('If number_simultaneous_users is < 1, the value makes no sense.')
+        )
+
+
+>>>>>>> miles-sphinx
 class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
@@ -108,11 +118,39 @@ class _DataModel(Model):
 
 
 class StepData(_DataModel):
+    """
+    Data model for a step. The only requirement, unless you have overridden
+    substantial portions of how the step records incoming data (if you have to
+    ask then you didn't do it), is include a field
+    ``general_model = models.ForeignKey('MyStepClassName')``
+
+    For how to add other database fields for your StepData,
+    see documentation on :class:`django:django.db.models.Model`.
+    :method:`django:django.db.models.Model.full_clean` will be called on
+    this model when it is instantiated with user data, so if you override
+    :method:`django:django.db.models.Model.clean` or add any
+    instances of :mod:`django:django.core.validators` to your fields
+    then it will be run every time one of these is going to be saved.
+    """
     pass
     #  general_model = models.ForeignKey('Step') <-- field you must implement
 
 
 class AuditorData(_DataModel):
+    """
+    Data model for an auditor. The only requirement, unless you have overridden
+    substantial portions of how the auditor records incoming data (if you have
+    to ask then you didn't do it), is include a field
+    ``general_model = models.ForeignKey('MyAuditorClassName')``
+
+    For how to add other database fields for your AuditorData,
+    see documentation on :class:`django:django.db.models.Model`.
+    :method:`django:django.db.models.Model.full_clean` will be called on
+    this model when it is instantiated with user data, so if you override
+    :method:`django:django.db.models.Model.clean` or add any
+    instances of :mod:`django:django.core.validators` to your fields
+    then it will be run every time one of these is going to be saved.
+    """
     pass
     #  general_model = models.ForeignKey('Auditor') <--
     #                                                  field you must implement
@@ -155,12 +193,30 @@ class TaskInteraction(_TaskLinkedModel):
 
 class _EventAndSubmissionModel(_TaskLinkedModel):
     script_location = 'survey/js/step_or_auditor/my_example.js'
+    """
+    Location in static data hierarchy of the script file that should be loaded
+    when your step or auditor is rendered on a HIT page. It will only be
+    loaded once, no matter e.g. how many steps you have.
+    """
     data_model = _DataModel
     has_custom_admin = False
+    """
+    Overrides automatic creation of
+    :class:`django:django.contrib.admin.ModelAdmin`
+    that will otherwise happen for you. If you set this to True on your step
+    or auditor you must provide and register your own ModelAdmin
+    """
     # shortcut to allow users to have related models that need
     # to be edited for their step or auditor and still
     # autogenerate admin page
     inlines = []
+    """
+    List of strings representing other instances of
+    :class:`django:django.db.models.Model` in the :mod:`survey` app
+    that should be created as instances of
+    :class:`django:django.contrib.admin.StackedInline` in the
+    :class:`django:django.contrib.admin.ModelAdmin` generated for this class.
+    """
 
     def has_data_for_task_interaction(self, task_interaction):
         return self.data_model.has_instances_for_task_interaction(task_interaction)
@@ -179,8 +235,10 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
         Simple helper function. Takes a list of dictionaries or a single
         dictionary in the parameter processed_data, where the keys
         are names of fields on the class's data_model and the values
-        are values to be saved on those fields. Not appropriate for all
-        situations but fits many, especially with auditors.
+        are values to be saved on those fields. Saves those dictionaries
+        to instances of the data_model.
+        Not appropriate for all
+        situations but fits many, especially with auditors
         """
 
         processed_data = self.processed_data_to_list(processed_data)
@@ -208,6 +266,16 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
         raise NotImplementedError()
 
     def serialize_data(self, task_interaction):
+        """
+        Takes a task_interaction and serializes all information recorded
+        by this class associated with that task_interaction into an
+        arbitrarily deep tree of dictionariies and lists with only Python
+        primitives as keys and values. Used by framework to serialized
+        results of a HIT.
+
+        :param task_interaction: task interaction with this step/auditor
+        :type task_interaction: :class:`survey.models.TaskInteraction`
+        """
         # TODO: Implement prefetching
         return [datum.serialize_info_to_dict() for datum in
                 self.data_model.objects.filter(
@@ -221,6 +289,13 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
                 self.updated.strftime(str(_('Updated: %B %d, %Y'))))
 
     def clean(self):
+        """
+        Called when user attempts to modify or add this model in admin.
+        Can either do nothing or raise a ValidationError to signal
+        that the user has done something unacceptable with the model.
+        Before using this make sure you can't use
+        :mod:`django:django.core.validators`
+        """
         # if step/auditor object's task already has user data
         # we can't let them alter it or auditors/steps
         if self.task.taskinteraction_set.count() > 0:
@@ -238,14 +313,30 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
 
 class Step(_EventAndSubmissionModel):
     """
-    Your step should include some way to distinguish it from another instance of
-    the same class in its template code, because the user may make multiple
+    Step class. To add your own, create a step that inherits from this class.
+    Create an associated data_model to capture data produced by the user
+    when they interact with this step. Provide a template_file to render for
+    this step on the page and a script_location for the script that will load
+    with this step.
+
+    Your step should include some way to distinguish it from another instance
+    of the same class in its template code, because the user may make multiple
     instances of the same step model (e.g. two multiple choice questions).
     That way, the associated script can pick up on those different instances,
     for example by seeing that they have different numbers associated with
-    their primary keys in the id attribute on one of their tags
+    their primary keys in the id attribute on one of their tags.
+
+    For how to add fields that can be configured in the admin and saved
+    for your step, see documentation on :class:`django:django.db.models.Model`
     """
     template_file = 'survey/my_step_template.html'
+    """
+    Location in templating system of the template that will be rendered for
+    your step. All variables and string-returning attributes of the instance
+    of Step will be available in this template under the variable
+    step_instance in the default implementation of
+    :method:`survey.models.Step.get_template_code`
+    """
     step_num = models.IntegerField(
         verbose_name=_('Step Number'),
         help_text=_('Controls the order that steps linked to a task are to be '
@@ -276,15 +367,34 @@ class Step(_EventAndSubmissionModel):
                                           task_interaction)
 
     def get_template_code(self, additional_context=None):
-        if additional_context is None:
-            additional_context = dict()
+        """
+        Function for rendering template code of a step. Default behavior is
+        that it just adds step as the context variable 'step_instance' and
+        renders the template with that context, but it supports taking the
+        argument additional_context, which it will also add to the template as
+        context, so that when you need more data for the template you can
+        typically override get_template_code, create your dictionary with
+        additional variables and then do something like
+        ``return super().get_template_code(additional_context=my_custom_context)``
+
+        :param additional_context: dictionary of additional context keys and values
+        :type additional_context: dict
+        :returns: str -- rendered template
+        """
         context = {'step_instance': self}
-        context.update(additional_context)
+        if additional_context is not None:
+            if not isinstance(additional_context, dict):
+                raise ValueError ('Type of additional_context must be dict')
+            context.update(additional_context)
         return render_to_string(self.template_file,
                                 context)
 
     @property
     def template_code(self):
+        """
+        Don't touch this. Bad juju.
+        :returns: str -- rendered template
+        """
         # get_template_code is not inlined so the user can override that
         # call without having to understand how @property or the template
         # system works in its entirety
@@ -303,8 +413,25 @@ class Step(_EventAndSubmissionModel):
 
 
 class Auditor(_EventAndSubmissionModel):
+    """
+    Auditor class. To add your own, create an auditor that inherits from this
+    class. Create an associated data_model to capture data produced by the user
+    when they interact with this step. Provide a script_location for the script
+    that will load with this auditor.
+
+    For how to add fields that can be configured in the admin and saved
+    for your auditor, see documentation on :class:`django:django.db.models.Model`
+    """
+
     # https://docs.djangoproject.com/en/1.9/ref/models/instances/#validating-objects
     def clean(self):
+        """
+        Called when user attempts to modify or add this model in admin.
+        Can either do nothing or raise a ValidationError to signal
+        that the user has done something unacceptable with the model.
+        Before using this make sure you can't use
+        :mod:`django:django.core.validators`
+        """
         # it is not valid to create two auditors for the same task
         try:
             type(self).objects.get(task=self.task)

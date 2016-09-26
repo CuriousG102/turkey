@@ -3,7 +3,11 @@ from django.contrib import admin
 from django.apps import apps
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
 from django.contrib.admin.utils import unquote, get_deleted_objects
+<<<<<<< HEAD
 from django.contrib.staticfiles.templatetags.staticfiles import static
+=======
+from django.core.exceptions import ValidationError
+>>>>>>> miles-sphinx
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
@@ -17,6 +21,15 @@ from .auditors import NAME_TO_AUDITOR
 
 
 def create_step_or_auditor_admin(model):
+    """
+    Generates and registers a :class:`django:django.contrib.admin.ModelAdmin`
+    for a step or auditor automatically. The generated
+    :class:`django:django.contrib.admin.ModelAdmin` includes
+    :attr:`survey.models._EventAndSubmissionModel.inlines` and has been
+    overridden to not show up in the main menu of available admins, as well as
+    to redirect back to the task the step or auditor is attached to after it
+    returns from saving or adding
+    """
     model_inlines = []
     for inline in model.inlines:
         class Inline(admin.StackedInline):
@@ -45,6 +58,14 @@ def create_step_or_auditor_admin(model):
                 obj = self.get_object(request, unquote(object_id), to_field)
                 if obj is not None:
                     task_id = obj.task.pk
+                    if obj.taskinteraction_set.count() > 0:
+                        raise ValidationError(
+                            _('Steps and Auditors for %s may not be changed, '
+                              'added, or deleted because it already has '
+                              'user interactions and data gathered would '
+                              'be invalidated') % self.task
+                        )
+
 
             # by calling parent here, we can get the object's associated task
             # before it is deleted, but let the parent do all necessary
@@ -73,6 +94,11 @@ def create_step_or_auditor_admin(model):
 
 
 def create_step_or_auditor_admins(model_name_list):
+    """
+    Called on start on values in :data:`survey.steps.NAME_TO_STEP' and
+    :data:`survey.auditors.NAME_TO_AUDITOR' to autogenerate admins for
+    those models
+    """
     for model_name in model_name_list:
         model = apps.get_model('survey', model_name)
         if not model.has_custom_admin:
