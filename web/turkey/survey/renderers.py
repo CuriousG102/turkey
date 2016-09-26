@@ -15,7 +15,7 @@ class XMLBodyRenderer(BaseRenderer):
     def __init__(self, item_tag_name='list_item', root_tag_name=None, body=True):
         """
         item_tag_name controls name of list elements, root_tag_name controls
-        whether or not there is a root tag and what it's name is. if body
+        whether or not there is a root tag and what its name is. if body
         is false then this creates a header, otherwise no
         """
         self.root_tag_name = root_tag_name

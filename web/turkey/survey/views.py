@@ -1,15 +1,18 @@
 from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.paginator import Paginator
+from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http import Http404, StreamingHttpResponse, HttpResponse
+from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
-from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
 from rest_framework import status
+from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -17,63 +20,159 @@ from .auditors import NAME_TO_AUDITOR
 from .steps import NAME_TO_STEP
 from .models import Task, TaskInteraction
 
-
 # TODO: Authentication
-from survey.renderers import XMLBodyRenderer
+from .renderers import XMLBodyRenderer
+
+
+# TODO: Implement token authentication. So when the interaction is created, make a token to identify user...
+class NonAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        pass
 
 
 class RecordSubmission(APIView):
+    authentication_classes = (NonAuthentication,)
+    permission_classes = (AllowAny,)
+
+    class SubmissionProcessingException(Exception):
+        pass
+
     def save_data_to_mapped_models(self, data, map,
                                    task_interaction_model):
-        task = task_interaction_model.task
-        for name, model_data in data.items():
-            associated_models = apps.get_model('survey', map[name]) \
-                .objects.filter(task=task)
-            for model in associated_models:
-                model.handle_submission_data(model_data,
-                                             task_interaction_model)
+        model_to_name = {v: k for k, v in map.items()}
+        associated_models = self.get_associated_models(map, task_interaction_model)
+        for model in associated_models:
+            model_class_name = type(model).__name__
+            try:
+                model_data = data[model_to_name[model_class_name]]
+            except KeyError:
+                raise ValidationError(_('Missing or invalid data'
+                                        'from one or more steps or auditors'))
+            model.handle_submission_data(model_data, task_interaction_model)
+
+    def get_task_interaction(self, interaction_pk):
+        """
+        Helper function to get a task interaction from a potentially invalid
+        string representing interaction_pk. Must be called from within a
+        transaction because it locks the task interaction using
+        "select_for_update" method on the queryset.
+
+        If string is invalid it returns None.
+        """
+        task_interaction = None
+        try:
+            task_interaction = TaskInteraction.objects \
+                .select_for_update() \
+                .select_related('task') \
+                .get(pk=int(interaction_pk))
+        except ValueError:
+            pass
+        except TaskInteraction.DoesNotExist:
+            pass
+
+        return task_interaction
+
+    def process_submission(self, submission_data, task_interaction):
+        raise NotImplementedError()
+
+    def get_associated_models(self, map, task_interaction):
+        """
+        Get models of steps or auditors that apply to the task
+        linked to by task_interaction
+        """
+        associated_models = []
+
+        for model_name in map.values():
+            model = apps.get_model('survey', model_name)
+            associated_models.extend(model.objects.filter(task=task_interaction.task))
+
+        return associated_models
+
+    def associated_models_have_data(self, map, task_interaction):
+        """
+        Find out if the models associated with a task_interaction
+        already have data instances. This serves to show us whether there has
+        already been a submission or not
+        """
+        associated_models = self.get_associated_models(map, task_interaction)
+        for model in associated_models:
+            if model.has_data_for_task_interaction(task_interaction):
+                return True
+
+        return False
 
     def post(self, request, **kwargs):
-        submission = request.data
-        # TODO: What to do when it's not found?
+        with transaction.atomic():
+            task_interaction_model = self.get_task_interaction(kwargs['pk'])
+            if not task_interaction_model:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            try:
+                self.process_submission(request.data, task_interaction_model)
+                return Response(status=status.HTTP_201_CREATED)
+            except ValidationError:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+class StepSubmission(RecordSubmission):
+    def process_submission(self, submission_data, task_interaction):
+        if task_interaction.task.external:
+            raise ValidationError(_('Submitting steps on an internal HIT'))
+
+        if self.associated_models_have_data(NAME_TO_STEP, task_interaction):
+            raise ValidationError(_('Step data already submitted for this task'))
+
+        self.save_data_to_mapped_models(submission_data['steps'],
+                                        NAME_TO_STEP,
+                                        task_interaction)
+
+
+class AuditorSubmission(RecordSubmission):
+    def process_submission(self, submission_data, task_interaction):
+        if self.associated_models_have_data(NAME_TO_AUDITOR, task_interaction):
+            raise ValidationError(_('Auditor data already submitted for this task'))
+
+        self.save_data_to_mapped_models(submission_data['auditors'],
+                                        NAME_TO_AUDITOR,
+                                        task_interaction)
+
+
+class CreateTaskInteractionView(APIView):
+    authentication_classes = (NonAuthentication,)
+    permission_classes = (AllowAny,)
+
+    def post(self, request, **kwargs):
+        if type(request.data) is not dict or 'task_pk' not in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            task_interaction_model = TaskInteraction.objects \
-                .get(pk=int(kwargs['pk']))
-        except TaskInteraction.DoesNotExist:
+            task = Task.objects.get(pk=int(request.data['task_pk']))
+        except Task.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        if task_interaction_model.completed:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        try:
-            # if we fail validation or anything else all is well and nothing
-            # is committed
-            with transaction.atomic():
-                self.save_data_to_mapped_models(submission['auditors'],
-                                                NAME_TO_AUDITOR,
-                                                task_interaction_model)
-                self.save_data_to_mapped_models(submission['steps'],
-                                                NAME_TO_STEP,
-                                                task_interaction_model)
-                task_interaction_model.completed = True
-                task_interaction_model.save()
-            return Response(status=status.HTTP_201_CREATED)
-        except ValidationError:
+        except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        if not task.external:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(ensure_csrf_cookie, name='dispatch')
+        task_interaction = TaskInteraction.objects.create(task=task)
+        return Response(data={'task_interaction': task_interaction.pk,
+                              'auditor_submission_url': request.build_absolute_uri(
+                                  reverse('survey:auditor_submission',
+                                          kwargs={'pk': task_interaction.pk}))},
+                        status=status.HTTP_201_CREATED)
+
+
 class TaskView(View):
     def get(self, request, **kwargs):
+        TASK_NOT_FOUND = Http404(_('No such task'))
         try:
             task = Task.objects.get(pk=kwargs['pk'])
         except Task.DoesNotExist:
-            raise Http404(_('No such task'))
+            raise TASK_NOT_FOUND
 
-        # TODO: Find a way to cut down on the number of queries these two for loops will have to make
-        auditors = []
-        for auditor_model_name in NAME_TO_AUDITOR.values():
-            auditor_model = apps.get_model('survey', auditor_model_name)
-            auditors.extend(auditor_model.objects.filter(task=task))
+        if task.external:
+            raise TASK_NOT_FOUND
+
+        # TODO: Find a way to cut down on the number of queries these loops will have to make
 
         steps = []
         for step_model_name in NAME_TO_STEP.values():
@@ -81,26 +180,39 @@ class TaskView(View):
             steps.extend(step_model.objects.filter(task=task))
         steps.sort(key=lambda x: x.step_num)
 
-        auditor_script_locations = [auditor.script_location for auditor in
-                                    auditors]
-
         # serves to only get one instance of each script
         # needed for steps, since it is valid
         # for a user to have multiple steps (e.g. multiple choice)
         step_script_locations = list(
             set([step.script_location for step in steps]))
 
+        auditor_uris = []
+        for auditor_model_name in NAME_TO_AUDITOR.values():
+            auditor_model = apps.get_model('survey', auditor_model_name)
+            try:
+                auditor = auditor_model.objects.get(task=task)
+                auditor_uris.append(static(auditor.script_location))
+            except auditor_model.DoesNotExist:
+                pass
+
         task_interaction_model = TaskInteraction.objects.create(task=task)
+
+        auditor_submission_endpoint = reverse(
+            'survey:auditor_submission',
+            kwargs={'pk': task_interaction_model.pk}
+        )
+        auditor_submission_endpoint = '"%s"' % auditor_submission_endpoint
 
         return TemplateResponse(
             request, task.survey_wrap_template,
             status=status.HTTP_200_OK,
-            context={'auditors': auditors,
-                     'steps': steps,
+            context={'steps': steps,
                      'task': task,
                      'task_interaction_model': task_interaction_model,
-                     'auditor_script_locations': auditor_script_locations,
-                     'step_script_locations': step_script_locations})
+                     'step_script_locations': step_script_locations,
+                     'submission_endpoint': mark_safe(auditor_submission_endpoint),
+                     'auditor_uris': auditor_uris,
+                     'embed_uri': static('survey/js/mmm_turkey.js')})
 
 
 class TasksExport(LoginRequiredMixin, APIView):
@@ -221,8 +333,11 @@ class TasksExport(LoginRequiredMixin, APIView):
 
     def get(self, request, primary_keys=None):
         if not primary_keys:
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
-        primary_keys = [int(n) for n in primary_keys.split(',')]
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            primary_keys = [int(n) for n in primary_keys.split(',')]
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         # "trust but verify"
         tasks = Task.objects.filter(pk__in=primary_keys)
         if tasks.count() != len(primary_keys):

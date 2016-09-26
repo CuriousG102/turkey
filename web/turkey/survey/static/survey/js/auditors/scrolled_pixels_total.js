@@ -45,7 +45,7 @@ $(window).scroll(
     })
 );
 
-overlord.register_auditor('scrolled_pixels_total',
+turkey.register_auditor('scrolled_pixels_total',
                           auditor_scrolled_pixels_total
                             .submit_callable
                             .bind(auditor_scrolled_pixels_total));

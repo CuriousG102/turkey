@@ -20,7 +20,7 @@ $(window).mousemove(
     })
 );
 
-overlord.register_auditor('mouse_movement_total',
+turkey.register_auditor('mouse_movement_total',
                           auditor_mouse_movement_total
                             .submit_callable
                             .bind(auditor_mouse_movement_total));

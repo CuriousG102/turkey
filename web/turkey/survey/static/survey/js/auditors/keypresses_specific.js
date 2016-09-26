@@ -16,7 +16,7 @@ $(document).ready(function() {
                             .bind(auditor_keypresses_specific));
 });
 
-overlord.register_auditor('keypresses_specific',
+turkey.register_auditor('keypresses_specific',
                           auditor_keypresses_specific
                             .submit_callable
                             .bind(auditor_keypresses_specific));

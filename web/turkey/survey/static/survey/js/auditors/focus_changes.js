@@ -22,7 +22,7 @@ document.addEventListener(  visibility_change,
                                 .bind(auditor_focus_changes),
                             false);
 
-overlord.register_auditor('focus_changes',
+turkey.register_auditor('focus_changes',
                           auditor_focus_changes
                             .submit_callable
                             .bind(auditor_focus_changes));

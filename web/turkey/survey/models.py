@@ -25,17 +25,11 @@ class Model(models.Model):
         abstract = True
 
 
-def not_less_than_one(value):
-    if value < 1:
-        raise ValidationError(
-            _('If number_simultaneous_users is < 1, the value makes no sense.')
-        )
-
-
 # Create your models here.
 class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
+    # TODO: Actually enforce this
     owners = models.ManyToManyField(
         User,
         verbose_name=_('Owners'),
@@ -43,21 +37,45 @@ class Task(Model):
     )
     survey_name = models.CharField(max_length=144,
                                    verbose_name=_('Survey Name'),
-                                   help_text=(
+                                   help_text=_(
                                        'This is exposed to the user: Name of '
-                                       'the survey they\'re taking'))
+                                       'the survey they\'re taking. It is an '
+                                       'optional field, as it is not relevant '
+                                       'if this is an external task.'),
+                                   blank=True,
+                                   null=True
+                                   )
+
+    external = models.BooleanField(default=False,
+                                   verbose_name=_('External Hit'),
+                                   help_text=_(
+                                       'If the task is not external, we will host it '
+                                       'and you can design it on our platform. If it is '
+                                       'external, you should mark this true, and we will '
+                                       'provide you with embed code to use on your HIT '
+                                       'with your selected auditors.')
+                                   )
 
     def __str__(self):
         return ' '.join(['%s: ' % self._meta.verbose_name, self.survey_name,
                          super().__str__()])
 
     def clean(self):
-        if self.pk and self.taskinteraction_set.count():
+        if self.pk and self.taskinteraction_set.all().exists():
             original = type(self).objects.get(pk=self.pk)
             if self.survey_name != original.survey_name:
-                return ValidationError(_('Can\'t change the name of the '
-                                         'survey as there are already '
+                raise ValidationError(_('Can\'t change the name of the '
+                                         'HIT as there are already '
                                          'responses'))
+            if self.external != original.external:
+                raise ValidationError(_('Can\'t change whether the HIT is '
+                                         'internal or external because there '
+                                         'is already collected data'))
+
+        if not self.external and not self.survey_name:
+            raise ValidationError(_('%s cannot be blank because this is not '
+                                     'an external HIT') %
+                                   self._meta.get_field('survey_name').verbose_name)
 
     class Meta:
         verbose_name = _('Interactive Task')
@@ -73,6 +91,10 @@ class _DataModel(Model):
     data from the user, and that data model points back at the auditor/step
     """
     task_interaction_model = models.ForeignKey('TaskInteraction')
+
+    @classmethod
+    def has_instances_for_task_interaction(cls, task_interaction):
+        return cls.objects.filter(task_interaction_model=task_interaction).exists()
 
     def __str__(self):
         return ' '.join(
@@ -124,10 +146,9 @@ class TaskInteraction(_TaskLinkedModel):
     associated with.
 
     The other consideration: We can see what percentage of people are
-    completing our HITs
+    completing our HITs by calculating (task interactions with linked submitted steps)/(task interactions)
     """
 
-    completed = models.BooleanField(default=False)
     class Meta:
         verbose_name = _('Task Interaction')
 
@@ -141,13 +162,12 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
     # autogenerate admin page
     inlines = []
 
+    def has_data_for_task_interaction(self, task_interaction):
+        return self.data_model.has_instances_for_task_interaction(task_interaction)
+
     @staticmethod
     def processed_data_to_list(processed_data):
-        try:
-            assert (
-                type(processed_data) == list or type(processed_data) == dict
-            )
-        except AssertionError:
+        if not (type(processed_data == list or type(processed_data == dict))):
             raise ValidationError(_('processed_data is not list or dict'))
         if type(processed_data) != list:
             processed_data = [processed_data]
@@ -198,9 +218,8 @@ class _EventAndSubmissionModel(_TaskLinkedModel):
                (self._meta.verbose_name or
                 '%s object' % self.__class__.__name__,
                 self.task,
-                self.updated.strftime('Updated: %B %d, %Y'))
+                self.updated.strftime(str(_('Updated: %B %d, %Y'))))
 
-    # TODO: Move clean methods higher up the inheritance chain
     def clean(self):
         # if step/auditor object's task already has user data
         # we can't let them alter it or auditors/steps
@@ -244,12 +263,13 @@ class Step(_EventAndSubmissionModel):
         dictionaries to save_processed_data_to_model and it will create
         those data models for you. Alternatively, you can choose to handle
         the model creation on your own. This will be necessary if your data
-        model has relations with models other than the your Step or Auditor
-        model. The base case of this method is written for the simplest
+        model has relations that are not represented by a single foreign key.
+        The base case of this method is written for the simplest
         possible scenario: The data coming in from the submission is a
         dictionary whose keys are ids for instances of your model. The
-        values of those keys are also dictionaries, whose keys and values
-        directly matches your data model, and so can be passed directly to
+        values of those keys is a list of dictionaries or a dictionary,
+        whose keys and values
+        directly match your data model, and so can be passed directly to
         save_processed_data_to_model without validation or translation.
         """
         self.save_processed_data_to_model(data[str(self.pk)],
@@ -269,6 +289,11 @@ class Step(_EventAndSubmissionModel):
         # call without having to understand how @property or the template
         # system works in its entirety
         return self.get_template_code()
+
+    def clean(self):
+        if self.task.external:
+            raise ValidationError(_('Can\'t create step for external HIT'))
+        super().clean()
 
     class Meta:
         abstract = True
@@ -302,12 +327,13 @@ class Auditor(_EventAndSubmissionModel):
         dictionaries to save_processed_data_to_model and it will create
         those data models for you. Alternatively, you can choose to handle
         the model creation on your own. This will be necessary if your data
-        model has relations with models other than the your Step or Auditor
-        model. The base case of this method is written for the simplest
+        model has relations that are not represented by a single foreign key.
+        The base case of this method is written for the simplest
         possible scenario: The data coming in from the submission is a
-        dictionary, whose keys and values directly match your data model,
-        and so can be passed directly to save_processed_data_to_model without
-        validation or translation.
+        list of dictionaries or a single dictionary
+        whose keys and values directly
+        match your data model, and so can be passed directly to
+        save_processed_data_to_model without validation or translation.
         """
         self.save_processed_data_to_model(data, task_interaction)
 

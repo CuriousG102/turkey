@@ -33,7 +33,7 @@ $(document).ready(function() {
     auditor_user_agent.get_user_agent();
 });
 
-overlord.register_auditor('user_agent',
+turkey.register_auditor('user_agent',
                           auditor_user_agent
                             .submit_callable
                             .bind(auditor_user_agent));

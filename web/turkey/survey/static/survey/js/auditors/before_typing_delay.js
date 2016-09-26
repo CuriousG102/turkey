@@ -31,7 +31,7 @@ $(document).ready(function() {
                           .bind(auditor_before_typing_delay));
 });
 
-overlord.register_auditor('before_typing_delay',
+turkey.register_auditor('before_typing_delay',
                           auditor_before_typing_delay
                             .submit_callable
                             .bind(auditor_before_typing_delay));
