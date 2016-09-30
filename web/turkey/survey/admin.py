@@ -3,11 +3,8 @@ from django.contrib import admin
 from django.apps import apps
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
 from django.contrib.admin.utils import unquote, get_deleted_objects
-<<<<<<< HEAD
 from django.contrib.staticfiles.templatetags.staticfiles import static
-=======
 from django.core.exceptions import ValidationError
->>>>>>> miles-sphinx
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect

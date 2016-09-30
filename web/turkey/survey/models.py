@@ -25,17 +25,13 @@ class Model(models.Model):
         abstract = True
 
 
-<<<<<<< HEAD
 # Create your models here.
-=======
 def not_less_than_one(value):
     if value < 1:
         raise ValidationError(
             _('If number_simultaneous_users is < 1, the value makes no sense.')
         )
 
-
->>>>>>> miles-sphinx
 class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'

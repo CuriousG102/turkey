@@ -134,14 +134,13 @@ REST_FRAMEWORK = {
     )
 }
 
-<<<<<<< HEAD
 # CORS
 CORS_URLS_REGEX = r'^/survey/api/.*$'
 
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
-=======
+
 # Default Django settings. Override these with settings in the module
 # pointed-to by the DJANGO_SETTINGS_MODULE environment variable.
 
@@ -731,4 +730,3 @@ SECURE_HSTS_SECONDS = 0
 SECURE_REDIRECT_EXEMPT = []
 SECURE_SSL_HOST = None
 SECURE_SSL_REDIRECT = False
->>>>>>> miles-sphinx
