@@ -1,10 +1,7 @@
 Overview and Inspiration
 ************************
-Creating internal HITs on Amazon Mechanical Turk can be programmatically restrictive, and as a result, many
-requesters turn to using external HITs as a more flexible alternative. However, creating external HITs can prove
-to be a challenge for those who do not know how to code or a redundant chore for those who do. The goal of this
-project is to provide a framework that allows for a requester to quickly and easily create external MTurk HITs
-with minimal effort thanks to convenient built-in features.
+Internal HITs on Amazon Mechanical Turk can be programmatically restrictive, and as a result, many requesters turn to using external HITs as a more flexible alternative. However, creating such HITs can be redundant and time-consuming. `MmmTurkey <https://github.com/CuriousG102/turkey/>`_ is a framework that enables researchers to not only quickly create and manage external HITs thanks to convenient built-in features, but more significantly also capture and record detailed worker behavioral data characterizing how each worker completes a given task. You can read out paper `here <https://arxiv.org/abs/1609.00945>`_.
+
 
 Features
 ========
@@ -14,8 +11,8 @@ Features
 - Tasks automatically linked to a single Postgres database
 - Response and auditor data for a HIT can be exported to XML
 - Default auditors provided to gather data on worker interactions
-    * Easy to add your own custom auditor .. TODO: make this a link and same for one below
+    * Easy to add your own `custom auditor <extending.html#auditors>`_
 
 - Default steps provided including multiple choice, text response, and checkbox selections
-    * Easy to add your own custom step
+    * Easy to add your own `custom step <extending.html#steps>`_
 

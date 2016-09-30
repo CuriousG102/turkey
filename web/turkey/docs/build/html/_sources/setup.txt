@@ -3,11 +3,7 @@ Setup
 
 For Local Development
 =====================
-For local development it is best to avoid using Docker. It will make
-debugging harder, require you to use Postgres when you could use
-the lighter and easier to inspect SQLite3, and increase your time to
-iterate on code. You can use the following commands within web to
-take a shortcut and speed up development.::
+For local development it is best to avoid using Docker. It will make debugging harder, require you to use Postgres when you could use the lighter and easier to inspect SQLite3, and increase your time to iterate on code. You can use the following commands within web to take a shortcut and speed up development::
 
     virtualenv venv
     virtualenv -p python3 venv

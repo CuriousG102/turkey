@@ -1,3 +1,3 @@
 Authors
 *******
-Written by Brandon Dang and Miles Hudson under the direction of Dr. Matthew Lease.
+Developed by Miles Hudson and Brandon Dang under the direction of Dr. `Matthew Lease <https://www.ischool.utexas.edu/~ml/>`_.
