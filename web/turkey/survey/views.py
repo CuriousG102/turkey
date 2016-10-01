@@ -250,6 +250,19 @@ class TasksExport(LoginRequiredMixin, APIView):
                 steps[step_name] = step_models
         return steps
 
+    def _get_related_tokens(self, task):
+        # return tokens where the token is linked to at least one
+        # task interaction that is in turn linked to task
+        #
+        # Pseudo-SQL:
+        # SELECT DISTINCT TOKENS.<all_fields>
+        # FROM TOKENS
+        # INNER JOIN TASK_INTERACTIONS
+        # ON TASK_INTERACTIONS.TOKEN = TOKENS.PK
+        # WHERE TASK_INTERACTIONS.TASK = <task>
+        task_interactions = TaskInteraction.objects.filter(task=task)
+        return Token.objects.filter(taskinteraction__in=task_interactions).distinct()
+
     def _render_auditors_meta_xml(self, request, task):
         auditors = self._get_related_auditors(task)
 
@@ -277,12 +290,21 @@ class TasksExport(LoginRequiredMixin, APIView):
         steps_xml = XMLBodyRenderer(root_tag_name='steps_meta')
         return steps_xml.render(serialized_steps)
 
+    def _render_tokens_xml(self, request, task):
+        tokens = self._get_related_tokens(task)
+
+        serialized_tokens = [token.serialize_info_to_dict() for token in tokens]
+
+        tokens_xml = XMLBodyRenderer(root_tag_name='tokens_meta')
+        return tokens_xml.render(serialized_tokens)
+
     def _render_task_meta_xml(self, request, task):
         auditors_xml = self._render_auditors_meta_xml(request, task)
         steps_xml = self._render_steps_meta_xml(request, task)
+        tokens_xml = self._render_tokens_xml(request, task)
         renderer = XMLBodyRenderer(root_tag_name='task_meta')
         task_xml = renderer.render(task.serialize_info_to_dict())
-        return ''.join([task_xml, auditors_xml, steps_xml])
+        return ''.join([task_xml, auditors_xml, steps_xml, tokens_xml])
 
     def _get_auditors_dict(self, interaction, auditors):
         auditors_serialized = dict()
