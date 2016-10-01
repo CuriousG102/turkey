@@ -11,6 +11,8 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+
+from .default_settings import SURVEY_CONFIG
 from .models import Task
 from .steps import NAME_TO_STEP
 from .auditors import NAME_TO_AUDITOR
@@ -189,8 +191,6 @@ class TaskAdmin(admin.ModelAdmin):
             related_auditor_models
         )
 
-        embed_uri = request.build_absolute_uri(
-            static('survey/js/mmm_turkey.js'))
         task_id = task.pk if task is not None else None
         auditor_uris = []
         for auditor in related_auditor_models:
@@ -204,11 +204,9 @@ class TaskAdmin(admin.ModelAdmin):
         if task is not None:
             embed_code = render_to_string(
                 'survey/admin/embed_template.html',
-                {'embed_uri': mark_safe(embed_uri),
-                 'submission_endpoint': mark_safe('null'),
-                 'fetch_interaction_endpoint': mark_safe('"%s"' % fetch_interaction_endpoint),
+                {'fetch_interaction_endpoint': fetch_interaction_endpoint,
                  'task_pk': mark_safe(str(task_id)),
-                 'fetch_data': mark_safe('true'),
+                 'token_name': SURVEY_CONFIG['TOKEN_NAME'],
                  'auditor_uris': auditor_uris},
                 request=request)
         else:

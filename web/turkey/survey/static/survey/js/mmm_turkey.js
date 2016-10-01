@@ -1,25 +1,10 @@
-var AuditorHandler = function (submission_endpoint, fetch_interaction_endpoint,
-                               task_pk, fetch_interaction) {
+var AuditorHandler = function (interaction_manager) {
     this.auditors = [];
-    this.submission_endpoint = submission_endpoint;
     this.TIMEOUT = 10 * Math.pow(10, 3); // seconds
-    if (fetch_interaction) {
-        $.post({
-            url: fetch_interaction_endpoint,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({'task_pk': task_pk}),
-            success: function(data, txt, xhr) {
-               if (xhr.status !== 201) {
-                    console.error(data);
-                    console.error(xhr);
-                }
-                this.submission_endpoint = data['auditor_submission_url'];
-            }.bind(this),
-            error: function (data) {
-                console.error(data);
-            }
-        });
-    }
+    interaction_manager.get_interaction(function (endpoints, token) {
+        this.submission_endpoint = endpoints['auditor_submission_endpoint'];
+        this.token = token;
+    }.bind(this));
     $(window).ready(function () {
         $(window).on('unload', function() {
             this.submit();
@@ -33,7 +18,8 @@ AuditorHandler.prototype.register_auditor = function(name, callback) {
 
 AuditorHandler.prototype.submit = function() {
     var submission = {
-        'auditors': {}
+        'auditors': {},
+        'token': this.token
     };
 
     $.each(this.auditors, function(i, el) {

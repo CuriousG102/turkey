@@ -5,7 +5,6 @@ from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
-from django.http import HttpResponseBadRequest
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -17,6 +16,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from .default_settings import SURVEY_CONFIG
 from .auditors import NAME_TO_AUDITOR
 from .steps import NAME_TO_STEP
 from .models import Task, TaskInteraction, Token
@@ -65,7 +65,7 @@ class RecordSubmission(APIView):
         try:
             if 'token' not in request.data:
                 return None
-            token = Token.objects.get(request.data['token'])
+            token = Token.objects.get(token=request.data['token'])
             task_interaction = TaskInteraction.objects \
                 .select_for_update() \
                 .select_related('task') \
@@ -172,6 +172,9 @@ class CreateTaskInteractionView(APIView):
                               'auditor_submission_url': request.build_absolute_uri(
                                   reverse('survey:auditor_submission',
                                           kwargs={'pk': task_interaction.pk})),
+                              'step_submission_url': request.build_absolute_uri(
+                                  reverse('survey:step_submission',
+                                          kwargs={'pk': task_interaction.pk})),
                               'token': token.token},
                         status=status.HTTP_201_CREATED)
 
@@ -210,38 +213,19 @@ class TaskView(View):
             except auditor_model.DoesNotExist:
                 pass
 
-        if 'turkey_token' in request.COOKIES:
-            try:
-                token = Token.objects.get(token=request.COOKIES['turkey_token'])
-            except Token.DoesNotExist:
-                return HttpResponseBadRequest()
-        else:
-            token = Token.objects.create()
+        fetch_interaction_endpoint = reverse('survey:create_interaction')
 
-        task_interaction_model = TaskInteraction.objects.create(task=task,
-                                                                token=token)
-
-        auditor_submission_endpoint = reverse(
-            'survey:auditor_submission',
-            kwargs={'pk': task_interaction_model.pk}
-        )
-        auditor_submission_endpoint = '"%s"' % auditor_submission_endpoint
-
-        response = TemplateResponse(
+        return TemplateResponse(
             request,
             task.survey_wrap_template,
             status=status.HTTP_200_OK,
             context={'steps': steps,
                      'task': task,
-                     'task_interaction_model': task_interaction_model,
                      'step_script_locations': step_script_locations,
-                     'submission_endpoint': mark_safe(auditor_submission_endpoint),
                      'auditor_uris': auditor_uris,
-                     'embed_uri': static('survey/js/mmm_turkey.js')}
+                     'fetch_interaction_endpoint': fetch_interaction_endpoint,
+                     'token_name': SURVEY_CONFIG['TOKEN_NAME']},
         )
-        response.set_cookie('turkey_token', token.token)
-
-        return response
 
 
 class TasksExport(LoginRequiredMixin, APIView):
