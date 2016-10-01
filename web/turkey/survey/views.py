@@ -158,7 +158,9 @@ class CreateTaskInteractionView(APIView):
             try:
                 token = Token.objects.get(token=request.data['token'])
             except Token.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                token = Token.objects.create()
+            if not token.valid:
+                token = Token.objects.create()
         else:
             token = Token.objects.create()
 

@@ -6,9 +6,9 @@ var AuditorHandler = function (interaction_manager) {
         this.token = token;
     }.bind(this));
     $(window).ready(function () {
-        $(window).on('unload', function() {
+        window.onbeforeunload = function() {
             this.submit();
-        }.bind(this));
+        }.bind(this);
     }.bind(this));
 };
 
@@ -40,6 +40,7 @@ AuditorHandler.prototype.submit = function() {
         },
         error: function (data) {
             console.error(data);
+            console.error(submission);
         }
     });
 };
