@@ -3,8 +3,7 @@
 <!-- TODO: The request crap is a painful hack till we have our static assets served off-server -->
 <script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/globals/jquery.ba-throttle-debounce.min.js" %}"></script>
 <script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/globals/visibility_changes.js" %}"></script>
-<script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/globals/swfobject-2.2.min.js" %}"></script>
-<script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/globals/evercookie.js" %}"></script>
+<script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/globals/js.cookie.js" %}"></script>
 <script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/interaction_manager.js" %}"></script>
 <script src="{% if request %}//{% endif %}{{ request.get_host }}{% static "survey/js/mmm_turkey.js" %}"></script>
 <script>

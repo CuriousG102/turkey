@@ -7,11 +7,7 @@ var InteractionManager = function (fetch_interaction_endpoint, task_pk,
     this.fetch_interaction_endpoint = fetch_interaction_endpoint;
     this.task_pk = task_pk;
     this.token_name = token_name;
-    this.fetching = false;
-    this.fetched = false;
-    this.auditor_submission_endpoint = null;
-    this.step_submission_endpoint = null;
-    this.token = null;
+    this.request_promise = null;
 };
 
 // gets interaction if one is not already created
@@ -19,54 +15,41 @@ var InteractionManager = function (fetch_interaction_endpoint, task_pk,
 // 'step_submission_endpoint') and token value
 // into callback
 InteractionManager.prototype.get_interaction = function(callback) {
-    if (this.fetching)
-        return;
-    // god forgive me
-    var call_callback = function () {
+    var call_callback = function (data, text, xhr) {
         callback({
-            'auditor_submission_endpoint': this.auditor_submission_endpoint,
-            'step_submission_endpoint': this.step_submission_endpoint
-        }, this.token);
-    };
-    if (this.fetched) {
-        call_callback();
+            'auditor_submission_endpoint': data['auditor_submission_url'],
+            'step_submission_endpoint': data['step_submission_url']
+        }, data['token']);
+    }.bind(this);
+
+    if (this.request_promise) {
+        this.request_promise.done(call_callback);
         return;
     }
 
-    this.fetching = true;
     var post_data = {'task_pk': this.task_pk};
-    var ec = new evercookie();
 
     // I dream of a day where literally everyone uses promises and
     // callbacks are no more than a distant memory. May our children never
     // know the horrors of callbacks.
-    $(document).ready(function() {
-        ec.get(this.token_name, function (token) {
-            if (token) {
-                post_data['token'] = token;
+    var token = Cookies.get(this.token_name);
+    if (token) {
+        post_data['token'] = token;
+    }
+    this.request_promise = $.post({
+        url: this.fetch_interaction_endpoint,
+        contentType: "application/json; charset=ut-8",
+        data: JSON.stringify(post_data),
+    }).promise();
+    this.request_promise
+        .done(function (data, text, xhr) {
+           if (xhr.status !== 201) {
+                console.error(data);
+                console.error(xhr);
+                return;
             }
-            $.post({
-                url: this.fetch_interaction_endpoint,
-                contentType: "application/json; charset=ut-8",
-                data: JSON.stringify(post_data),
-                success: function (data, text, xhr) {
-                    if (xhr.status !== 201) {
-                        console.error(data);
-                        console.error(xhr);
-                        return;
-                    }
-                    this.token = data['token'];
-                    this.auditor_submission_endpoint = data['auditor_submission_url'];
-                    this.step_submission_endpoint = data['step_submission_url'];
-                    this.fetching = false;
-                    this.fetched = true;
-                    call_callback();
-                }.bind(this),
-                error: function (data) {
-                    console.error(data);
-                    this.fetching = false;
-                }.bind(this)
-            });
-        });
-    });
+            Cookies.set(this.token_name, data['token']);
+            call_callback(data, text, xhr);
+        }.bind(this))
+        .fail(function (data) { console.error(data); });
 };

@@ -154,9 +154,6 @@ class CreateTaskInteractionView(APIView):
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if not task.external:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
         if 'token' in request.data:
             try:
                 token = Token.objects.get(token=request.data['token'])
