@@ -154,6 +154,9 @@ class CreateTaskInteractionView(APIView):
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        if not task.published:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         if 'token' in request.data:
             try:
                 token = Token.objects.get(token=request.data['token'])
@@ -186,7 +189,7 @@ class TaskView(View):
         except Task.DoesNotExist:
             raise TASK_NOT_FOUND
 
-        if task.external:
+        if task.external or not task.published:
             raise TASK_NOT_FOUND
 
         # TODO: Find a way to cut down on the number of queries these loops will have to make

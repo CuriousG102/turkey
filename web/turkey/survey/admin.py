@@ -1,12 +1,17 @@
+from collections import OrderedDict
+
+from django import forms
 from django.conf.urls import url
 from django.contrib import admin
 from django.apps import apps
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
-from django.contrib.admin.utils import unquote, get_deleted_objects
+from django.contrib.admin.utils import unquote
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http import Http404
-from django.shortcuts import redirect
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
@@ -38,6 +43,32 @@ def create_step_or_auditor_admin(model):
         def redirect_back_to_task(self, request, task_id):
             return redirect('admin:survey_task_change', task_id)
 
+        def user_in_access_list(self, request, obj=None):
+            if obj:
+                return request.user.is_superuser or request.user in obj.task.owners.all()
+            return True
+
+        def user_can_change_or_delete(self, request, obj=None):
+            if obj:
+                return not obj.task.taskinteraction_set.exists()
+            return True
+
+        def get_readonly_fields(self, request, obj=None):
+            if not self.user_can_change_or_delete(request, obj=obj):
+                return [field.name for field in self.model._meta.fields]
+            return []
+
+        def has_change_permission(self, request, obj=None):
+            parent_vote = super().has_change_permission(request, obj=obj)
+            child_vote = self.user_in_access_list(request, obj=obj)
+            return parent_vote and child_vote
+
+        def has_delete_permission(self, request, obj=None):
+            parent_vote = super().has_delete_permission(request, obj=obj)
+            child_vote = self.user_in_access_list(request, obj=obj) and \
+                         self.user_can_change_or_delete(request, obj=obj)
+            return parent_vote and child_vote
+
         def delete_view(self, request, object_id, extra_context=None):
             to_field = request.POST.get(TO_FIELD_VAR,
                                         request.GET.get(TO_FIELD_VAR))
@@ -45,7 +76,7 @@ def create_step_or_auditor_admin(model):
             # obtained, so we preserve that ordering here
             if not (to_field and not self.to_field_allowed(request, to_field)):
                 obj = self.get_object(request, unquote(object_id), to_field)
-                if obj is not None:
+                if obj:
                     task_id = obj.task.pk
 
             # by calling parent here, we can get the object's associated task
@@ -71,6 +102,25 @@ def create_step_or_auditor_admin(model):
         def response_post_save_add(self, request, obj):
             return self.redirect_back_to_task(request, obj.task.pk)
 
+        def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+            template_response = super().render_change_form(request, context, add=add,
+                                                           change=change, form_url=form_url,
+                                                           obj=obj)
+            can_change = self.user_can_change_or_delete(request, obj=obj)
+
+            # this is a bit hacky because it just relies on my knowledge of
+            # how Django's admin works (i.e. digging in the code). But Django
+            # doesn't provide a clean abstraction for manipulating the buttons
+            # that are available at the bottom of an admin change page.
+            template_response.context_data.update({
+                'has_delete_permission': can_change,
+                'save_as': can_change,
+                'has_add_permission': can_change,
+                'show_save_and_continue': can_change,
+                'show_save': can_change
+            })
+            return template_response
+
     admin.site.register(model, StepAuditorAdmin)
 
 
@@ -82,7 +132,6 @@ def create_step_or_auditor_admins(model_name_list):
 
 
 create_step_or_auditor_admins(NAME_TO_STEP.values())
-create_step_or_auditor_admins(NAME_TO_AUDITOR.values())
 
 
 @admin.register(Task)
@@ -90,6 +139,12 @@ class TaskAdmin(admin.ModelAdmin):
     step_add_template = 'survey/admin/step_add.html'
     auditor_add_template = 'survey/admin/auditor_add.html'
     actions = ['export_tasks_data']
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser or request.user in self.model.owners.all()
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser or request.user in self.model.owners.all()
 
     def get_urls(self):
         urls = super().get_urls()
@@ -141,13 +196,46 @@ class TaskAdmin(admin.ModelAdmin):
 
     def add_auditor_view(self, request, task_id=None):
         task_id = self.convert_and_check_task_id(task_id)
-        available_auditor_models = []
+        auditor_models = []  # tuple of auditors and whether they are active
+        # or not
         for model_name in NAME_TO_AUDITOR.values():
             model = apps.get_model('survey', model_name)
-            if model.objects.filter(task=task_id).count() == 0:
-                available_auditor_models.append(model)
-        return self.get_add_page_response(request, self.auditor_add_template,
-                                          available_auditor_models, task_id)
+            auditor_models.append((model,
+                                   model.objects.filter(task=task_id).exists()))
+        auditor_models.sort(key=lambda a: a[0]._meta.verbose_name.lower())
+        form_fields = []
+        for a, active in auditor_models:
+            field = forms.BooleanField(label=a._meta.verbose_name.title(),
+                                       initial=active,
+                                       required=False)
+            form_fields.append((a.__name__, field))
+        form_fields = OrderedDict(form_fields)
+
+        class AuditorForm(forms.BaseForm):
+            base_fields = form_fields
+
+        name_to_active = {a.__name__: active for a, active in auditor_models}
+        name_to_model = {a.__name__: a for a, _ in auditor_models}
+        if request.method == 'POST':
+            form = AuditorForm(initial=name_to_active,
+                               data=request.POST)
+            if not form.is_valid():
+                return HttpResponseBadRequest(_('Auditor form data corrupted'))
+            with transaction.atomic():
+                for name in form.changed_data:
+                    if name_to_active[name]:
+                        name_to_model[name].objects.get(task=task_id).delete()
+                    else:
+                        name_to_model[name].objects.create(task=Task.objects.get(pk=task_id))
+            return redirect('admin:survey_task_change', task_id)
+        else:
+            return render(
+                request,
+                self.auditor_add_template,
+                {'form': AuditorForm(
+                    initial=name_to_active
+                )}
+            )
 
     def get_add_page_response(self, request, template, models, task_id):
         names = [model._meta.verbose_name.title for model in models]
@@ -184,16 +272,12 @@ class TaskAdmin(admin.ModelAdmin):
             self.get_models_change_pages(related_step_models),
             related_step_models
         )
-        related_auditor_models = self \
+        related_auditors = self \
             .get_related_models_from_mapping(task, NAME_TO_AUDITOR)
-        related_auditors = zip(
-            self.get_models_change_pages(related_auditor_models),
-            related_auditor_models
-        )
 
         task_id = task.pk if task is not None else None
         auditor_uris = []
-        for auditor in related_auditor_models:
+        for auditor in related_auditors:
             auditor_loc = static(auditor.script_location)
             auditor_uri = request.build_absolute_uri(auditor_loc)
             auditor_uris.append(auditor_uri)
@@ -219,7 +303,7 @@ class TaskAdmin(admin.ModelAdmin):
         context.update({
             'related_steps': related_steps,
             'related_auditors': related_auditors,
-            'task_id': task_id if task_id is not None else 0,
+            'task_id': task_id,
             'embed_code': embed_code
         })
         return super().render_change_form(request, context, **kwargs)
