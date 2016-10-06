@@ -379,6 +379,9 @@ class TasksExport(LoginRequiredMixin, APIView):
         tasks = Task.objects.filter(pk__in=primary_keys)
         if tasks.count() != len(primary_keys):
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        for task in tasks:
+            if request.user not in task.owners.all():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         response_iterator = self._get_response_iterator(request, tasks)
         return StreamingHttpResponse(response_iterator,
                                      content_type='text/xml')

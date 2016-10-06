@@ -44,9 +44,7 @@ def create_step_or_auditor_admin(model):
             return redirect('admin:survey_task_change', task_id)
 
         def user_in_access_list(self, request, obj=None):
-            if obj:
-                return request.user.is_superuser or request.user in obj.task.owners.all()
-            return True
+            return obj is None or request.user.is_superuser or request.user in obj.task.owners.all()
 
         def user_can_change_or_delete(self, request, obj=None):
             if obj:
@@ -57,6 +55,12 @@ def create_step_or_auditor_admin(model):
             if not self.user_can_change_or_delete(request, obj=obj):
                 return [field.name for field in self.model._meta.fields]
             return []
+
+        def get_queryset(self, request):
+            qs = super().get_queryset(request)
+            if request.user.is_superuser:
+                return qs
+            return qs.filter(task__owners__in=[request.user])
 
         def has_change_permission(self, request, obj=None):
             parent_vote = super().has_change_permission(request, obj=obj)
@@ -140,11 +144,21 @@ class TaskAdmin(admin.ModelAdmin):
     auditor_add_template = 'survey/admin/auditor_add.html'
     actions = ['export_tasks_data']
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(owners__in=[request.user])
+
     def has_change_permission(self, request, obj=None):
-        return request.user.is_superuser or request.user in self.model.owners.all()
+        parent_vote = super().has_change_permission(request, obj=obj)
+        child_vote = obj is None or request.user.is_superuser or request.user in obj.owners.all()
+        return parent_vote and child_vote
 
     def has_delete_permission(self, request, obj=None):
-        return request.user.is_superuser or request.user in self.model.owners.all()
+        parent_vote = super().has_change_permission(request, obj=obj)
+        child_vote = obj is None or request.user.is_superuser or request.user in obj.owners.all()
+        return parent_vote and child_vote
 
     def get_urls(self):
         urls = super().get_urls()
