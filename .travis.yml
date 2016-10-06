@@ -1,0 +1,6 @@
+language: python
+python:
+  - "3.5"
+install: "pip install -r web/requirements.txt"
+script:
+  - "python manage.py web/turkey/manage.py test survey.tests"
