@@ -47,14 +47,12 @@ def create_step_or_auditor_admin(model):
             return obj is None or request.user.is_superuser or request.user in obj.task.owners.all()
 
         def user_can_change_or_delete(self, request, obj=None):
-            if obj:
-                return not obj.task.taskinteraction_set.exists()
-            return True
+            return obj is None or not obj.task.taskinteraction_set.exists()
 
         def get_readonly_fields(self, request, obj=None):
             if not self.user_can_change_or_delete(request, obj=obj):
                 return [field.name for field in self.model._meta.fields]
-            return []
+            return super().get_readonly_fields(request, obj=obj)
 
         def get_queryset(self, request):
             qs = super().get_queryset(request)
