@@ -1,0 +1,9 @@
+language: python
+python:
+  - "3.5"
+before_install:
+  - "export DJANGO_SETTINGS_MODULE=turkey.settings"
+  - "export PYTHONPATH=$HOME/builds/CuriousG102/turkey/web/turkey"
+install: "pip install -r web/requirements.txt"
+script:
+  - "python web/turkey/manage.py test survey.tests"
