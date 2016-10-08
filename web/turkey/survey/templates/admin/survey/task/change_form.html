@@ -5,9 +5,9 @@
   <link rel="stylesheet" type="text/css" href="{% static 'survey/css/code_block.css' %}" />
 {% endblock %}
 
-{% block after_field_sets %}
+{% block after_field_sets %}{{ block.super }}
   {% load i18n %}
-  {% if task_id == 0 %}
+  {% if not task_id %}
     <div class="form-row">
       <h1>{% trans 'Please click Save and continue in order to add tasks and auditors' %}</h1>
     </div>
@@ -26,23 +26,27 @@
             </li>
           {% endfor %}
         </ul>
-        <a href="{% url 'admin:survey_task_add_step' task_id=task_id %}">{% trans 'Add Step' %}</a>
+        {% if not original.taskinteraction_set.exists %}
+          <a href="{% url 'admin:survey_task_add_step' task_id=task_id %}">{% trans 'Add Step' %}</a>
+        {% endif %}
       </div>
     {% endif %}
     <div class="form-row">
       <h2>{% trans 'Associated Auditors:' %}</h2>
       <ul>
-        {% for url, related_auditor in related_auditors %}
+        {% for related_auditor in related_auditors %}
           <li>
-            <a href="{{ url }}">{{ related_auditor }}</a>
+            {{ related_auditor }}
           </li>
         {% endfor %}
       </ul>
-      <a href="{% url 'admin:survey_task_add_auditor' task_id=task_id %}">{% trans 'Add Auditor' %}</a>
+      {% if not original.taskinteraction_set.exists %}
+        <a href="{% url 'admin:survey_task_add_auditor' task_id=task_id %}">{% trans 'Add/Change Auditors' %}</a>
+      {% endif %}
     </div>
     {% if original.external %}
       <div class="form-row">
-        <h2>{% trans 'To embed, copy and paste this code into the head of your page AFTER selecting all the auditors you want:' %}</h2>
+        <h2>{% trans 'To embed, copy and paste this code into the head of your page AFTER selecting all the auditors you want and publishing:' %}</h2>
         <h3>{% trans 'If you do not have jQuery embedded on your page, you will need to do so in a tag BEFORE the embed' %}</h3>
         <div class="code">
           {% autoescape on %}
@@ -52,5 +56,7 @@
       </div>
     {% endif %}
   {% endif %}
-
+  {% if original %}
+    <a href="{% url 'survey:export_tasks' primary_keys=original.pk %}"><h2>Export available data</h2></a>
+  {% endif %}
 {% endblock %}

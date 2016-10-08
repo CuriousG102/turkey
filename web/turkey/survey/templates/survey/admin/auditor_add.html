@@ -1,6 +1,16 @@
-{% extends "survey/admin/add.html" %}
-{% block models_list_head %}
+{% extends "admin/base_site.html" %}
+{% block extrastyle %}{{ block.super }}
+  <style>
+    input[type=submit].default {
+      float: left;
+    }
+  </style>
+{% endblock %}
+{% block content %}
   {% load i18n %}
-  <h1>{% trans 'Add Auditor' %}</h1>
-  <h2>{% trans 'Available Auditors:' %}</h2>
+  <h1>Activate/Deactivate Auditors</h1>
+  <form method="POST">{% csrf_token %}
+    {{ form.as_ul }}
+    <input type="submit" value="Submit" class="default" name="_save">
+  </form>
 {% endblock %}

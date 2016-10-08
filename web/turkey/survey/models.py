@@ -1,5 +1,6 @@
 import binascii
 
+from django.apps import apps
 from django.core import serializers
 from django.db import models
 from django.core.exceptions import ValidationError, FieldDoesNotExist
@@ -72,12 +73,14 @@ class Token(Model):
 class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
+
     # TODO: Actually enforce this
     owners = models.ManyToManyField(
         User,
         verbose_name=_('Owners'),
         help_text=_('Users with permission to view and modify')
     )
+
     survey_name = models.CharField(max_length=144,
                                    verbose_name=_('Survey Name'),
                                    help_text=_(
@@ -99,26 +102,55 @@ class Task(Model):
                                        'with your selected auditors.')
                                    )
 
+    published = models.BooleanField(default=False,
+                                    verbose_name=_('Published'),
+                                    help_text=_(
+                                        'Activate the task and start '
+                                        'collecting data. Be warned: after '
+                                        'there are task interactions you will '
+                                        'not be able to modify auditors or '
+                                        'steps (if applicable). You cannot '
+                                        'unpublish a task once there are '
+                                        'responses'
+                                    ))
+
     def __str__(self):
         return ' '.join(['%s: ' % self._meta.verbose_name, self.survey_name,
                          super().__str__()])
 
     def clean(self):
-        if self.pk and self.taskinteraction_set.all().exists():
+        original = None
+        if self.pk:
             original = type(self).objects.get(pk=self.pk)
+        if original and self.taskinteraction_set.all().exists():
             if self.survey_name != original.survey_name:
                 raise ValidationError(_('Can\'t change the name of the '
-                                        'HIT as there are already '
-                                        'responses'))
+                                        'HIT as there is already '
+                                        'collected data'))
             if self.external != original.external:
                 raise ValidationError(_('Can\'t change whether the HIT is '
                                         'internal or external because there '
                                         'is already collected data'))
+            if not self.published:
+                raise ValidationError(_('Can\'t unpublish task as there is '
+                                        'already collected data'))
 
         if not self.external and not self.survey_name:
             raise ValidationError(_('%s cannot be blank because this is not '
                                     'an external HIT') %
                                   self._meta.get_field('survey_name').verbose_name)
+
+        if original and self.external and self.external != original.external \
+                and self.has_related_steps():
+            raise ValidationError(_('Cannot change this task to external '
+                                    'until you delete related steps'))
+
+    def has_related_steps(self):
+        for step in NAME_TO_STEP.values():
+            step = apps.get_model('survey', step)
+            if step.objects.filter(task=self).exists():
+                return True
+        return False
 
     class Meta:
         verbose_name = _('Interactive Task')

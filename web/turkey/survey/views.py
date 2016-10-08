@@ -154,6 +154,9 @@ class CreateTaskInteractionView(APIView):
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        if not task.published:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         if 'token' in request.data:
             try:
                 token = Token.objects.get(token=request.data['token'])
@@ -186,7 +189,7 @@ class TaskView(View):
         except Task.DoesNotExist:
             raise TASK_NOT_FOUND
 
-        if task.external:
+        if task.external or not task.published:
             raise TASK_NOT_FOUND
 
         # TODO: Find a way to cut down on the number of queries these loops will have to make
@@ -376,6 +379,9 @@ class TasksExport(LoginRequiredMixin, APIView):
         tasks = Task.objects.filter(pk__in=primary_keys)
         if tasks.count() != len(primary_keys):
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        for task in tasks:
+            if request.user not in task.owners.all():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         response_iterator = self._get_response_iterator(request, tasks)
         return StreamingHttpResponse(response_iterator,
                                      content_type='text/xml')
