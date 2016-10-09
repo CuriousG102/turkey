@@ -11,4 +11,4 @@ COPY . /usr/src/app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ./setup.sh; cd turkey; /usr/local/bin/gunicorn turkey.wsgi:application -c gunicorn_config.py
+CMD ./setup.sh; cd turkey; python manage.py migrate; /usr/local/bin/gunicorn turkey.wsgi:application -c gunicorn_config.py
