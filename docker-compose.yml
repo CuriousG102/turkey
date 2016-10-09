@@ -1,33 +1,55 @@
-web:
-  restart: always
-  build: ./web
-  expose:
-    - "8000"
-  links:
-    - postgres:postgres
-  env_file: .env
-  working_dir: /usr/src/app/turkey
-  command: /usr/local/bin/gunicorn adoption_stories.wsgi:application -w 2 -b :8000
+version: "2"
+services:
+  web:
+    restart: always
+    build: ./web
+    expose:
+      - "8000"
+    links:
+      - postgres:postgres
+    env_file: .env
+    environment:
+      - DEBUG
+      - SECRET_KEY
+      - DOMAIN
+    depends_on:
+      - "postgres"
 
-nginx:
-  restart: always
-  build: ./nginx/
-  ports:
-    - "80:80"
-  links:
-    - web:web
+  nginx:
+    restart: always
+    build: ./nginx/
+    ports:
+      - "80:80"
+    volumes_from:
+      - static_data
+    depends_on:
+      - "web"
+      - "static_data"
+    links:
+      - web:web
 
-postgres:
-  restart: always
-  image: postgres:latest
-  volumes_from:
-    - data
-  ports:
-    - "5432:5432"
+  postgres:
+    restart: always
+    build: ./postgres/
+    volumes_from:
+      - data
+    expose:
+      - "5432"
 
-data:
-  restart: always
-  image: postgres:latest
-  volumes:
-    - /var/lib/postgresql
-  command: "true"
+  data:
+    image: postgres:latest
+    volumes:
+      - /var/lib/postgresql
+    command: "true"
+
+  static_data:
+    build: ./web
+    env_file: .env
+    volumes:
+      - /usr/build/app/static
+    environment:
+      - DEBUG
+      - SECRET_KEY
+      - DOMAIN
+    command: "/bin/sh collect-static.sh"
+
