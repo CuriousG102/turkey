@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal
+from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData
 
 
 class AbstractTestCase(TestCase):
@@ -82,6 +82,27 @@ class BasicAuditorSubmissionTestCase(AbstractTestCase):
             }
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_auditor_submission_serialized(self):
+        """
+        Test with one of the basic auditors that things are properly going to the database.
+        """
+        auditor = AuditorClicksTotal.objects.create(task=self.internal_task)
+        interaction = self.create_task_interaction()
+        self.post_json_submission(
+            interaction,
+            {
+                'token': self.token.token.decode(),
+                self.SUBMISSION_OBJECTS_KEY: {
+                    'clicks_total': {
+                        'count': 5
+                    }
+                }
+            }
+        )
+        data = AuditorClicksTotalData.objects.filter(general_model=auditor)
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0].count, 5)
 
 
 class TokenSanityChecks(AbstractTestCase):
