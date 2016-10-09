@@ -104,6 +104,22 @@ class BasicAuditorSubmissionTestCase(AbstractTestCase):
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0].count, 5)
 
+    def test_junk_data_returns_bad_request(self):
+        AuditorClicksTotal.objects.create(task=self.internal_task)
+        interaction = self.create_task_interaction()
+        response = self.post_json_submission(
+            interaction,
+            {
+                'token': self.token.token.decode(),
+                self.SUBMISSION_OBJECTS_KEY: {
+                    'clicks_total': {
+                        'count': 'fish'
+                    }
+                }
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class TokenSanityChecks(AbstractTestCase):
     def test_can_create(self):
