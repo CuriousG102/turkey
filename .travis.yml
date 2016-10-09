@@ -1,9 +1,10 @@
-language: python
-python:
-  - "3.5"
+sudo: required
+
+services:
+  - docker
+
 before_install:
-  - "export DJANGO_SETTINGS_MODULE=turkey.settings"
-  - "export PYTHONPATH=$HOME/builds/CuriousG102/turkey/web/turkey"
-install: "pip install -r web/requirements.txt"
+  - docker-compose build
+
 script:
-  - "python web/turkey/manage.py test survey.tests"
+  - docker-compose run -e DEBUG=1 web "./test.sh"

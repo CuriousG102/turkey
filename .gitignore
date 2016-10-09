@@ -3,3 +3,5 @@
 venv/
 *.pyc
 *.sqlite3
+web/static/
+logfile
