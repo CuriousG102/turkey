@@ -74,7 +74,6 @@ class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
 
-    # TODO: Actually enforce this
     owners = models.ManyToManyField(
         User,
         verbose_name=_('Owners'),
@@ -193,7 +192,6 @@ class AuditorData(_DataModel):
     #                                                  field you must implement
 
 
-# TODO: Should inherit from Model, but this causes field clashes, necessitating inheriting Model as well in some classes. Bad stuff.
 class _TaskLinkedModel(Model):
     task = models.ForeignKey(
         'Task',
