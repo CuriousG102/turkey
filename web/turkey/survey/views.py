@@ -117,6 +117,8 @@ class RecordSubmission(APIView):
             task_interaction_model = self.get_task_interaction(kwargs['pk'], request)
             if not task_interaction_model:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            if not task_interaction_model.task.published:
+                return Response(status=status.HTTP_404_NOT_FOUND)
             try:
                 self.process_submission(request.data, task_interaction_model)
                 return Response(status=status.HTTP_201_CREATED)

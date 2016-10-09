@@ -130,9 +130,6 @@ class Task(Model):
                 raise ValidationError(_('Can\'t change whether the HIT is '
                                         'internal or external because there '
                                         'is already collected data'))
-            if not self.published:
-                raise ValidationError(_('Can\'t unpublish task as there is '
-                                        'already collected data'))
 
         if not self.external and not self.survey_name:
             raise ValidationError(_('%s cannot be blank because this is not '
