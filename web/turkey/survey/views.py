@@ -1,3 +1,4 @@
+import django
 from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.templatetags.staticfiles import static
@@ -6,7 +7,6 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
 from rest_framework import status
@@ -117,10 +117,14 @@ class RecordSubmission(APIView):
             task_interaction_model = self.get_task_interaction(kwargs['pk'], request)
             if not task_interaction_model:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            if not task_interaction_model.task.published:
+                return Response(status=status.HTTP_404_NOT_FOUND)
             try:
                 self.process_submission(request.data, task_interaction_model)
                 return Response(status=status.HTTP_201_CREATED)
             except ValidationError:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            except django.core.exceptions.ValidationError:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
 

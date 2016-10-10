@@ -74,7 +74,6 @@ class Task(Model):
     survey_wrap_template = 'survey/survey_default_template.html'
     lobby_template = 'survey/lobby_default_template.html'
 
-    # TODO: Actually enforce this
     owners = models.ManyToManyField(
         User,
         verbose_name=_('Owners'),
@@ -131,9 +130,6 @@ class Task(Model):
                 raise ValidationError(_('Can\'t change whether the HIT is '
                                         'internal or external because there '
                                         'is already collected data'))
-            if not self.published:
-                raise ValidationError(_('Can\'t unpublish task as there is '
-                                        'already collected data'))
 
         if not self.external and not self.survey_name:
             raise ValidationError(_('%s cannot be blank because this is not '
@@ -193,7 +189,6 @@ class AuditorData(_DataModel):
     #                                                  field you must implement
 
 
-# TODO: Should inherit from Model, but this causes field clashes, necessitating inheriting Model as well in some classes. Bad stuff.
 class _TaskLinkedModel(Model):
     task = models.ForeignKey(
         'Task',
