@@ -1,6 +1,8 @@
 import json
 
+import time
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.exceptions import ValidationError
 from django.test import Client
 from django.test import TestCase
@@ -8,7 +10,9 @@ from django.test import TestCase
 # Create your tests here.
 from django.urls import reverse
 from rest_framework import status
+from selenium import webdriver
 
+from web.turkey.survey import default_settings
 from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData
 
 
@@ -175,3 +179,46 @@ class TaskSanityChecks(AbstractTestCase):
             task.external = True
 
         self.invalid_task_modification(mod)
+
+
+class AuditorTotalClicksTestCase(StaticLiveServerTestCase):
+    def setUp(self):
+        super().setUpClass()
+        self.selenium = webdriver.Chrome('/usr/local/bin/chromedriver')
+        self.token = Token.objects.create()
+        self.task = Task(survey_name='Bestest Task',
+                         external=False,
+                         published=False)
+        self.selenium.get(self.get_url('admin:login'))
+        self.selenium.add_cookie({
+            'name': default_settings.SURVEY_CONFIG['TOKEN_NAME'],
+            'value': self.token.token.decode(),
+            'path': '/',
+            'domain': self.server_thread.host
+        })
+        self.task.save()
+        self.clicks_auditor = AuditorClicksTotal.objects \
+            .create(task=self.task)
+        self.task.published = True
+        self.task.save()
+
+    def get_url(self, name, kwargs=None):
+        return self.live_server_url + reverse(name, kwargs=kwargs)
+
+    def test_clicks_recorded(self):
+        NUMBER_CLICKS = 3
+        self.selenium.get(self.get_url('survey:TaskPage',
+                                       kwargs={'pk': self.task.pk}))
+        body = self.selenium.find_element_by_tag_name('body')
+        for _ in range(NUMBER_CLICKS):
+            body.click()
+        self.selenium.find_element_by_id('submit').click()
+        interaction = TaskInteraction.objects.filter(task=self.task)
+        self.assertEqual(len(interaction), 1)
+        interaction = interaction[0]
+        auditor_data = AuditorClicksTotalData.objects.filter(task_interaction_model=interaction)
+        time.sleep(1)
+        self.assertEqual(len(auditor_data), 1)
+        auditor_data = auditor_data[0]
+        # add one for submission button click
+        self.assertEqual(auditor_data.count, NUMBER_CLICKS + 1)
