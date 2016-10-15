@@ -13,7 +13,8 @@ from rest_framework import status
 from selenium import webdriver
 
 from web.turkey.survey import default_settings
-from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData
+from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData, \
+    AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData
 
 
 class AbstractTestCase(TestCase):
@@ -181,14 +182,17 @@ class TaskSanityChecks(AbstractTestCase):
         self.invalid_task_modification(mod)
 
 
-class AuditorTotalClicksTestCase(StaticLiveServerTestCase):
+class AbstractAuditorTestCase(StaticLiveServerTestCase):
+    def get_webdriver(self):
+        return webdriver.Chrome('/usr/local/bin/chromedriver')
+
     def setUp(self):
-        super().setUpClass()
-        self.selenium = webdriver.Chrome('/usr/local/bin/chromedriver')
+        super().setUp()
+        self.selenium = self.get_webdriver()
         self.token = Token.objects.create()
         self.task = Task(survey_name='Bestest Task',
                          external=False,
-                         published=False)
+                         published=True)
         self.selenium.get(self.get_url('admin:login'))
         self.selenium.add_cookie({
             'name': default_settings.SURVEY_CONFIG['TOKEN_NAME'],
@@ -197,28 +201,65 @@ class AuditorTotalClicksTestCase(StaticLiveServerTestCase):
             'domain': self.server_thread.host
         })
         self.task.save()
-        self.clicks_auditor = AuditorClicksTotal.objects \
-            .create(task=self.task)
-        self.task.published = True
-        self.task.save()
 
     def get_url(self, name, kwargs=None):
         return self.live_server_url + reverse(name, kwargs=kwargs)
 
-    def test_clicks_recorded(self):
-        NUMBER_CLICKS = 3
+    def take_auditor_actions(self):
+        pass
+
+    def verify_auditor_data(self, interaction):
+        pass
+
+    def test_auditor(self):
         self.selenium.get(self.get_url('survey:TaskPage',
                                        kwargs={'pk': self.task.pk}))
-        body = self.selenium.find_element_by_tag_name('body')
-        for _ in range(NUMBER_CLICKS):
-            body.click()
+        self.take_auditor_actions()
         self.selenium.find_element_by_id('submit').click()
         interaction = TaskInteraction.objects.filter(task=self.task)
         self.assertEqual(len(interaction), 1)
         interaction = interaction[0]
-        auditor_data = AuditorClicksTotalData.objects.filter(task_interaction_model=interaction)
+        # give the browser time to finish submitting data
         time.sleep(1)
+        self.verify_auditor_data(interaction)
+
+
+class AuditorTotalClicksTestCase(AbstractAuditorTestCase):
+    NUMBER_CLICKS = 3
+
+    def setUp(self):
+        super().setUp()
+        self.clicks_auditor = AuditorClicksTotal.objects \
+            .create(task=self.task)
+
+    def take_auditor_actions(self):
+        body = self.selenium.find_element_by_tag_name('body')
+        for _ in range(self.NUMBER_CLICKS):
+            body.click()
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorClicksTotalData.objects.filter(task_interaction_model=interaction)
         self.assertEqual(len(auditor_data), 1)
         auditor_data = auditor_data[0]
         # add one for submission button click
-        self.assertEqual(auditor_data.count, NUMBER_CLICKS + 1)
+        self.assertEqual(auditor_data.count, self.NUMBER_CLICKS + 1)
+
+
+class AuditorBeforeTypingDelayUserTypes(AbstractAuditorTestCase):
+    TIME_WAIT_TO_TYPE = 1
+
+    def setUp(self):
+        super().setUp()
+        self.delay_auditor = AuditorBeforeTypingDelay.objects \
+            .create(task=self.task)
+
+    def take_auditor_actions(self):
+        time.sleep(self.TIME_WAIT_TO_TYPE)
+        self.selenium.find_element_by_tag_name('body').send_keys('kjlj;')
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorBeforeTypingDelayData.objects.filter(task_interaction_model=interaction)
+        self.assertEqual(len(auditor_data), 1)
+        auditor_data = auditor_data[0]
+        self.assertLess(auditor_data.milliseconds/1000, self.TIME_WAIT_TO_TYPE * 1.5)
+        self.assertGreater(auditor_data.milliseconds/1000, self.TIME_WAIT_TO_TYPE)
