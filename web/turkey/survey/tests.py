@@ -1,4 +1,5 @@
 import json
+import platform
 
 import time
 from django.contrib.auth.models import User
@@ -9,10 +10,12 @@ from django.test import TestCase
 
 # Create your tests here.
 from django.urls import reverse
+from django.utils.decorators import classproperty
 from rest_framework import status
 from selenium import webdriver
+from selenium.webdriver import DesiredCapabilities
 
-from web.turkey.survey import default_settings
+from . import default_settings
 from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData, \
     AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData
 
@@ -184,7 +187,12 @@ class TaskSanityChecks(AbstractTestCase):
 
 class AbstractAuditorTestCase(StaticLiveServerTestCase):
     def get_webdriver(self):
-        return webdriver.Chrome('/usr/local/bin/chromedriver')
+        if platform.system() != 'Linux':
+            return webdriver.Chrome('/usr/local/bin/chromedriver')
+        else:
+            return webdriver.Remote(
+                command_executor='http://selenium:4444/wd/hub',
+                desired_capabilities=DesiredCapabilities.CHROME)
 
     def setUp(self):
         super().setUp()
@@ -201,6 +209,12 @@ class AbstractAuditorTestCase(StaticLiveServerTestCase):
             'domain': self.server_thread.host
         })
         self.task.save()
+
+    @classproperty
+    def live_server_url(cls):
+        return 'http://%s:%s' % (
+            cls.server_thread.host if platform.system() != 'Linux' else 'web',
+            cls.server_thread.port)
 
     def get_url(self, name, kwargs=None):
         return self.live_server_url + reverse(name, kwargs=kwargs)
@@ -261,5 +275,5 @@ class AuditorBeforeTypingDelayUserTypes(AbstractAuditorTestCase):
         auditor_data = AuditorBeforeTypingDelayData.objects.filter(task_interaction_model=interaction)
         self.assertEqual(len(auditor_data), 1)
         auditor_data = auditor_data[0]
-        self.assertLess(auditor_data.milliseconds/1000, self.TIME_WAIT_TO_TYPE * 1.5)
-        self.assertGreater(auditor_data.milliseconds/1000, self.TIME_WAIT_TO_TYPE)
+        self.assertLess(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE * 1.5)
+        self.assertGreater(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE)

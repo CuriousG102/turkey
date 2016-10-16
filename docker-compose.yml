@@ -5,8 +5,6 @@ services:
     build: ./web
     expose:
       - "8000"
-    links:
-      - postgres:postgres
     env_file: .env
     environment:
       - DEBUG
@@ -25,8 +23,6 @@ services:
     depends_on:
       - "web"
       - "static_data"
-    links:
-      - web:web
 
   postgres:
     restart: always
