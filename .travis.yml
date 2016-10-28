@@ -7,4 +7,4 @@ services:
   - docker
 
 script:
-  - docker-compose -f docker-test-compose.yml run web "./test.sh"
+  - ./test.sh

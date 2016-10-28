@@ -206,15 +206,19 @@ class AbstractAuditorTestCase(StaticLiveServerTestCase):
             'name': default_settings.SURVEY_CONFIG['TOKEN_NAME'],
             'value': self.token.token.decode(),
             'path': '/',
-            'domain': self.server_thread.host
+            'domain': self.live_server_host
         })
         self.task.save()
 
     @classproperty
     def live_server_url(cls):
         return 'http://%s:%s' % (
-            cls.server_thread.host if platform.system() != 'Linux' else 'web',
+            cls.live_server_host,
             cls.server_thread.port)
+
+    @classproperty
+    def live_server_host(cls):
+        return cls.server_thread.host if platform.system() != 'Linux' else 'web'
 
     def get_url(self, name, kwargs=None):
         return self.live_server_url + reverse(name, kwargs=kwargs)
