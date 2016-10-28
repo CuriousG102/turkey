@@ -19,7 +19,7 @@ from selenium.webdriver.common.keys import Keys
 from . import default_settings
 from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData, \
     AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData, AuditorClicksSpecific, AuditorClicksSpecificData, \
-    AuditorFocusChanges, AuditorFocusChangesData
+    AuditorFocusChanges, AuditorFocusChangesData, AuditorKeypressesTotalData, AuditorKeypressesTotal
 
 
 class AbstractTestCase(TestCase):
@@ -310,6 +310,20 @@ class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
         # self.assertEqual(submit_click.dom_class, 'btn btn-primary')
         self.assertGreater(submit_click.time, body_click.time)
 
+
+class AuditorKeypressesTotalDataTestCase(AbstractAuditorTestCase):
+    NUM_KEY_PRESSES = 5
+
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorKeypressesTotal.objects.create(task=self.task)
+
+    def take_auditor_actions(self):
+        self.selenium.find_element_by_tag_name('body').send_keys('t'*self.NUM_KEY_PRESSES)
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorKeypressesTotalData.objects.get(task_interaction_model=interaction)
+        self.assertEqual(auditor_data.count, self.NUM_KEY_PRESSES)
 
 # TODO: Address failure
 # class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
