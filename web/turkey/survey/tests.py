@@ -19,7 +19,8 @@ from selenium.webdriver.common.keys import Keys
 from . import default_settings
 from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData, \
     AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData, AuditorClicksSpecific, AuditorClicksSpecificData, \
-    AuditorFocusChanges, AuditorFocusChangesData, AuditorKeypressesTotalData, AuditorKeypressesTotal
+    AuditorFocusChanges, AuditorFocusChangesData, AuditorKeypressesTotalData, AuditorKeypressesTotal, \
+    AuditorKeypressesSpecific, AuditorKeypressesSpecificData
 
 
 class AbstractTestCase(TestCase):
@@ -311,7 +312,7 @@ class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
         self.assertGreater(submit_click.time, body_click.time)
 
 
-class AuditorKeypressesTotalDataTestCase(AbstractAuditorTestCase):
+class AuditorKeypressesTotalTestCase(AbstractAuditorTestCase):
     NUM_KEY_PRESSES = 5
 
     def setUp(self):
@@ -319,11 +320,29 @@ class AuditorKeypressesTotalDataTestCase(AbstractAuditorTestCase):
         self.auditor = AuditorKeypressesTotal.objects.create(task=self.task)
 
     def take_auditor_actions(self):
-        self.selenium.find_element_by_tag_name('body').send_keys('t'*self.NUM_KEY_PRESSES)
+        self.selenium.find_element_by_tag_name('body').send_keys('t' * self.NUM_KEY_PRESSES)
 
     def verify_auditor_data(self, interaction):
         auditor_data = AuditorKeypressesTotalData.objects.get(task_interaction_model=interaction)
         self.assertEqual(auditor_data.count, self.NUM_KEY_PRESSES)
+
+
+class AuditorKeypressesSpecificTestCase(AbstractAuditorTestCase):
+    KEYS_TO_PRESS = 'abcde'
+
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorKeypressesSpecific.objects.create(task=self.task)
+
+    def take_auditor_actions(self):
+        self.selenium.find_element_by_tag_name('body').send_keys(self.KEYS_TO_PRESS)
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorKeypressesSpecificData.objects\
+            .filter(task_interaction_model=interaction).order_by('time')
+        self.assertEqual(len(auditor_data), len(self.KEYS_TO_PRESS))
+        self.assertEqual(''.join([a.key for a in auditor_data]),
+                         self.KEYS_TO_PRESS.upper())
 
 # TODO: Address failure
 # class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
