@@ -14,10 +14,12 @@ from django.utils.decorators import classproperty
 from rest_framework import status
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.keys import Keys
 
 from . import default_settings
 from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData, \
-    AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData, AuditorClicksSpecific, AuditorClicksSpecificData
+    AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData, AuditorClicksSpecific, AuditorClicksSpecificData, \
+    AuditorFocusChanges, AuditorFocusChangesData
 
 
 class AbstractTestCase(TestCase):
@@ -307,3 +309,24 @@ class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
         self.assertEqual(submit_click.dom_id, 'submit')
         # self.assertEqual(submit_click.dom_class, 'btn btn-primary')
         self.assertGreater(submit_click.time, body_click.time)
+
+
+# TODO: Address failure
+# class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
+#     TIME_TO_SWITCH = 1
+#
+#     def setUp(self):
+#         super().setUp()
+#         self.focus_auditor = AuditorFocusChanges.objects.create(task=self.task)
+#
+#     def take_auditor_actions(self):
+#         time.sleep(self.TIME_TO_SWITCH)
+#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
+#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+#
+#     def verify_auditor_data(self, interaction):
+#         auditor_data = AuditorFocusChangesData.objects.filter(task_interaction_model=interaction)
+#         self.assertEqual(len(auditor_data), 1)
+#         auditor_data = auditor_data[0]
+#         self.assertLess(auditor_data.time / 1000, self.TIME_TO_SWITCH * 1.5)
+#         self.assertGreater(auditor_data.time / 1000, self.TIME_TO_SWITCH)
