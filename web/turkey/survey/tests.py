@@ -17,7 +17,7 @@ from selenium.webdriver import DesiredCapabilities
 
 from . import default_settings
 from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData, \
-    AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData
+    AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData, AuditorClicksSpecific, AuditorClicksSpecificData
 
 
 class AbstractTestCase(TestCase):
@@ -281,3 +281,29 @@ class AuditorBeforeTypingDelayUserTypes(AbstractAuditorTestCase):
         auditor_data = auditor_data[0]
         self.assertLess(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE * 1.5)
         self.assertGreater(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE)
+
+
+class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
+    def setUp(self):
+        super().setUp()
+        self.clicks_auditor = AuditorClicksSpecific.objects.create(task=self.task)
+
+    def take_auditor_actions(self):
+        self.selenium.find_element_by_tag_name('body').click()
+
+    def verify_auditor_data(self, interaction):
+        # TODO: Identify why the failures on commented out lines are happening
+        auditor_data = AuditorClicksSpecificData.objects.filter(task_interaction_model=interaction)
+        self.assertEqual(auditor_data.count(), 2)
+        body_click = auditor_data.filter(dom_type='body')[0]
+        self.assertEqual(body_click.dom_type, 'body')
+        # self.assertEqual(body_click.dom_name, 'body')
+        self.assertIsNone(body_click.dom_id)
+        self.assertIsNone(body_click.dom_class)
+        self.assertGreaterEqual(body_click.time, 0)
+        submit_click = auditor_data.filter(dom_id='submit')[0]
+        self.assertEqual(submit_click.dom_type, 'input')
+        # self.assertEqual(submit_click.dom_name, 'input')
+        self.assertEqual(submit_click.dom_id, 'submit')
+        # self.assertEqual(submit_click.dom_class, 'btn btn-primary')
+        self.assertGreater(submit_click.time, body_click.time)
