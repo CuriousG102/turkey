@@ -2,6 +2,8 @@ import json
 import platform
 
 import time
+from unittest import skip
+
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.exceptions import ValidationError
@@ -463,45 +465,46 @@ class AuditorPastesSpecificTestCase(AbstractAuditorTestCase):
         for datum, truth in zip(auditor_data, self.PASTES_CONTENT):
             self.assertEqual(datum.data, truth)
 
-# TODO: Address failure
-# class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
-#     TOTAL_TIME = 1
-#     TIME_OFF = .5
-#
-#     def setUp(self):
-#         super().setUp()
-#         self.auditor = AuditorRecordedTimeDisparity.objects \
-#             .create(task=self.task)
-#
-#     def take_auditor_actions(self):
-#         time.sleep((self.TOTAL_TIME - self.TIME_OFF)/2)
-#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
-#         time.sleep(self.TIME_OFF)
-#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
-#         time.sleep((self.TOTAL_TIME - self.TIME_OFF)/2)
-#
-#     def verify_auditor_data(self, interaction):
-#         auditor_data = AuditorRecordedTimeDisparityData.objects\
-#             .get(task_interaction_model=interaction)
-#         self.assertGreater(auditor_data.milliseconds/1000, self.TIME_OFF)
-#         self.assertLess(auditor_data.milliseconds/1000, self.TIME_OFF*1.5)
+@skip('Currently broken')
+class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
+    TOTAL_TIME = 1
+    TIME_OFF = .5
 
-# TODO: Address failure
-# class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
-#     TIME_TO_SWITCH = 1
-#
-#     def setUp(self):
-#         super().setUp()
-#         self.focus_auditor = AuditorFocusChanges.objects.create(task=self.task)
-#
-#     def take_auditor_actions(self):
-#         time.sleep(self.TIME_TO_SWITCH)
-#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
-#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
-#
-#     def verify_auditor_data(self, interaction):
-#         auditor_data = AuditorFocusChangesData.objects.filter(task_interaction_model=interaction)
-#         self.assertEqual(len(auditor_data), 1)
-#         auditor_data = auditor_data[0]
-#         self.assertLess(auditor_data.time / 1000, self.TIME_TO_SWITCH * 1.5)
-#         self.assertGreater(auditor_data.time / 1000, self.TIME_TO_SWITCH)
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorRecordedTimeDisparity.objects \
+            .create(task=self.task)
+
+    def take_auditor_actions(self):
+        time.sleep((self.TOTAL_TIME - self.TIME_OFF)/2)
+        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
+        time.sleep(self.TIME_OFF)
+        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+        time.sleep((self.TOTAL_TIME - self.TIME_OFF)/2)
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorRecordedTimeDisparityData.objects\
+            .get(task_interaction_model=interaction)
+        self.assertGreater(auditor_data.milliseconds/1000, self.TIME_OFF)
+        self.assertLess(auditor_data.milliseconds/1000, self.TIME_OFF*1.5)
+
+
+@skip('Currently broken')
+class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
+    TIME_TO_SWITCH = 1
+
+    def setUp(self):
+        super().setUp()
+        self.focus_auditor = AuditorFocusChanges.objects.create(task=self.task)
+
+    def take_auditor_actions(self):
+        time.sleep(self.TIME_TO_SWITCH)
+        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
+        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorFocusChangesData.objects.filter(task_interaction_model=interaction)
+        self.assertEqual(len(auditor_data), 1)
+        auditor_data = auditor_data[0]
+        self.assertLess(auditor_data.time / 1000, self.TIME_TO_SWITCH * 1.5)
+        self.assertGreater(auditor_data.time / 1000, self.TIME_TO_SWITCH)
