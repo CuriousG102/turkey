@@ -2,4 +2,9 @@
 bash ./wait-for-it.sh -t 60 -h postgres -p 5432;
 bash ./wait-for-it.sh -t 60 -h selenium -p 4444;
 bash setup.sh;
-python /usr/src/app/turkey/manage.py test --liveserver=0.0.0.0:8082-8090 survey.tests;
+if [ $# -eq 0 ]
+then
+    python /usr/src/app/turkey/manage.py test --liveserver=0.0.0.0:8082-8090 survey.tests;
+else
+    python /usr/src/app/turkey/manage.py test --liveserver=0.0.0.0:8082-8090 survey.tests.$1;
+fi

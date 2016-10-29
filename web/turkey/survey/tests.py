@@ -21,7 +21,8 @@ from . import default_settings
 from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTotal, AuditorClicksTotalData, \
     AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData, AuditorClicksSpecific, AuditorClicksSpecificData, \
     AuditorFocusChanges, AuditorFocusChangesData, AuditorKeypressesTotalData, AuditorKeypressesTotal, \
-    AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData
+    AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData, \
+    AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData
 
 
 class AbstractTestCase(TestCase):
@@ -369,10 +370,42 @@ class AuditorMouseMovementTotalTestCase(AbstractAuditorTestCase):
             offset = (-offset[0], -offset[1])
 
     def verify_auditor_data(self, interaction):
-        auditor_data = AuditorMouseMovementTotalData.objects\
+        auditor_data = AuditorMouseMovementTotalData.objects \
             .get(task_interaction_model=interaction)
         self.assertEqual(auditor_data.amount, self.MOVEMENTS)
 
+
+class AuditorMouseMovementSpecificTestCase(AbstractAuditorTestCase):
+    MOVEMENTS = 3  # should be at least 1
+    TIME_BETWEEN_MOVEMENTS = 250  # ms
+    OFFSET = (50, 50)
+
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorMouseMovementSpecific.objects.create(task=self.task)
+
+    def take_auditor_actions(self):
+        window = self.selenium.find_element_by_tag_name('body')
+        actions = ActionChains(self.selenium)
+        actions.move_to_element_with_offset(window, 0, 0)
+        actions.perform()
+        movements = self.MOVEMENTS
+        offset = self.OFFSET
+        while movements:
+            movements -= 1
+            time.sleep(self.TIME_BETWEEN_MOVEMENTS / 1000)
+            actions.move_by_offset(*offset)
+            actions.perform()
+            offset = (-offset[0], -offset[1])
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorMouseMovementSpecificData.objects \
+            .filter(task_interaction_model=interaction)\
+            .order_by('time')
+        self.assertEqual(len(auditor_data), self.MOVEMENTS)
+        for i, movement in enumerate(auditor_data):
+            running_position = (0, 0) if i % 2 == 0 else self.OFFSET
+            self.assertEqual((movement.x, movement.y), running_position)
 
 # TODO: Address failure
 # class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
