@@ -22,7 +22,8 @@ from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTo
     AuditorBeforeTypingDelay, AuditorBeforeTypingDelayData, AuditorClicksSpecific, AuditorClicksSpecificData, \
     AuditorFocusChanges, AuditorFocusChangesData, AuditorKeypressesTotalData, AuditorKeypressesTotal, \
     AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData, \
-    AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData, AuditorPastesTotal, AuditorPastesTotalData
+    AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData, AuditorPastesTotal, AuditorPastesTotalData, \
+    AuditorPastesSpecific, AuditorPastesSpecificData
 
 
 class AbstractTestCase(TestCase):
@@ -428,10 +429,39 @@ class AuditorPastesTotalTestCase(AbstractAuditorTestCase):
             text_box.send_keys(Keys.CONTROL, 'v')
 
     def verify_auditor_data(self, interaction):
-        auditor_data = AuditorPastesTotalData.objects\
+        auditor_data = AuditorPastesTotalData.objects \
             .get(task_interaction_model=interaction)
         self.assertEqual(auditor_data.count, self.NUMBER_PASTES)
 
+
+class AuditorPastesSpecificTestCase(AbstractAuditorTestCase):
+    PASTES_CONTENT = ['I COPY AND PASTE INTO TURK TASKS',
+                      'Good or bad? That\'s for you to decide']
+
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorPastesSpecific.objects.create(task=self.task)
+        StepTextInput.objects.create(task=self.task, step_num=1,
+                                     title='copycat',
+                                     text='please don\'t cpopy paste')
+
+    def take_auditor_actions(self):
+        text_box = self.selenium.find_element_by_tag_name('textarea')
+        for content in self.PASTES_CONTENT:
+            text_box.send_keys(Keys.CONTROL, 'a')
+            text_box.send_keys(Keys.DELETE)
+            text_box.send_keys(content)
+            text_box.send_keys(Keys.CONTROL, 'a')
+            text_box.send_keys(Keys.CONTROL, 'x')
+            text_box.send_keys(Keys.CONTROL, 'v')
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = AuditorPastesSpecificData.objects \
+            .filter(task_interaction_model=interaction)\
+            .order_by('time')
+        self.assertEqual(len(auditor_data), len(self.PASTES_CONTENT))
+        for datum, truth in zip(auditor_data, self.PASTES_CONTENT):
+            self.assertEqual(datum.data, truth)
 
 # TODO: Address failure
 # class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
