@@ -23,7 +23,7 @@ services:
     env_file: .test-env
     depends_on:
       - "postgres"
-      - "selenium"
+      - "selenium-chrome"
     command: ./test.sh
 
   postgres:
@@ -39,5 +39,5 @@ services:
       - /var/lib/postgresql
     command: "true"
 
-  selenium:
+  selenium-chrome:
     image: selenium/standalone-chrome

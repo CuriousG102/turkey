@@ -195,17 +195,20 @@ class TaskSanityChecks(AbstractTestCase):
 
 
 class AbstractAuditorTestCase(StaticLiveServerTestCase):
-    def get_webdriver(self):
+    def get_webdrivers(self):
         if platform.system() != 'Linux':
-            return webdriver.Chrome('/usr/local/bin/chromedriver')
+            return [webdriver.Chrome('/usr/local/bin/chromedriver')]
         else:
-            return webdriver.Remote(
-                command_executor='http://selenium:4444/wd/hub',
-                desired_capabilities=DesiredCapabilities.CHROME)
+            return [
+                webdriver.Remote(
+                    command_executor='http://selenium-chrome:4444/wd/hub',
+                    desired_capabilities=DesiredCapabilities.CHROME
+                ),
+            ]
 
     def setUp(self):
         super().setUp()
-        self.selenium = self.get_webdriver()
+        self.selenium = self.get_webdrivers()[0]
         self.token = Token.objects.create()
         self.task = Task(survey_name='Bestest Task',
                          external=False,
@@ -473,7 +476,7 @@ class AuditorUserAgentTestCase(AbstractAuditorTestCase):
         self.auditor = AuditorUserAgent.objects.create(task=self.task)
 
     def verify_auditor_data(self, interaction):
-        auditor_data = self.auditor.data_model.objects\
+        auditor_data = self.auditor.data_model.objects \
             .get(task_interaction_model=interaction)
         self.assertIn('Chrome', auditor_data.user_agent)
 
