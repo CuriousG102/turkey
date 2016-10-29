@@ -246,6 +246,7 @@ class AbstractAuditorTestCase(StaticLiveServerTestCase):
         self.run_auditor_test_sequence(selenium)
 
     def run_auditor_test_sequence(self, selenium):
+        selenium.implicitly_wait(10)
         selenium.get(self.get_url('admin:login'))
         selenium.add_cookie({
             'name': default_settings.SURVEY_CONFIG['TOKEN_NAME'],
@@ -486,8 +487,6 @@ class AuditorUserAgentTestCase(AbstractAuditorTestCase):
         super().setUp()
         self.auditor = AuditorUserAgent.objects.create(task=self.task)
 
-
-
     def verify_auditor_data(self, interaction):
         auditor_data = self.auditor.data_model.objects \
             .get(task_interaction_model=interaction)
@@ -509,7 +508,7 @@ class AuditorTotalTaskTimeTestCase(AbstractAuditorTestCase):
         auditor_data = self.auditor.data_model.objects \
             .get(task_interaction_model=interaction)
         self.assertGreater(auditor_data.milliseconds / 1000, self.TOTAL_TIME)
-        self.assertLess(auditor_data.milliseconds / 1000, self.TOTAL_TIME * 1.5)
+        self.assertLess(auditor_data.milliseconds / 1000, self.TOTAL_TIME * 2)
 
 
 @skip('Currently broken')
