@@ -26,7 +26,7 @@ from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTo
     AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData, \
     AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData, AuditorPastesTotal, AuditorPastesTotalData, \
     AuditorPastesSpecific, AuditorPastesSpecificData, AuditorRecordedTimeDisparity, AuditorRecordedTimeDisparityData, \
-    AuditorTotalTaskTime
+    AuditorTotalTaskTime, AuditorUserAgent
 
 
 class AbstractTestCase(TestCase):
@@ -465,6 +465,17 @@ class AuditorPastesSpecificTestCase(AbstractAuditorTestCase):
         self.assertEqual(len(auditor_data), len(self.PASTES_CONTENT))
         for datum, truth in zip(auditor_data, self.PASTES_CONTENT):
             self.assertEqual(datum.data, truth)
+
+
+class AuditorUserAgentTestCase(AbstractAuditorTestCase):
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorUserAgent.objects.create(task=self.task)
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = self.auditor.data_model.objects\
+            .get(task_interaction_model=interaction)
+        self.assertIn('Chrome', auditor_data.user_agent)
 
 
 class AuditorTotalTaskTimeTestCase(AbstractAuditorTestCase):
