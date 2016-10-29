@@ -23,7 +23,7 @@ from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTo
     AuditorFocusChanges, AuditorFocusChangesData, AuditorKeypressesTotalData, AuditorKeypressesTotal, \
     AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData, \
     AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData, AuditorPastesTotal, AuditorPastesTotalData, \
-    AuditorPastesSpecific, AuditorPastesSpecificData
+    AuditorPastesSpecific, AuditorPastesSpecificData, AuditorRecordedTimeDisparity, AuditorRecordedTimeDisparityData
 
 
 class AbstractTestCase(TestCase):
@@ -457,11 +457,34 @@ class AuditorPastesSpecificTestCase(AbstractAuditorTestCase):
 
     def verify_auditor_data(self, interaction):
         auditor_data = AuditorPastesSpecificData.objects \
-            .filter(task_interaction_model=interaction)\
+            .filter(task_interaction_model=interaction) \
             .order_by('time')
         self.assertEqual(len(auditor_data), len(self.PASTES_CONTENT))
         for datum, truth in zip(auditor_data, self.PASTES_CONTENT):
             self.assertEqual(datum.data, truth)
+
+# TODO: Address failure
+# class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
+#     TOTAL_TIME = 1
+#     TIME_OFF = .5
+#
+#     def setUp(self):
+#         super().setUp()
+#         self.auditor = AuditorRecordedTimeDisparity.objects \
+#             .create(task=self.task)
+#
+#     def take_auditor_actions(self):
+#         time.sleep((self.TOTAL_TIME - self.TIME_OFF)/2)
+#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
+#         time.sleep(self.TIME_OFF)
+#         self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+#         time.sleep((self.TOTAL_TIME - self.TIME_OFF)/2)
+#
+#     def verify_auditor_data(self, interaction):
+#         auditor_data = AuditorRecordedTimeDisparityData.objects\
+#             .get(task_interaction_model=interaction)
+#         self.assertGreater(auditor_data.milliseconds/1000, self.TIME_OFF)
+#         self.assertLess(auditor_data.milliseconds/1000, self.TIME_OFF*1.5)
 
 # TODO: Address failure
 # class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
