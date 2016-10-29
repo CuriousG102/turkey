@@ -24,6 +24,7 @@ services:
     depends_on:
       - "postgres"
       - "selenium-chrome"
+      - "selenium-firefox"
     command: ./test.sh
 
   postgres:
@@ -41,3 +42,6 @@ services:
 
   selenium-chrome:
     image: selenium/standalone-chrome
+
+  selenium-firefox:
+    image: selenium/standalone-firefox

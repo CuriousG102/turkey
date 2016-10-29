@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 bash ./wait-for-it.sh -t 60 -h postgres -p 5432;
 bash ./wait-for-it.sh -t 60 -h selenium-chrome -p 4444;
+bash ./wait-for-it.sh -t 60 -h selenium-firefox -p 4444;
 bash setup.sh;
 if [ $# -eq 0 ]
 then

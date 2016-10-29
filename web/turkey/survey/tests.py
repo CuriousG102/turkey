@@ -195,31 +195,27 @@ class TaskSanityChecks(AbstractTestCase):
 
 
 class AbstractAuditorTestCase(StaticLiveServerTestCase):
-    def get_webdrivers(self):
+    def get_webdriver_chrome(self):
         if platform.system() != 'Linux':
-            return [webdriver.Chrome('/usr/local/bin/chromedriver')]
+            return webdriver.Chrome('/usr/local/bin/chromedriver')
         else:
-            return [
-                webdriver.Remote(
-                    command_executor='http://selenium-chrome:4444/wd/hub',
-                    desired_capabilities=DesiredCapabilities.CHROME
-                ),
-            ]
+            return webdriver.Remote(
+                command_executor='http://selenium-chrome:4444/wd/hub',
+                desired_capabilities=DesiredCapabilities.CHROME
+            )
+
+    def get_webdriver_firefox(self):
+        return webdriver.Remote(
+            command_executor='http://selenium-firefox:4444/wd/hub',
+            desired_capabilities=DesiredCapabilities.FIREFOX
+        )
 
     def setUp(self):
         super().setUp()
-        self.selenium = self.get_webdrivers()[0]
         self.token = Token.objects.create()
         self.task = Task(survey_name='Bestest Task',
                          external=False,
                          published=True)
-        self.selenium.get(self.get_url('admin:login'))
-        self.selenium.add_cookie({
-            'name': default_settings.SURVEY_CONFIG['TOKEN_NAME'],
-            'value': self.token.token.decode(),
-            'path': '/',
-            'domain': self.live_server_host
-        })
         self.task.save()
 
     @classproperty
@@ -235,17 +231,32 @@ class AbstractAuditorTestCase(StaticLiveServerTestCase):
     def get_url(self, name, kwargs=None):
         return self.live_server_url + reverse(name, kwargs=kwargs)
 
-    def take_auditor_actions(self):
+    def take_auditor_actions(self, selenium):
         pass
 
     def verify_auditor_data(self, interaction):
         pass
 
-    def test_auditor(self):
-        self.selenium.get(self.get_url('survey:TaskPage',
-                                       kwargs={'pk': self.task.pk}))
-        self.take_auditor_actions()
-        self.selenium.find_element_by_id('submit').click()
+    def test_auditor_chrome(self):
+        selenium = self.get_webdriver_chrome()
+        self.run_auditor_test_sequence(selenium)
+
+    def test_auditor_firefox(self):
+        selenium = self.get_webdriver_firefox()
+        self.run_auditor_test_sequence(selenium)
+
+    def run_auditor_test_sequence(self, selenium):
+        selenium.get(self.get_url('admin:login'))
+        selenium.add_cookie({
+            'name': default_settings.SURVEY_CONFIG['TOKEN_NAME'],
+            'value': self.token.token.decode(),
+            'path': '/',
+            'domain': self.live_server_host
+        })
+        selenium.get(self.get_url('survey:TaskPage',
+                                  kwargs={'pk': self.task.pk}))
+        self.take_auditor_actions(selenium)
+        selenium.find_element_by_id('submit').click()
         interaction = TaskInteraction.objects.filter(task=self.task)
         self.assertEqual(len(interaction), 1)
         interaction = interaction[0]
@@ -262,8 +273,8 @@ class AuditorTotalClicksTestCase(AbstractAuditorTestCase):
         self.clicks_auditor = AuditorClicksTotal.objects \
             .create(task=self.task)
 
-    def take_auditor_actions(self):
-        body = self.selenium.find_element_by_tag_name('body')
+    def take_auditor_actions(self, selenium):
+        body = selenium.find_element_by_tag_name('body')
         for _ in range(self.NUMBER_CLICKS):
             body.click()
 
@@ -283,9 +294,9 @@ class AuditorBeforeTypingDelayUserTypes(AbstractAuditorTestCase):
         self.delay_auditor = AuditorBeforeTypingDelay.objects \
             .create(task=self.task)
 
-    def take_auditor_actions(self):
+    def take_auditor_actions(self, selenium):
         time.sleep(self.TIME_WAIT_TO_TYPE)
-        self.selenium.find_element_by_tag_name('body').send_keys('kjlj;')
+        selenium.find_element_by_tag_name('body').send_keys('kjlj;')
 
     def verify_auditor_data(self, interaction):
         auditor_data = AuditorBeforeTypingDelayData.objects.filter(task_interaction_model=interaction)
@@ -300,8 +311,8 @@ class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
         super().setUp()
         self.clicks_auditor = AuditorClicksSpecific.objects.create(task=self.task)
 
-    def take_auditor_actions(self):
-        self.selenium.find_element_by_tag_name('body').click()
+    def take_auditor_actions(self, selenium):
+        selenium.find_element_by_tag_name('body').click()
 
     def verify_auditor_data(self, interaction):
         # TODO: Identify why the failures on commented out lines are happening
@@ -328,8 +339,8 @@ class AuditorKeypressesTotalTestCase(AbstractAuditorTestCase):
         super().setUp()
         self.auditor = AuditorKeypressesTotal.objects.create(task=self.task)
 
-    def take_auditor_actions(self):
-        self.selenium.find_element_by_tag_name('body').send_keys('t' * self.NUM_KEY_PRESSES)
+    def take_auditor_actions(self, selenium):
+        selenium.find_element_by_tag_name('body').send_keys('t' * self.NUM_KEY_PRESSES)
 
     def verify_auditor_data(self, interaction):
         auditor_data = AuditorKeypressesTotalData.objects.get(task_interaction_model=interaction)
@@ -343,8 +354,8 @@ class AuditorKeypressesSpecificTestCase(AbstractAuditorTestCase):
         super().setUp()
         self.auditor = AuditorKeypressesSpecific.objects.create(task=self.task)
 
-    def take_auditor_actions(self):
-        self.selenium.find_element_by_tag_name('body').send_keys(self.KEYS_TO_PRESS)
+    def take_auditor_actions(self, selenium):
+        selenium.find_element_by_tag_name('body').send_keys(self.KEYS_TO_PRESS)
 
     def verify_auditor_data(self, interaction):
         auditor_data = AuditorKeypressesSpecificData.objects \
@@ -362,9 +373,9 @@ class AuditorMouseMovementTotalTestCase(AbstractAuditorTestCase):
         super().setUp()
         self.auditor = AuditorMouseMovementTotal.objects.create(task=self.task)
 
-    def take_auditor_actions(self):
-        body = self.selenium.find_element_by_tag_name('body')
-        actions = ActionChains(self.selenium)
+    def take_auditor_actions(self, selenium):
+        body = selenium.find_element_by_tag_name('body')
+        actions = ActionChains(selenium)
         actions.move_to_element(body)
         actions.perform()
         movements = self.MOVEMENTS
@@ -391,9 +402,9 @@ class AuditorMouseMovementSpecificTestCase(AbstractAuditorTestCase):
         super().setUp()
         self.auditor = AuditorMouseMovementSpecific.objects.create(task=self.task)
 
-    def take_auditor_actions(self):
-        window = self.selenium.find_element_by_tag_name('body')
-        actions = ActionChains(self.selenium)
+    def take_auditor_actions(self, selenium):
+        window = selenium.find_element_by_tag_name('body')
+        actions = ActionChains(selenium)
         actions.move_to_element_with_offset(window, 0, 0)
         actions.perform()
         movements = self.MOVEMENTS
@@ -426,8 +437,8 @@ class AuditorPastesTotalTestCase(AbstractAuditorTestCase):
                                      title='copycat',
                                      text='please don\'t cpopy paste')
 
-    def take_auditor_actions(self):
-        text_box = self.selenium.find_element_by_tag_name('textarea')
+    def take_auditor_actions(self, selenium):
+        text_box = selenium.find_element_by_tag_name('textarea')
         text_box.send_keys(self.PASTES_CONTENT)
         for _ in range(self.NUMBER_PASTES):
             text_box.send_keys(Keys.CONTROL, 'a')
@@ -451,8 +462,8 @@ class AuditorPastesSpecificTestCase(AbstractAuditorTestCase):
                                      title='copycat',
                                      text='please don\'t cpopy paste')
 
-    def take_auditor_actions(self):
-        text_box = self.selenium.find_element_by_tag_name('textarea')
+    def take_auditor_actions(self, selenium):
+        text_box = selenium.find_element_by_tag_name('textarea')
         for content in self.PASTES_CONTENT:
             text_box.send_keys(Keys.CONTROL, 'a')
             text_box.send_keys(Keys.DELETE)
@@ -475,10 +486,12 @@ class AuditorUserAgentTestCase(AbstractAuditorTestCase):
         super().setUp()
         self.auditor = AuditorUserAgent.objects.create(task=self.task)
 
+
+
     def verify_auditor_data(self, interaction):
         auditor_data = self.auditor.data_model.objects \
             .get(task_interaction_model=interaction)
-        self.assertIn('Chrome', auditor_data.user_agent)
+        self.assertTrue('Chrome' in auditor_data.user_agent or 'Firefox' in auditor_data.user_agent)
 
 
 class AuditorTotalTaskTimeTestCase(AbstractAuditorTestCase):
@@ -489,7 +502,7 @@ class AuditorTotalTaskTimeTestCase(AbstractAuditorTestCase):
         self.auditor = AuditorTotalTaskTime.objects \
             .create(task=self.task)
 
-    def take_auditor_actions(self):
+    def take_auditor_actions(self, selenium):
         time.sleep(self.TOTAL_TIME)
 
     def verify_auditor_data(self, interaction):
@@ -509,11 +522,11 @@ class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
         self.auditor = AuditorRecordedTimeDisparity.objects \
             .create(task=self.task)
 
-    def take_auditor_actions(self):
+    def take_auditor_actions(self, selenium):
         time.sleep((self.TOTAL_TIME - self.TIME_OFF) / 2)
-        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
         time.sleep(self.TIME_OFF)
-        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
         time.sleep((self.TOTAL_TIME - self.TIME_OFF) / 2)
 
     def verify_auditor_data(self, interaction):
@@ -531,10 +544,10 @@ class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
         super().setUp()
         self.focus_auditor = AuditorFocusChanges.objects.create(task=self.task)
 
-    def take_auditor_actions(self):
+    def take_auditor_actions(self, selenium):
         time.sleep(self.TIME_TO_SWITCH)
-        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
-        self.selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
 
     def verify_auditor_data(self, interaction):
         auditor_data = AuditorFocusChangesData.objects.filter(task_interaction_model=interaction)
