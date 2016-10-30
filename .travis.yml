@@ -6,8 +6,5 @@ notifications:
 services:
   - docker
 
-before_install:
-  - docker-compose build
-
 script:
-  - docker-compose run -e DEBUG=1 web "./test.sh"
+  - ./test.sh

@@ -227,7 +227,7 @@ class TaskAdmin(admin.ModelAdmin):
             base_fields = form_fields
 
         name_to_active = {a.__name__: active for a, active in auditor_models}
-        name_to_model = {a.__name__: a for a, _ in auditor_models}
+        name_to_model = {a.__name__: a for a, __ in auditor_models}
         if request.method == 'POST':
             form = AuditorForm(initial=name_to_active,
                                data=request.POST)
