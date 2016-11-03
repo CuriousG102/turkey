@@ -4,6 +4,7 @@ import platform
 import time
 from unittest import skip
 
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.exceptions import ValidationError
@@ -26,7 +27,7 @@ from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTo
     AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData, \
     AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData, AuditorPastesTotal, AuditorPastesTotalData, \
     AuditorPastesSpecific, AuditorPastesSpecificData, AuditorRecordedTimeDisparity, AuditorRecordedTimeDisparityData, \
-    AuditorTotalTaskTime, AuditorUserAgent, AuditorURL
+    AuditorTotalTaskTime, AuditorUserAgent, AuditorURL, NAME_TO_AUDITOR
 
 
 class AbstractTestCase(TestCase):
@@ -266,6 +267,26 @@ class AbstractAuditorTestCase(StaticLiveServerTestCase):
         time.sleep(1)
         self.verify_auditor_data(interaction)
 
+
+class AuditorAllTestCase(AbstractAuditorTestCase):
+    """
+    Make sure running with all auditors doesn't crash
+    """
+    def setUp(self):
+        super().setUp()
+        self.auditors = []
+        for class_name in NAME_TO_AUDITOR.values():
+            auditor = apps.get_model('survey', class_name)
+            auditor = auditor.objects.create(task=self.task)
+            self.auditors.append(auditor)
+
+    def verify_auditor_data(self, interaction):
+        # we know some auditors get data. Since we take and parse auditor submissions on a per-case
+        # basis we know that at least one should have data
+        some_data = False
+        for auditor in self.auditors:
+            some_data = some_data or auditor.has_data_for_task_interaction(interaction)
+        self.assertTrue(some_data)
 
 class AuditorTotalClicksTestCase(AbstractAuditorTestCase):
     NUMBER_CLICKS = 3
