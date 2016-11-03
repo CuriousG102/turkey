@@ -8,6 +8,7 @@ from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import TemplateView
 from django.views.generic import View
 from rest_framework import status
 from rest_framework.authentication import BaseAuthentication
@@ -389,3 +390,7 @@ class TasksExport(LoginRequiredMixin, APIView):
         response_iterator = self._get_response_iterator(request, tasks)
         return StreamingHttpResponse(response_iterator,
                                      content_type='text/xml')
+
+
+class ThanksView(TemplateView):
+    template_name = 'survey/thanks.html'
