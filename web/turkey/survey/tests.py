@@ -26,7 +26,7 @@ from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTo
     AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData, \
     AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData, AuditorPastesTotal, AuditorPastesTotalData, \
     AuditorPastesSpecific, AuditorPastesSpecificData, AuditorRecordedTimeDisparity, AuditorRecordedTimeDisparityData, \
-    AuditorTotalTaskTime, AuditorUserAgent
+    AuditorTotalTaskTime, AuditorUserAgent, AuditorURL
 
 
 class AbstractTestCase(TestCase):
@@ -330,7 +330,7 @@ class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
         self.assertEqual(submit_click.dom_type, 'input')
         # self.assertEqual(submit_click.dom_name, 'input')
         self.assertEqual(submit_click.dom_id, 'submit')
-        # self.assertEqual(submit_click.dom_class, 'btn btn-primary')
+        self.assertEqual(submit_click.dom_class, 'btn btn-primary')
         self.assertGreater(submit_click.time, body_click.time)
 
 
@@ -511,11 +511,23 @@ class AuditorTotalTaskTimeTestCase(AbstractAuditorTestCase):
         self.assertGreater(auditor_data.milliseconds / 1000, self.TOTAL_TIME)
         self.assertLess(auditor_data.milliseconds / 1000, self.TOTAL_TIME * 2)
 
+class AuditorUrlTestCase(AbstractAuditorTestCase):
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorURL.objects.create(task=self.task)
+
+    def take_auditor_actions(self, selenium):
+        time.sleep(2)
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = self.auditor.data_model.objects \
+            .get(task_interaction_model=interaction)
+        self.assertIn('web', auditor_data.url)
 
 @skip('Currently broken')
 class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
-    TOTAL_TIME = 1
-    TIME_OFF = .5
+    TOTAL_TIME = 4
+    TIME_OFF = 1.5
 
     def setUp(self):
         super().setUp()
@@ -524,9 +536,9 @@ class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
 
     def take_auditor_actions(self, selenium):
         time.sleep((self.TOTAL_TIME - self.TIME_OFF) / 2)
-        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.CONTROL + 't')
         time.sleep(self.TIME_OFF)
-        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.CONTROL + 'w')
         time.sleep((self.TOTAL_TIME - self.TIME_OFF) / 2)
 
     def verify_auditor_data(self, interaction):
@@ -535,9 +547,8 @@ class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
         self.assertGreater(auditor_data.milliseconds / 1000, self.TIME_OFF)
         self.assertLess(auditor_data.milliseconds / 1000, self.TIME_OFF * 1.5)
 
-
-@skip('Currently broken')
-class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
+@skip('Something\s wrong')
+class AuditorFocusChangesTestCase(AbstractAuditorTestCase):
     TIME_TO_SWITCH = 1
 
     def setUp(self):
@@ -546,8 +557,8 @@ class AuditorFocusChangesTestcase(AbstractAuditorTestCase):
 
     def take_auditor_actions(self, selenium):
         time.sleep(self.TIME_TO_SWITCH)
-        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
-        selenium.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.CONTROL + 't')
+        selenium.find_element_by_tag_name('body').send_keys(Keys.CONTROL + 'w')
 
     def verify_auditor_data(self, interaction):
         auditor_data = AuditorFocusChangesData.objects.filter(task_interaction_model=interaction)

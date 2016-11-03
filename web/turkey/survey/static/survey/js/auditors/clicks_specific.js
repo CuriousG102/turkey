@@ -6,10 +6,10 @@ var AuditorClicksSpecific = {
             'dom_type'  :   e.target.nodeName.toLowerCase(),
             'dom_id'    :   e.target.id != '' && e.target.id != undefined
                             ? e.target.id : null,
-            'dom_class' :   e.target.class != '' && e.target.class != undefined
-                            ? e.target.class : null,
-            'dom_name'  :   e.target.name != '' && e.target.name != undefined
-                            ? e.target.name : null,
+            'dom_class' :   e.target.className != '' && e.target.className != undefined
+                            ? e.target.className : null,
+            'dom_name'  :   $(e.target).attr('name') != '' && $(e.target).attr('name') != undefined
+                            ? $(e.target).attr('name') : null,
             'time'      :   (new Date()).getTime() - this.start_date.getTime()
         };
         this.clicks_specific.push(dom);

@@ -28,6 +28,7 @@ NAME_TO_AUDITOR = {
     'scrolled_pixels_specific': 'AuditorScrolledPixelsSpecific',
     'total_task_time': 'AuditorTotalTaskTime',
     'within_typing_delay': 'AuditorWithinTypingDelay',
+    'url': 'AuditorURL',
     'user_agent' : 'AuditorUserAgent'
 }
 
@@ -449,3 +450,22 @@ class AuditorWithinTypingDelay(Auditor):
         abstract = False
         verbose_name = _('Within Typing Delay Auditor')
         verbose_name_plural = _('Within Typing Delay Auditors')
+
+class AuditorURLData(AuditorData):
+    general_model = models.ForeignKey('AuditorURL')
+    url = models.TextField(
+        verbose_name=_('URL'),
+        help_text=_('URL of the current task')
+    )
+
+    class Meta(AuditorData.Meta):
+        abstract = False
+
+class AuditorURL(Auditor):
+    script_location = 'survey/js/auditors/url.js'
+    data_model = AuditorURLData
+
+    class Meta(Auditor.Meta):
+        abstract = False
+        verbose_name = _('URL Auditor')
+        verbose_name_plural = _('URL Auditors')
