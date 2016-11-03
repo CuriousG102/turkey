@@ -73,5 +73,5 @@ SubmissionHandler.prototype.submit = function() {
                 error_func();
             }.bind(this)
         });
-    });
+    }.bind(this));
 };

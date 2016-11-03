@@ -15,7 +15,7 @@
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
     <script>
       var overlord = new SubmissionHandler(
-          '/{% url 'survey:thanks' %}',
+          '//{{ request.get_host }}/{% url 'survey:thanks' %}',
           interaction_manager
       );
       $(document).ready(function() {
