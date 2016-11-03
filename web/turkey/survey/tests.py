@@ -272,6 +272,7 @@ class AuditorAllTestCase(AbstractAuditorTestCase):
     """
     Make sure running with all auditors doesn't crash
     """
+
     def setUp(self):
         super().setUp()
         self.auditors = []
@@ -287,6 +288,7 @@ class AuditorAllTestCase(AbstractAuditorTestCase):
         for auditor in self.auditors:
             some_data = some_data or auditor.has_data_for_task_interaction(interaction)
         self.assertTrue(some_data)
+
 
 class AuditorTotalClicksTestCase(AbstractAuditorTestCase):
     NUMBER_CLICKS = 3
@@ -329,6 +331,7 @@ class AuditorBeforeTypingDelayUserTypes(AbstractAuditorTestCase):
         auditor_data = auditor_data[0]
         self.assertLess(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE * 1.5)
         self.assertGreater(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE)
+
 
 @skip('Won\'t work till we have a different click item to test on than submit.')
 class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
