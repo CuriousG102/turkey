@@ -26,7 +26,7 @@ from .models import Task, Token, TaskInteraction, StepTextInput, AuditorClicksTo
     AuditorKeypressesSpecific, AuditorKeypressesSpecificData, AuditorMouseMovementTotal, AuditorMouseMovementTotalData, \
     AuditorMouseMovementSpecific, AuditorMouseMovementSpecificData, AuditorPastesTotal, AuditorPastesTotalData, \
     AuditorPastesSpecific, AuditorPastesSpecificData, AuditorRecordedTimeDisparity, AuditorRecordedTimeDisparityData, \
-    AuditorTotalTaskTime, AuditorUserAgent
+    AuditorTotalTaskTime, AuditorUserAgent, AuditorURL
 
 
 class AbstractTestCase(TestCase):
@@ -511,6 +511,18 @@ class AuditorTotalTaskTimeTestCase(AbstractAuditorTestCase):
         self.assertGreater(auditor_data.milliseconds / 1000, self.TOTAL_TIME)
         self.assertLess(auditor_data.milliseconds / 1000, self.TOTAL_TIME * 2)
 
+class AuditorUrlTestCase(AbstractAuditorTestCase):
+    def setUp(self):
+        super().setUp()
+        self.auditor = AuditorURL.objects.create(task=self.task)
+
+    def take_auditor_actions(self, selenium):
+        time.sleep(2)
+
+    def verify_auditor_data(self, interaction):
+        auditor_data = self.auditor.data_model.objects \
+            .get(task_interaction_model=interaction)
+        self.assertIn('web', auditor_data.url)
 
 @skip('Currently broken')
 class AuditorRecordedTimeDisparityTestCase(AbstractAuditorTestCase):
