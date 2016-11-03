@@ -330,7 +330,7 @@ class AuditorBeforeTypingDelayUserTypes(AbstractAuditorTestCase):
         self.assertLess(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE * 1.5)
         self.assertGreater(auditor_data.milliseconds / 1000, self.TIME_WAIT_TO_TYPE)
 
-
+@skip('Won\'t work till we have a different click item to test on than submit.')
 class AuditorClicksSpecificTestCase(AbstractAuditorTestCase):
     NUM_CLICKS = 5
 
