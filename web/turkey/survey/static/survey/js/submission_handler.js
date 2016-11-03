@@ -51,25 +51,27 @@ SubmissionHandler.prototype.submit = function() {
         return;
     }
 
-    $.post({
-        url: this.submission_endpoint,
-        contentType:"application/json; charset=utf-8",
-        data: JSON.stringify(submission),
-        timeout: 10 * Math.pow(10, 3), // seconds
-        success: function (data, txt, xhr) {
-            this.posting = false;
-            if (xhr.status !== 201) {
+    turkey.submit(function() {
+        $.post({
+            url: this.submission_endpoint,
+            contentType:"application/json; charset=utf-8",
+            data: JSON.stringify(submission),
+            timeout: 10 * Math.pow(10, 3), // seconds
+            success: function (data, txt, xhr) {
+                this.posting = false;
+                if (xhr.status !== 201) {
+                    console.error(data);
+                    console.error(xhr);
+                    error_func();
+                }
+                // window.alert("Success!");
+                window.location.replace(this.next_page);
+            }.bind(this),
+            error: function (data) {
                 console.error(data);
-                console.error(xhr);
+                this.posting = false;
                 error_func();
-            }
-            // window.alert("Success!");
-            window.location.replace(this.next_page);
-        }.bind(this),
-        error: function (data) {
-            console.error(data);
-            this.posting = false;
-            error_func();
-        }.bind(this)
+            }.bind(this)
+        });
     });
 };
