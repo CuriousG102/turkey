@@ -21,11 +21,7 @@ class Model(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
 
     def serialize_info_to_dict(self):
-        info_dict = serializers.serialize('python', [self])[0]
-        for k, v in info_dict.items():
-            if type(v) == str:
-                info_dict[k] = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', v)
-        return info_dict
+        return serializers.serialize('python', [self])[0]
 
     def __str__(self):
         return self.updated.strftime(str(_('Updated: %B %d, %Y')))
