@@ -236,7 +236,7 @@ class TaskView(View):
 
 
 class TasksExport(LoginRequiredMixin, APIView):
-    NUMBER_RECORDS_PER_QUERY = 5 * 10 ** 2
+    NUMBER_RECORDS_PER_QUERY = 5
     XML_OPENING_LINE = '<?xml version="1.0" encoding="UTF-8"?>'
 
     def _get_related_auditors(self, task):
