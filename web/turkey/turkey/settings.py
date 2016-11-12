@@ -39,7 +39,6 @@ else:
 
 ALLOWED_HOSTS = [os.getenv('DOMAIN')]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -89,14 +88,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'turkey.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
     'default': dj_database_url.config()
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -115,7 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -142,3 +138,12 @@ CORS_URLS_REGEX = r'^/survey/api/.*$'
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+NOTEBOOK_ARGUMENTS = [
+    '--certfile', '/usr/src/app/mycert.pem',
+    '--keyfile', '/usr/src/app/mykey.key',
+    '--ip', '*',
+    '--password', os.getenv('NOTEBOOK_PASS_HASH', None),  # guide on how to make:
+    # http://jupyter-notebook.readthedocs.io/en/latest/public_server.html#securing-a-notebook-server
+    '--password_required', '1'
+]
