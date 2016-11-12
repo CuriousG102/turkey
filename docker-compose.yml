@@ -5,6 +5,8 @@ services:
     build: ./web
     expose:
       - "8000"
+    ports:
+      - "8888:8888"
     env_file: .env
     environment:
       - DEBUG
