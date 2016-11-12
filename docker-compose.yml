@@ -12,6 +12,7 @@ services:
       - DEBUG
       - SECRET_KEY
       - DOMAIN
+      - NOTEBOOK_PASS_HASH
     depends_on:
       - "postgres"
 
