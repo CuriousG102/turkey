@@ -1,9 +1,6 @@
 import os
 
-c = get_config()
-
 # Allow all IP addresses to use the service and run it on port 8888.
-print('test')
 c.NotebookApp.ip = '*'
 c.NotebookApp.port = 8888
 
