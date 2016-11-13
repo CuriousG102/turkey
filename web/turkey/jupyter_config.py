@@ -6,6 +6,6 @@ c.NotebookApp.port = 8888
 
 # Don't load the browser on startup.
 c.NotebookApp.open_browser = False
-c.NotebookApp.certfile = '/usr/src/app/mycert.pem'
-c.NotebookApp.keyfile = '/usr/src/app/mykey.key'
+c.NotebookApp.certfile = '/usr/src/app/turkey/mycert.pem'
+c.NotebookApp.keyfile = '/usr/src/app/turkey/mykey.key'
 c.NotebookApp.password = os.getenv('NOTEBOOK_PASS_HASH', None)
