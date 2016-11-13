@@ -9,4 +9,3 @@ c.NotebookApp.open_browser = False
 c.NotebookApp.certfile = '/usr/src/app/mycert.pem'
 c.NotebookApp.keyfile = '/usr/src/app/mykey.key'
 c.NotebookApp.password = os.getenv('NOTEBOOK_PASS_HASH', None)
-c.NotebookApp.password_required = True
