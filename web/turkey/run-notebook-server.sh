@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd turkey;
 DEBUG=1;
 export DEBUG;
 DJANGO_SETTINGS_MODULE=turkey.settings;
