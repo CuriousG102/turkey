@@ -5,14 +5,11 @@ services:
     build: ./web
     expose:
       - "8000"
-    ports:
-      - "8888:8888"
     env_file: .env
     environment:
       - DEBUG
       - SECRET_KEY
       - DOMAIN
-      - NOTEBOOK_PASS_HASH
     depends_on:
       - "postgres"
 
