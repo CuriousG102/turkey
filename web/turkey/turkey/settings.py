@@ -138,12 +138,3 @@ CORS_URLS_REGEX = r'^/survey/api/.*$'
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-NOTEBOOK_ARGUMENTS = [
-    '--certfile', '/usr/src/app/mycert.pem',
-    '--keyfile', '/usr/src/app/mykey.key',
-    '--ip', '*',
-    '--password', os.getenv('NOTEBOOK_PASS_HASH', None),  # guide on how to make:
-    # http://jupyter-notebook.readthedocs.io/en/latest/public_server.html#securing-a-notebook-server
-    '--password_required', '1'
-]
