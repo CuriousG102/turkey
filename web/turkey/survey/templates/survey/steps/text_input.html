@@ -1,20 +1,20 @@
 <!-- ti = text-input -->
-<div class="step-ti" id="step-ti-{{ step_instance.pk }}" style="padding-bottom: 100%">
+<div class="step-ti" id="step-ti-{{ step_instance.pk }}">
   <div class="row">
     <div class="col-md-12">
       <h3>{{ step_instance.title }}</h3>
     </div>
   </div>
-  <!-- <div class="row">
+  <div class="row">
     <div class="col-md-12">
       <p>{{ step_instance.text }}</p>
     </div>
-  </div> -->
+  </div>
 
   <div class="row">
     <div class="col-md-12">
       <div class="textarea step-ti-response">
-        <textarea class="form-control" rows="1" cols="20px" name="step-ti-{{ step_instance.pk }}"></textarea>
+        <textarea class="form-control" rows="5" name="step-ti-{{ step_instance.pk }}"></textarea>
       </div>
     </div>
   </div>
