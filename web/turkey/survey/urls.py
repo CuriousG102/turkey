@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from . import views
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     url(r'^export_tasks/(?P<primary_keys>(\d+,)*\d+)/export.xml',
         views.TasksExport.as_view(),
         name='export_tasks'),
+    url(r'^task/thanks/', views.ThanksView.as_view(), name='thanks')
 ]

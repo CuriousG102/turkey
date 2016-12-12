@@ -12,7 +12,11 @@
       {{ task_pk }},
       "{{ token_name }}"
   );
-  var turkey = new AuditorHandler(interaction_manager);
+  {% if no_trigger %}
+    var turkey = new AuditorHandler(interaction_manager, true);
+  {% else %}
+    var turkey = new AuditorHandler(interaction_manager, false);
+  {% endif %}
 </script>
 {% for auditor_uri in auditor_uris %}
   <script src="{{ auditor_uri }}"></script>

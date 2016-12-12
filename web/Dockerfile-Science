@@ -1,0 +1,21 @@
+FROM python:3.5
+
+RUN echo 'deb http://http.debian.net/debian wheezy-backports main' > /etc/apt/sources.list.d/wheezy-backports-main.list
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+RUN apt-get update && apt-get install -y libtiff5-dev libjpeg62-turbo-dev zlib1g-dev \
+            libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk \
+            postgresql-client openssl build-essential git-lfs wamerican
+RUN git lfs install
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# this is an optimization if you put the RUN statement after the COPY of
+# everything you will find yourself download all the dependencies every time
+# you chagne any given file
+COPY science-requirements.txt /usr/src/app
+RUN pip install --no-cache-dir -r science-requirements.txt
+
+COPY . /usr/src/app
+
+CMD /bin/bash /usr/src/app/turkey/run-notebook-server.sh;

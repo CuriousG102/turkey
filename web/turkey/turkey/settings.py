@@ -39,7 +39,6 @@ else:
 
 ALLOWED_HOSTS = [os.getenv('DOMAIN')]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'survey'
+    'survey',
 ]
 
 MIDDLEWARE = [
@@ -88,14 +87,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'turkey.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
     'default': dj_database_url.config()
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -114,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/

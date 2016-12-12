@@ -8,6 +8,7 @@ from django.db import transaction
 from django.http import Http404, StreamingHttpResponse
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import TemplateView
 from django.views.generic import View
 from rest_framework import status
 from rest_framework.authentication import BaseAuthentication
@@ -235,7 +236,7 @@ class TaskView(View):
 
 
 class TasksExport(LoginRequiredMixin, APIView):
-    NUMBER_RECORDS_PER_QUERY = 5 * 10 ** 2
+    NUMBER_RECORDS_PER_QUERY = 5
     XML_OPENING_LINE = '<?xml version="1.0" encoding="UTF-8"?>'
 
     def _get_related_auditors(self, task):
@@ -384,8 +385,13 @@ class TasksExport(LoginRequiredMixin, APIView):
         if tasks.count() != len(primary_keys):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         for task in tasks:
-            if request.user not in task.owners.all():
+            if request.user not in task.owners.all()\
+                    and not request.user.is_superuser:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         response_iterator = self._get_response_iterator(request, tasks)
         return StreamingHttpResponse(response_iterator,
                                      content_type='text/xml')
+
+
+class ThanksView(TemplateView):
+    template_name = 'survey/thanks.html'
