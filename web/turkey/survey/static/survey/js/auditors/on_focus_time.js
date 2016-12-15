@@ -6,15 +6,15 @@ var AuditorOnFocusTime = {
     log_on_focus_time: function (e) {
         if(document[this.hidden]) {
             var focus_change_time = (new Date()).getTime();
-            this.on_focus_time += focus_change_time - this.last_focus_time;  
+            this.on_focus_time += focus_change_time - this.last_focus_time;
         } else {
-            this.last_focus_time = (new Date()).getTime(); 
+            this.last_focus_time = (new Date()).getTime();
         }
     },
     submit_callable: function () {
         var focus_change_time = (new Date()).getTime();
-        this.on_focus_time += focus_change_time - this.last_focus_time;  
-        
+        this.on_focus_time += focus_change_time - this.last_focus_time;
+
         return {
             'milliseconds': this.on_focus_time
         };

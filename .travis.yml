@@ -1,0 +1,10 @@
+sudo: required
+
+notifications:
+  slack: utir:sjroKLjC6HBb9yAo6mLP1WJd
+
+services:
+  - docker
+
+script:
+  - ./test.sh

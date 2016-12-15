@@ -11,11 +11,12 @@
     <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    {% include 'survey/admin/embed_template.html' with task_pk=task.pk token_name=token_name fetch_interaction_endpoint=fetch_interaction_endpoint no_trigger=True  %}
     <script src="{% static "survey/js/submission_handler.js" %}"></script>
     <script>
       var overlord = new SubmissionHandler(
-          "{% url 'survey:step_submission' pk=task_interaction_model.pk %}",
-          'http://www.google.com/'
+          '//{{ request.get_host }}/{% url 'survey:thanks' %}',
+          interaction_manager
       );
       $(document).ready(function() {
         $('#submit').click(overlord.submit.bind(overlord));
@@ -24,7 +25,6 @@
     {% for step_loc in step_script_locations %}
       <script src="{% static step_loc %}"></script>
     {% endfor %}
-    {% include 'survey/admin/embed_template.html' with embed_uri=embed_uri submission_endpoint=submission_endpoint task_pk='null' auditor_uris=auditor_uris fetch_data='false' fetch_interaction_endpoint='null' %}
   </head>
   <body>
     <div class="container-fluid">

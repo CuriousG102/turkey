@@ -1,3 +1,4 @@
+import re
 from django.utils import six
 from django.utils.encoding import smart_text
 from django.utils.six import StringIO
@@ -64,4 +65,4 @@ class XMLBodyRenderer(BaseRenderer):
             pass
 
         else:
-            xml.characters(smart_text(data))
+            xml.characters(re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', smart_text(data)))

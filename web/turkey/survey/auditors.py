@@ -4,7 +4,6 @@ from django.utils.translation import ugettext_lazy as _
 # register and build your auditor models here
 from .models import Auditor, AuditorData
 
-
 # Some inspiration: http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf
 NAME_TO_AUDITOR = {
     'before_typing_delay': 'AuditorBeforeTypingDelay',
@@ -24,14 +23,16 @@ NAME_TO_AUDITOR = {
     'pastes_total': 'AuditorPastesTotal',
     'pastes_specific': 'AuditorPastesSpecific',
     'recorded_time_disparity': 'AuditorRecordedTimeDisparity',
-    'scrolled_pixels_total': 'AuditorScrolledPixelsTotal', 
+    'scrolled_pixels_total': 'AuditorScrolledPixelsTotal',
     'scrolled_pixels_specific': 'AuditorScrolledPixelsSpecific',
     'total_task_time': 'AuditorTotalTaskTime',
     'within_typing_delay': 'AuditorWithinTypingDelay',
-    'user_agent' : 'AuditorUserAgent'
+    'url': 'AuditorURL',
+    'user_agent': 'AuditorUserAgent'
 }
 
-#before_typing_delay
+
+# before_typing_delay
 class AuditorBeforeTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorBeforeTypingDelay')
     milliseconds = models.IntegerField(
@@ -44,6 +45,7 @@ class AuditorBeforeTypingDelayData(AuditorData):
     class Meta(AuditorData.Meta):
         abstract = False
 
+
 class AuditorBeforeTypingDelay(Auditor):
     script_location = 'survey/js/auditors/before_typing_delay.js'
     data_model = AuditorBeforeTypingDelayData
@@ -54,7 +56,7 @@ class AuditorBeforeTypingDelay(Auditor):
         verbose_name_plural = _('Before Typing Delay Auditors')
 
 
-#clicks_total
+# clicks_total
 class AuditorClicksTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorClicksTotal')
     count = models.IntegerField(
@@ -64,6 +66,7 @@ class AuditorClicksTotalData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorClicksTotal(Auditor):
     script_location = 'survey/js/auditors/clicks_total.js'
@@ -75,7 +78,7 @@ class AuditorClicksTotal(Auditor):
         verbose_name_plural = _('Clicks Total Auditors')
 
 
-#clicks_specific
+# clicks_specific
 class AuditorClicksSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorClicksSpecific')
     dom_type = models.TextField(
@@ -105,9 +108,9 @@ class AuditorClicksSpecificData(AuditorData):
         help_text=_('timestamp of this click event')
     )
 
-
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorClicksSpecific(Auditor):
     script_location = 'survey/js/auditors/clicks_specific.js'
@@ -119,7 +122,7 @@ class AuditorClicksSpecific(Auditor):
         verbose_name_plural = _('Clicks Specific Auditors')
 
 
-#focus_changes
+# focus_changes
 class AuditorFocusChangesData(AuditorData):
     general_model = models.ForeignKey('AuditorFocusChanges')
     time = models.IntegerField(
@@ -129,6 +132,7 @@ class AuditorFocusChangesData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorFocusChanges(Auditor):
     script_location = 'survey/js/auditors/focus_changes.js'
@@ -140,7 +144,7 @@ class AuditorFocusChanges(Auditor):
         verbose_name_plural = _('Focus Changes Auditors')
 
 
-#keypresses_total
+# keypresses_total
 class AuditorKeypressesTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorKeypressesTotal')
     count = models.IntegerField(
@@ -150,6 +154,7 @@ class AuditorKeypressesTotalData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorKeypressesTotal(Auditor):
     script_location = 'survey/js/auditors/keypresses_total.js'
@@ -161,16 +166,21 @@ class AuditorKeypressesTotal(Auditor):
         verbose_name_plural = _('Keypresses Total Auditors')
 
 
-#keypresses_specific
+# keypresses_specific
 class AuditorKeypressesSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorKeypressesSpecific')
     key = models.TextField(
         verbose_name=_('keypresses specific'),
         help_text=_('specific keys pressed by the user')
     )
+    time = models.IntegerField(
+        verbose_name=('keypresses specific timestamp'),
+        help_text=_('timestamp of this keypress event')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorKeypressesSpecific(Auditor):
     script_location = 'survey/js/auditors/keypresses_specific.js'
@@ -182,7 +192,7 @@ class AuditorKeypressesSpecific(Auditor):
         verbose_name_plural = _('Keypresses Specific Auditors')
 
 
-#mouse_movement_total
+# mouse_movement_total
 class AuditorMouseMovementTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorMouseMovementTotal')
     amount = models.IntegerField(
@@ -192,6 +202,7 @@ class AuditorMouseMovementTotalData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorMouseMovementTotal(Auditor):
     script_location = 'survey/js/auditors/mouse_movement_total.js'
@@ -203,7 +214,7 @@ class AuditorMouseMovementTotal(Auditor):
         verbose_name_plural = _('Mouse Movement Total Auditors')
 
 
-#mouse_movement_specific
+# mouse_movement_specific
 class AuditorMouseMovementSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorMouseMovementSpecific')
     x = models.IntegerField(
@@ -214,9 +225,14 @@ class AuditorMouseMovementSpecificData(AuditorData):
         verbose_name=_('mouse movement y coordinate'),
         help_text=_('ending y coordinate of mouse whenever user moves mouse')
     )
+    time = models.IntegerField(
+        verbose_name=('mouse movement timestamp'),
+        help_text=_('timestamp of this mouse movement')
+    )
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorMouseMovementSpecific(Auditor):
     script_location = 'survey/js/auditors/mouse_movement_specific.js'
@@ -228,7 +244,7 @@ class AuditorMouseMovementSpecific(Auditor):
         verbose_name_plural = _('Mouse Movement Specific Auditors')
 
 
-#on_focus_time
+# on_focus_time
 class AuditorOnFocusTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorOnFocusTime')
     milliseconds = models.IntegerField(
@@ -238,6 +254,7 @@ class AuditorOnFocusTimeData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorOnFocusTime(Auditor):
     script_location = 'survey/js/auditors/on_focus_time.js'
@@ -249,7 +266,7 @@ class AuditorOnFocusTime(Auditor):
         verbose_name_plural = _('On Focus Time Auditors')
 
 
-#pastes_total
+# pastes_total
 class AuditorPastesTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorPastesTotal')
     count = models.IntegerField(
@@ -259,6 +276,7 @@ class AuditorPastesTotalData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorPastesTotal(Auditor):
     script_location = 'survey/js/auditors/pastes_total.js'
@@ -270,7 +288,7 @@ class AuditorPastesTotal(Auditor):
         verbose_name_plural = _('Pastes Total Auditors')
 
 
-#pastes_specific
+# pastes_specific
 class AuditorPastesSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorPastesSpecific')
     data = models.TextField(
@@ -285,6 +303,7 @@ class AuditorPastesSpecificData(AuditorData):
     class Meta(AuditorData.Meta):
         abstract = False
 
+
 class AuditorPastesSpecific(Auditor):
     script_location = 'survey/js/auditors/pastes_specific.js'
     data_model = AuditorPastesSpecificData
@@ -295,7 +314,7 @@ class AuditorPastesSpecific(Auditor):
         verbose_name_plural = _('Pastes Specific Auditors')
 
 
-#recorded_time_disparity
+# recorded_time_disparity
 class AuditorRecordedTimeDisparityData(AuditorData):
     general_model = models.ForeignKey('AuditorRecordedTimeDisparity')
     milliseconds = models.IntegerField(
@@ -305,6 +324,7 @@ class AuditorRecordedTimeDisparityData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorRecordedTimeDisparity(Auditor):
     script_location = 'survey/js/auditors/recorded_time_disparity.js'
@@ -316,7 +336,7 @@ class AuditorRecordedTimeDisparity(Auditor):
         verbose_name_plural = _('Recorded Time Disparity Auditors')
 
 
-#scrolled_pixels_total
+# scrolled_pixels_total
 class AuditorScrolledPixelsTotalData(AuditorData):
     general_model = models.ForeignKey('AuditorScrolledPixelsTotal')
     horizontal = models.IntegerField(
@@ -331,6 +351,7 @@ class AuditorScrolledPixelsTotalData(AuditorData):
     class Meta(AuditorData.Meta):
         abstract = False
 
+
 class AuditorScrolledPixelsTotal(Auditor):
     script_location = 'survey/js/auditors/scrolled_pixels_total.js'
     data_model = AuditorScrolledPixelsTotalData
@@ -341,7 +362,7 @@ class AuditorScrolledPixelsTotal(Auditor):
         verbose_name_plural = _('Scrolled Pixels Total Auditors')
 
 
-#scrolled_pixels_specific
+# scrolled_pixels_specific
 class AuditorScrolledPixelsSpecificData(AuditorData):
     general_model = models.ForeignKey('AuditorScrolledPixelsSpecific')
     horizontal_position = models.IntegerField(
@@ -368,6 +389,7 @@ class AuditorScrolledPixelsSpecificData(AuditorData):
     class Meta(AuditorData.Meta):
         abstract = False
 
+
 class AuditorScrolledPixelsSpecific(Auditor):
     script_location = 'survey/js/auditors/scrolled_pixels_specific.js'
     data_model = AuditorScrolledPixelsSpecificData
@@ -378,7 +400,7 @@ class AuditorScrolledPixelsSpecific(Auditor):
         verbose_name_plural = _('Scrolled Pixels Specific Auditors')
 
 
-#total_task_time
+# total_task_time
 class AuditorTotalTaskTimeData(AuditorData):
     general_model = models.ForeignKey('AuditorTotalTaskTime')
     milliseconds = models.IntegerField(
@@ -388,6 +410,7 @@ class AuditorTotalTaskTimeData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorTotalTaskTime(Auditor):
     script_location = 'survey/js/auditors/total_task_time.js'
@@ -399,7 +422,7 @@ class AuditorTotalTaskTime(Auditor):
         verbose_name_plural = _('Total Task Time Auditors')
 
 
-#user_agent
+# user_agent
 class AuditorUserAgentData(AuditorData):
     general_model = models.ForeignKey('AuditorUserAgent')
     user_agent = models.TextField(
@@ -409,6 +432,7 @@ class AuditorUserAgentData(AuditorData):
 
     class Meta(AuditorData.Meta):
         abstract = False
+
 
 class AuditorUserAgent(Auditor):
     script_location = 'survey/js/auditors/user_agent.js'
@@ -420,7 +444,7 @@ class AuditorUserAgent(Auditor):
         verbose_name_plural = _('User Agent Auditors')
 
 
-#within_typing_delay
+# within_typing_delay
 class AuditorWithinTypingDelayData(AuditorData):
     general_model = models.ForeignKey('AuditorWithinTypingDelay')
     within_delay = models.TextField(
@@ -433,6 +457,7 @@ class AuditorWithinTypingDelayData(AuditorData):
     class Meta(AuditorData.Meta):
         abstract = False
 
+
 class AuditorWithinTypingDelay(Auditor):
     script_location = 'survey/js/auditors/within_typing_delay.js'
     data_model = AuditorWithinTypingDelayData
@@ -441,3 +466,24 @@ class AuditorWithinTypingDelay(Auditor):
         abstract = False
         verbose_name = _('Within Typing Delay Auditor')
         verbose_name_plural = _('Within Typing Delay Auditors')
+
+
+class AuditorURLData(AuditorData):
+    general_model = models.ForeignKey('AuditorURL')
+    url = models.TextField(
+        verbose_name=_('URL'),
+        help_text=_('URL of the current task')
+    )
+
+    class Meta(AuditorData.Meta):
+        abstract = False
+
+
+class AuditorURL(Auditor):
+    script_location = 'survey/js/auditors/url.js'
+    data_model = AuditorURLData
+
+    class Meta(Auditor.Meta):
+        abstract = False
+        verbose_name = _('URL Auditor')
+        verbose_name_plural = _('URL Auditors')
