@@ -28,7 +28,7 @@ You will be prompted for your email address, a username, and a password. Once yo
 
 For Local Development
 =====================
-For local development, it is best to avoid using Docker. It will make debugging harder, require you to use Postgres when you could use the lighter and easier to inspect SQLite3, and increase your time to iterate on code. Taking advantage of virtual environments, you can use the following commands within the project root directory to take a shortcut and speed up development (but first, be sure you have `Docker and Docker Compose installed <https://docs.docker.com/compose/install/>`_ ::
+For local development, we suggest the use of Docker and virtual environments. Once you have `Docker and Docker Compose installed <https://docs.docker.com/compose/install/>`_ installed, the following commands will help guide you through the process of downloading and setting up MmmTurkey::
 
     git clone https://github.com/CuriousG102/turkey.git
 
