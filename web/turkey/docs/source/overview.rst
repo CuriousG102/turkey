@@ -17,3 +17,4 @@ Features
 - Default steps provided including multiple choice, text response, and checkbox selections
     * Easy to add your own `custom step <extending.html#steps>`_
 
+- Dockerized for quick and easy setup
