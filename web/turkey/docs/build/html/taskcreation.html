@@ -42,15 +42,14 @@
             
   <div class="section" id="creating-a-task">
 <h1>Creating a Task<a class="headerlink" href="#creating-a-task" title="Permalink to this headline">¶</a></h1>
-<p>At the admin home, select &#8220;Add interactive task&#8221;. A new task requires an owner and a title. Hit &#8220;Save and continue editing&#8221; before adding steps or auditors.</p>
+<p>At the admin home, select &#8220;Add interactive task&#8221;. A new task requires an owner and a title and can be designated as an external task. Embeddable code is provided for external tasks so that users can take advantage of auditor functionality without being forced to use MmmTurkey to host the task. Hit &#8220;Save and continue editing&#8221; before adding steps or auditors. When you are finished creating your task, you can &#8220;publish&#8221; it so that workers can begin to view and complete your task. Once published, tasks cannot be changed (e.g., no new steps or auditors can be added).</p>
 <div class="section" id="steps">
 <h2>Steps<a class="headerlink" href="#steps" title="Permalink to this headline">¶</a></h2>
 <p>Simply put, a <a class="reference external" href="extending.html#steps">step</a> is a question or interaction in the HIT. A step can be a multiple choice question, text response, checkbox question, or a custom interaction written by a requester. A task can have any number of steps, either in a specified order or a randomized order.</p>
 </div>
 <div class="section" id="auditors">
 <h2>Auditors<a class="headerlink" href="#auditors" title="Permalink to this headline">¶</a></h2>
-<p>Inspired by the work of <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">Jeff Rzeszotarski and Aniket Kittur</a></p>
-<p><a class="reference external" href="extending.html#auditors">Auditors</a> act as spies that record a worker&#8217;s interactions while working on a HIT. Information such as what the user is clicking or typing, the position of his mouse at a certain time, or how often he tabs out is recorded and stored in the database. Information about a worker&#8217;s interactions can be used to judge the merit of a worker and filter out repeated &#8220;bad&#8221; workers/responses in future HITs. Any number of auditors can be added to a task, but only one instance of each is allowed to be added.</p>
+<p>Inspired by the <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">work</a> of Jeff Rzeszotarski and Aniket Kittur, <a class="reference external" href="extending.html#auditors">auditors</a> act as spies that record a worker&#8217;s interactions while working on a HIT. Information such as what the user is clicking or typing, the position of his mouse at a certain time, or how often he tabs out is recorded and stored in the database. Information about a worker&#8217;s interactions can be used to judge the merit of a worker and filter out repeated &#8220;bad&#8221; workers/responses in future HITs. Any number of auditors can be added to a task, but only one instance of each is allowed to be added.</p>
 <p>Note that data recording begins whenever a worker starts working on a HIT rather than just sending all the information when the submit button is clicked. Tasks cannot be modified after data recording begins; this includes modifying the task name, adding more steps or auditors, or modifying a step&#8217;s text prompt.</p>
 </div>
 </div>

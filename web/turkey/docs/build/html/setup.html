@@ -42,23 +42,58 @@
             
   <div class="section" id="setup">
 <h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="for-data-collection">
+<h2>For Data Collection<a class="headerlink" href="#for-data-collection" title="Permalink to this headline">¶</a></h2>
+<p>For data collection, we suggest you use a virtual server such as an Amazon EC2 instance or a DigitalOcean Droplet. Create and log into your server and install any necessary software packages. To use MmmTurkey, be sure to <a class="reference external" href="https://docs.docker.com/compose/install">install Docker and Docker Compose</a>. The following commands will help guide you through the process of downloading and setting up MmmTurkey:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">CuriousG102</span><span class="o">/</span><span class="n">turkey</span><span class="o">.</span><span class="n">git</span>
+
+<span class="n">cd</span> <span class="o">./</span><span class="n">turkey</span>
+
+<span class="n">export</span> <span class="n">SECRET_KEY</span><span class="o">=</span><span class="n">your_arbitrary_secret_key</span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">build</span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
+</pre></div>
+</div>
+<p>In a new terminal, you can type <code class="docutils literal"><span class="pre">docker</span> <span class="pre">ps</span></code> to view running Docker containers. Look for a container with a name along the lines of <code class="docutils literal"><span class="pre">turkey_web_1</span></code> (its image should be <code class="docutils literal"><span class="pre">turkey_web</span></code>). To connect to and run commands in this container, run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">exec</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">t</span> <span class="n">turkey_web_1</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+</pre></div>
+</div>
+<p>MmmTurkey should now be ready to run locally for development on your machine. Navigate to <a class="reference external" href="http://localhost/admin">localhost</a> in your browser and you should hit the login page.</p>
+<p>The above steps can be follows the next time you work on MmmTurkey, minus cloning the repository and creating and setting up the virtual environment. Creating a superuser (e.g., admin) really only needs to be done the first time you set up MmmTurkey:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
+</pre></div>
+</div>
+<p>You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The set up should then be complete. You are now free to <a class="reference external" href="taskcreation.html">create new tasks</a> or <a class="reference external" href="data.html">view or export data</a> for previous tasks if you have already created some.</p>
+</div>
 <div class="section" id="for-local-development">
 <h2>For Local Development<a class="headerlink" href="#for-local-development" title="Permalink to this headline">¶</a></h2>
-<p>For local development it is best to avoid using Docker. It will make debugging harder, require you to use Postgres when you could use the lighter and easier to inspect SQLite3, and increase your time to iterate on code. You can use the following commands within web to take a shortcut and speed up development:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">virtualenv</span> <span class="n">venv</span>
+<p>For local development, it is best to avoid using Docker. It will make debugging harder, require you to use Postgres when you could use the lighter and easier to inspect SQLite3, and increase your time to iterate on code. Taking advantage of virtual environments, you can use the following commands within the project root directory to take a shortcut and speed up development (but first, be sure you have <a class="reference external" href="https://docs.docker.com/compose/install/">Docker and Docker Compose installed</a></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">CuriousG102</span><span class="o">/</span><span class="n">turkey</span><span class="o">.</span><span class="n">git</span>
+
+<span class="n">cd</span> <span class="o">./</span><span class="n">turkey</span><span class="o">/</span><span class="n">web</span>
+
+<span class="n">virtualenv</span> <span class="n">venv</span>
 <span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="n">python3</span> <span class="n">venv</span>
 <span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 
 <span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
 
-<span class="n">cd</span> <span class="o">/</span><span class="n">turkey</span><span class="o">/</span><span class="n">web</span><span class="o">/</span><span class="n">turkey</span>
-<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">makemigrations</span>
-<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span>
-<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
-<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runserver</span>
+<span class="n">export</span> <span class="n">DEBUG</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">build</span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
 </pre></div>
 </div>
+<p>The remainder of this setup is identical to the above section. In a new terminal, you can type <code class="docutils literal"><span class="pre">docker</span> <span class="pre">ps</span></code> to view running Docker containers. Look for a container with a name along the lines of <code class="docutils literal"><span class="pre">turkey_web_1</span></code> (its image should be <code class="docutils literal"><span class="pre">turkey_web</span></code>). To connect to and run commands in this container, run the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">exec</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">t</span> <span class="n">turkey_web_1</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+</pre></div>
+</div>
+<p>MmmTurkey should now be ready to run locally for development on your machine. Navigate to <a class="reference external" href="http://localhost/admin">localhost</a> in your browser and you should hit the login page.</p>
+<p>The above steps can be follows the next time you work on MmmTurkey, minus cloning the repository and creating and setting up the virtual environment. Creating a superuser (e.g., admin) really only needs to be done the first time you set up MmmTurkey:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
+</pre></div>
+</div>
+<p>You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The set up should then be complete. You are now free to <a class="reference external" href="taskcreation.html">create new tasks</a> or <a class="reference external" href="data.html">view or export data</a> for previous tasks if you have already created some.</p>
 </div>
 </div>
 
@@ -71,6 +106,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Setup</a><ul>
+<li><a class="reference internal" href="#for-data-collection">For Data Collection</a></li>
 <li><a class="reference internal" href="#for-local-development">For Local Development</a></li>
 </ul>
 </li>

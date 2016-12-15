@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Writing Your Own Steps and Auditors &#8212; Turkey 0.1 documentation</title>
+    <title>Steps and Auditors &#8212; Turkey 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,6 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Turkey 0.1 documentation" href="index.html" />
-    <link rel="next" title="Adding Your Custom Assets" href="addassets.html" />
     <link rel="prev" title="Using Data" href="data.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -40,8 +39,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="writing-your-own-steps-and-auditors">
-<h1>Writing Your Own Steps and Auditors<a class="headerlink" href="#writing-your-own-steps-and-auditors" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="steps-and-auditors">
+<h1>Steps and Auditors<a class="headerlink" href="#steps-and-auditors" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="steps">
 <h2>Steps<a class="headerlink" href="#steps" title="Permalink to this headline">¶</a></h2>
 <p>If you think of your HIT as a test, then a &#8220;step&#8221; is an individual question in your test. You can add as many steps as you would like to your task, and you can choose to have them ordered or unordered (randomized). The same applies to the response options of each step, if applicable.</p>
@@ -62,30 +61,24 @@
 </div>
 <div class="section" id="writing-your-own">
 <h3>Writing Your Own<a class="headerlink" href="#writing-your-own" title="Permalink to this headline">¶</a></h3>
-<p>Writing your own steps will involve several steps. You will need to add Python code, generate migrations, and have associated Python, HTML, and Javascript .. TODO Have a full walkthrough</p>
+<p>Writing your own steps will involve several steps. You will need to add Python code, generate migrations, and have associated Python, HTML, and JavaScript.</p>
 <div class="section" id="python">
 <h4>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h4>
-<p>Models for steps are in</p>
 <p>Add your step to the dictionary <cite>NAME_TO_STEP</cite> at the top of the file. You will need to write two classes, one for the step&#8217;s data and one for the step itself. The data class will have a &#8220;general_models&#8221; field with the foreign key being the name of your step and a &#8220;response&#8221; field specifying the type of response your database should expect to receive (int, text, etc). The step class has a &#8220;script_location&#8221; field, a &#8220;template_file&#8221; location field, a &#8220;data_model&#8221; field (which is simply the data class you just wrote), and some metadata fields specific to an instance of this step such as &#8220;title&#8221; and &#8220;text&#8221; (question text). Fields in this class will affect how the process of adding this step will appear on the admin site. Note that a step&#8217;s fields can be accessed in a template with step_instance.attribute; this can be helpful when filling out HTML element fields.</p>
 </div>
 <div class="section" id="javascript">
 <h4>Javascript<a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h4>
-<p>Scripts are located in (.../js/steps/). Create an object with a <cite>submit_callable</cite> function that returns an object. This object should get the responses of every instance of this specific step type, and each instance&#8217;s response should be paired with its primary key in the return object. jQuery should be extremely helpful in extracting the responses of a step instance. After writing this object, be sure to register your step to the &#8220;overlord&#8221; object (.../js/submission_handler.js), which handles the submission of results and all auditor data when the submit button is clicked.</p>
-</div>
-<div class="section" id="html-and-css">
-<h4>HTML and CSS<a class="headerlink" href="#html-and-css" title="Permalink to this headline">¶</a></h4>
-<p>TODO</p>
+<p>Scripts are located in <cite>/turkey/web/turkey/survey/static/survey/js/</cite>. Create an object with a <cite>submit_callable</cite> function that returns an object. This object should get the responses of every instance of this specific step type, and each instance&#8217;s response should be paired with its primary key in the return object. jQuery should be extremely helpful in extracting the responses of a step instance. After writing this object, be sure to register your step to the &#8220;SubmissionHandler&#8221; object  in <cite>submission_handler.js</cite>, which handles the submission of results and all auditor data when the submit button is clicked.</p>
 </div>
 </div>
 </div>
 <div class="section" id="auditors">
 <h2>Auditors<a class="headerlink" href="#auditors" title="Permalink to this headline">¶</a></h2>
-<p>Models for auditors are in</p>
-<p>Inspired by the work of <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">Jeff Rzeszotarski and Aniket Kittur</a>, the framework provides &#8220;auditor&#8221; objects that record a worker&#8217;s interactions with a task from the moment they start until they submit their responses or close out of the page. Auditor data can be used to analyze the merit of a worker and estimate the quality of their responses. Doing this can help filter out bad response data and potentially identify workers who repeatedly provide poor quality work as well as detect a pattern amongst workers with varying levels of work ethic. Auditors are written in JavaScript (.../js/auditors/) and primarily make use of jQuery events to detect browser interactions.</p>
+<p>Inspired by the <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">work</a> of Jeff Rzeszotarski and Aniket Kittur, the framework provides &#8220;auditor&#8221; objects that record a worker&#8217;s interactions with a task from the moment they start until they submit their responses or close out of the page. Auditor data can be used to analyze the merit of a worker and estimate the quality of their responses. Doing this can help filter out bad response data and potentially identify workers who repeatedly provide poor quality work as well as detect a pattern amongst workers with varying levels of work ethic. Auditors are written in JavaScript (.../js/auditors/) and primarily make use of jQuery events to detect browser interactions.</p>
 <div class="section" id="currently-included-auditors">
 <h3>Currently Included Auditors<a class="headerlink" href="#currently-included-auditors" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="focus-based-auditors">
-<h4>Focus Based Auditors<a class="headerlink" href="#focus-based-auditors" title="Permalink to this headline">¶</a></h4>
+<h4>FOCUS BASED AUDITORS<a class="headerlink" href="#focus-based-auditors" title="Permalink to this headline">¶</a></h4>
 <p>Auditors recording whether the worker is on or off focus. A worker is considered on focus if the task page is &#8220;visible&#8221;. The page is visible if it is not tabbed out, minimized, or closed. Primarily makes use of the Page Visibility API (.../js/globals/visibility_changes.js) to detect changes in focus.</p>
 </div>
 <div class="section" id="focus-changes">
@@ -101,7 +94,7 @@
 <p>The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="extending.html#time-based-auditors">Time Based Auditor</a>.</p>
 </div>
 <div class="section" id="keyboard-based-auditors">
-<h4>Keyboard Based Auditors<a class="headerlink" href="#keyboard-based-auditors" title="Permalink to this headline">¶</a></h4>
+<h4>KEYBOARD BASED AUDITORS<a class="headerlink" href="#keyboard-based-auditors" title="Permalink to this headline">¶</a></h4>
 <p>Auditors recording typing interactions. Makes use of jQuery keyboard events.</p>
 </div>
 <div class="section" id="before-typing-delay">
@@ -121,7 +114,7 @@
 <p>Checks if the worker typed within the first 10 seconds (default) of the task. Returns &#8220;true&#8221; if so, &#8220;false&#8221; if not.</p>
 </div>
 <div class="section" id="mouse-based-auditors">
-<h4>Mouse Based Auditors<a class="headerlink" href="#mouse-based-auditors" title="Permalink to this headline">¶</a></h4>
+<h4>MOUSE BASED AUDITORS<a class="headerlink" href="#mouse-based-auditors" title="Permalink to this headline">¶</a></h4>
 <p>Auditors recording mouse interactions. Makes use of jQuery&#8217;s mousemove and click events.</p>
 </div>
 <div class="section" id="clicks-total">
@@ -140,8 +133,8 @@
 <h4>Mouse Movement Specific<a class="headerlink" href="#mouse-movement-specific" title="Permalink to this headline">¶</a></h4>
 <p>Ending position of the cursor after the worker moves his mouse, debounced.</p>
 </div>
-<div class="section" id="scroll-base-auditors">
-<h4>Scroll Base Auditors<a class="headerlink" href="#scroll-base-auditors" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="scroll-based-auditors">
+<h4>SCROLL BASED AUDITORS<a class="headerlink" href="#scroll-based-auditors" title="Permalink to this headline">¶</a></h4>
 <p>Auditors recording scrolling events. Makes use of jQuery&#8217;s scroll event and the jQuery debounce plugin (.../js/globals/jquery.ba-throttle-debounce.min.js).</p>
 </div>
 <div class="section" id="scrolled-pixels-total">
@@ -153,7 +146,7 @@
 <p>For each scrolling event, reports the end position, the raw change in pixels from the previous position, and the timestamp of the event. Records data for both horizontal and vertical scrolling, debounced.</p>
 </div>
 <div class="section" id="time-based-auditors">
-<h4>Time Based Auditors<a class="headerlink" href="#time-based-auditors" title="Permalink to this headline">¶</a></h4>
+<h4>TIME BASED AUDITORS<a class="headerlink" href="#time-based-auditors" title="Permalink to this headline">¶</a></h4>
 <p>Auditors recording the time spent completing the task.</p>
 </div>
 <div class="section" id="total-task-time">
@@ -169,8 +162,8 @@
 <p>The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="extending.html#focus-based-auditors">Focus Based Auditor</a>.</p>
 </div>
 <div class="section" id="other-auditors">
-<h4>Other Auditors<a class="headerlink" href="#other-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Pasting events and User Agent spying.</p>
+<h4>OTHER AUDITORS<a class="headerlink" href="#other-auditors" title="Permalink to this headline">¶</a></h4>
+<p>Pasting events, User Agent spying, and URL.</p>
 </div>
 <div class="section" id="pastes-total">
 <h4>Pastes Total<a class="headerlink" href="#pastes-total" title="Permalink to this headline">¶</a></h4>
@@ -179,6 +172,10 @@
 <div class="section" id="pastes-specific">
 <h4>Pastes Specific<a class="headerlink" href="#pastes-specific" title="Permalink to this headline">¶</a></h4>
 <p>The content (text) of a paste action.</p>
+</div>
+<div class="section" id="url">
+<h4>URL<a class="headerlink" href="#url" title="Permalink to this headline">¶</a></h4>
+<p>Returns the URL of the current page.</p>
 </div>
 <div class="section" id="user-agent">
 <h4>User Agent<a class="headerlink" href="#user-agent" title="Permalink to this headline">¶</a></h4>
@@ -211,7 +208,7 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Writing Your Own Steps and Auditors</a><ul>
+<li><a class="reference internal" href="#">Steps and Auditors</a><ul>
 <li><a class="reference internal" href="#steps">Steps</a><ul>
 <li><a class="reference internal" href="#currently-included-steps">Currently Included Steps</a><ul>
 <li><a class="reference internal" href="#multiple-answer">Multiple Answer</a></li>
@@ -222,37 +219,37 @@
 <li><a class="reference internal" href="#writing-your-own">Writing Your Own</a><ul>
 <li><a class="reference internal" href="#python">Python</a></li>
 <li><a class="reference internal" href="#javascript">Javascript</a></li>
-<li><a class="reference internal" href="#html-and-css">HTML and CSS</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#auditors">Auditors</a><ul>
 <li><a class="reference internal" href="#currently-included-auditors">Currently Included Auditors</a><ul>
-<li><a class="reference internal" href="#focus-based-auditors">Focus Based Auditors</a></li>
+<li><a class="reference internal" href="#focus-based-auditors">FOCUS BASED AUDITORS</a></li>
 <li><a class="reference internal" href="#focus-changes">Focus Changes</a></li>
 <li><a class="reference internal" href="#on-focus-time">On Focus Time</a></li>
 <li><a class="reference internal" href="#recorded-time-disparity">Recorded Time Disparity</a></li>
-<li><a class="reference internal" href="#keyboard-based-auditors">Keyboard Based Auditors</a></li>
+<li><a class="reference internal" href="#keyboard-based-auditors">KEYBOARD BASED AUDITORS</a></li>
 <li><a class="reference internal" href="#before-typing-delay">Before Typing Delay</a></li>
 <li><a class="reference internal" href="#keypresses-total">Keypresses Total</a></li>
 <li><a class="reference internal" href="#keypresses-specific">Keypresses Specific</a></li>
 <li><a class="reference internal" href="#within-typing-delay">Within Typing Delay</a></li>
-<li><a class="reference internal" href="#mouse-based-auditors">Mouse Based Auditors</a></li>
+<li><a class="reference internal" href="#mouse-based-auditors">MOUSE BASED AUDITORS</a></li>
 <li><a class="reference internal" href="#clicks-total">Clicks Total</a></li>
 <li><a class="reference internal" href="#clicks-specific">Clicks Specific</a></li>
 <li><a class="reference internal" href="#mouse-movement-total">Mouse Movement Total</a></li>
 <li><a class="reference internal" href="#mouse-movement-specific">Mouse Movement Specific</a></li>
-<li><a class="reference internal" href="#scroll-base-auditors">Scroll Base Auditors</a></li>
+<li><a class="reference internal" href="#scroll-based-auditors">SCROLL BASED AUDITORS</a></li>
 <li><a class="reference internal" href="#scrolled-pixels-total">Scrolled Pixels Total</a></li>
 <li><a class="reference internal" href="#scrolled-pixels-specific">Scrolled Pixels Specific</a></li>
-<li><a class="reference internal" href="#time-based-auditors">Time Based Auditors</a></li>
+<li><a class="reference internal" href="#time-based-auditors">TIME BASED AUDITORS</a></li>
 <li><a class="reference internal" href="#total-task-time">Total Task Time</a></li>
 <li><a class="reference internal" href="#id2">On Focus Time</a></li>
 <li><a class="reference internal" href="#id3">Recorded Time Disparity</a></li>
-<li><a class="reference internal" href="#other-auditors">Other Auditors</a></li>
+<li><a class="reference internal" href="#other-auditors">OTHER AUDITORS</a></li>
 <li><a class="reference internal" href="#pastes-total">Pastes Total</a></li>
 <li><a class="reference internal" href="#pastes-specific">Pastes Specific</a></li>
+<li><a class="reference internal" href="#url">URL</a></li>
 <li><a class="reference internal" href="#user-agent">User Agent</a></li>
 </ul>
 </li>
@@ -272,7 +269,6 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="data.html" title="previous chapter">Using Data</a></li>
-      <li>Next: <a href="addassets.html" title="next chapter">Adding Your Custom Assets</a></li>
   </ul></li>
 </ul>
 </div>
