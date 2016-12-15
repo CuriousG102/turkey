@@ -5,3 +5,4 @@ venv/
 *.sqlite3
 web/static/
 logfile
+web/turkey/docs/build
