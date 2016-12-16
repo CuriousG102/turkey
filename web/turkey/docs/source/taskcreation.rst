@@ -1,6 +1,5 @@
 Creating a Task
 ***************
-
 At the admin home, select "Add interactive task". A new task requires an owner and a title and can be designated as an external task. Embeddable code is provided for external tasks so that users can take advantage of auditor functionality without being forced to use MmmTurkey to host the task. Hit "Save and continue editing" before adding steps or auditors. When you are finished creating your task, you can "publish" it so that workers can begin to view and complete your task. Once published, tasks cannot be changed (e.g., no new steps or auditors can be added).
 
 Steps
