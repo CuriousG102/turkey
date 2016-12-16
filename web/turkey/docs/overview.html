@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Inspiration &mdash; Turkey 0.1 documentation</title>
+    <title>Overview and Inspiration &#8212; Turkey 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Turkey 0.1 documentation" href="index.html" />
     <link rel="next" title="Authors" href="authors.html" />
-    <link rel="prev" title="Turkey" href="index.html" />
+    <link rel="prev" title="MmmTurkey" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -42,11 +42,7 @@
             
   <div class="section" id="overview-and-inspiration">
 <h1>Overview and Inspiration<a class="headerlink" href="#overview-and-inspiration" title="Permalink to this headline">¶</a></h1>
-<p>Creating internal HITs on Amazon Mechanical Turk can be programmatically restrictive, and as a result, many
-requesters turn to using external HITs as a more flexible alternative. However, creating external HITs can prove
-to be a challenge for those who do not know how to code or a redundant chore for those who do. The goal of this
-project is to provide a framework that allows for a requester to quickly and easily create external MTurk HITs
-with minimal effort thanks to convenient built-in features.</p>
+<p>Internal HITs on Amazon Mechanical Turk can be programmatically restrictive, and as a result, many requesters turn to using external HITs as a more flexible alternative. However, creating such HITs can be redundant and time-consuming. <a class="reference external" href="https://github.com/CuriousG102/turkey/">MmmTurkey</a> is a framework that enables researchers to not only quickly create and manage external HITs thanks to convenient built-in features, but more significantly also capture and record detailed worker behavioral data characterizing how each worker completes a given task. You can read our paper <a class="reference external" href="https://arxiv.org/abs/1609.00945">here</a>.</p>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul>
@@ -56,6 +52,8 @@ with minimal effort thanks to convenient built-in features.</p>
 </li>
 <li><p class="first">All tasks can be managed from a single, centralized dashboard</p>
 </li>
+<li><p class="first">Embeddable code provided for external tasks</p>
+</li>
 <li><p class="first">Tasks automatically linked to a single Postgres database</p>
 </li>
 <li><p class="first">Response and auditor data for a HIT can be exported to XML</p>
@@ -63,7 +61,7 @@ with minimal effort thanks to convenient built-in features.</p>
 <li><dl class="first docutils">
 <dt>Default auditors provided to gather data on worker interactions</dt>
 <dd><ul class="first last simple">
-<li>Easy to add your own custom auditor .. TODO: make this a link and same for one below</li>
+<li>Easy to add your own <a class="reference external" href="extending.html#auditors">custom auditor</a></li>
 </ul>
 </dd>
 </dl>
@@ -71,10 +69,12 @@ with minimal effort thanks to convenient built-in features.</p>
 <li><dl class="first docutils">
 <dt>Default steps provided including multiple choice, text response, and checkbox selections</dt>
 <dd><ul class="first last simple">
-<li>Easy to add your own custom step</li>
+<li>Easy to add your own <a class="reference external" href="extending.html#steps">custom step</a></li>
 </ul>
 </dd>
 </dl>
+</li>
+<li><p class="first">Dockerized for quick and easy setup</p>
 </li>
 </ul>
 </div>
@@ -97,7 +97,7 @@ with minimal effort thanks to convenient built-in features.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Turkey</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">MmmTurkey</a></li>
       <li>Next: <a href="authors.html" title="next chapter">Authors</a></li>
   </ul></li>
 </ul>
@@ -112,8 +112,8 @@ with minimal effort thanks to convenient built-in features.</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -124,10 +124,10 @@ with minimal effort thanks to convenient built-in features.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Miles R Hutson and Brandon U Dặng.
+      &copy;2016, Miles R Hutson and Brandon Dang.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
       
       |
