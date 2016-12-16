@@ -235,8 +235,7 @@ gh-pages:
 	git checkout brandon-sphinx source
 	git reset HEAD
 	make html
-	cp -fvr build/html/_sources ../../..
-	cp -fvr build/html/_static ../../..
+	rm -rf ../../../_sources ../../../_static
 	mv -fv build/html/* ../../..
 	rm -rf source build
 	git add -A
