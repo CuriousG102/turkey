@@ -232,10 +232,11 @@ dummy:
 gh-pages:
 	git checkout gh-pages
 	rm -rf build _sources _static
+	rm ../../../*.html ../../../objects.inv ../../../searchindex.js
+	rm -rf ../../../_sources ../../../_static
 	git checkout brandon-sphinx source
 	git reset HEAD
 	make html
-	rm -rf ../../../_sources ../../../_static
 	mv -fv build/html/* ../../..
 	rm -rf source build
 	git add -A
