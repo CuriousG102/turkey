@@ -227,15 +227,17 @@ pseudoxml:
 dummy:
 	$(SPHINXBUILD) -b dummy $(ALLSPHINXOPTS) $(BUILDDIR)/dummy
 	@echo
-	@echo "Build finished. Dummy builder gepynerates no files."
+	@echo "Build finished. Dummy builder generates no files."
 
 gh-pages:
 	git checkout gh-pages
 	rm -rf build _sources _static
-	git checkout miles-sphinx source
+	git checkout brandon-sphinx source
 	git reset HEAD
 	make html
-	mv -fv build/html/* ./
+	cp -fvr build/html/_sources ../../..
+	cp -fvr build/html/_static ../../..
+	mv -fv build/html/* ../../..
 	rm -rf source build
 	git add -A
-	git commit -m "Generated gh-pages for `git log miles-sphinx -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout miles-sphinx
+	git commit -m "Generated gh-pages for `git log brandon-sphinx -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout brandon-sphinx
