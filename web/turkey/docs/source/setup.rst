@@ -53,10 +53,10 @@ If you encounter failure when running ``pip install``, please refer to `this iss
 
     docker exec -i -t turkey_web_1 /bin/bash
 
-MmmTurkey should now be ready to run locally for development on your machine. Navigate to `localhost <http://localhost/admin>`_ in your browser and you should hit the login page.
+MmmTurkey should now be ready to run locally for development on your machine. Navigate to `localhost <http://localhost/admin>`_ in your browser and you should reach the login page.
 
 The above steps can be followed the next time you work on MmmTurkey, minus cloning the repository and creating and setting up the virtual environment. Creating a superuser (e.g., admin) only needs to be done the first time you set up MmmTurkey unless you later decide to add more admins::
 
     python manage.py createsuperuser
 
-You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The set up should then be complete. You are now free to `create new tasks <taskcreation.html>`_ or `view or export data <data.html>`_ for previous tasks if you have already created some.
+You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The set up should then be complete. You are now free to work on MmmTurkey.
