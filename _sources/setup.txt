@@ -15,7 +15,7 @@ For data collection, we suggest you use a virtual server such as an Amazon EC2 i
     service docker start
     docker-compose up
 
-Note that you may be required to start docker as a root user. If this is the case, you must execute all subsequent docker commands as root as well. In a new terminal, you can type ``docker ps`` to view running Docker containers. Look for a container with a name along the lines of ``turkey_web_1`` (its image should be ``turkey_web``). To connect to and run commands in this container, run the following command::
+Note that you may be required to start docker as a root user. If this is the case, you must execute all subsequent docker commands as root and set environment variables as well. If this is the case, it may be easiest to first log into a root environment with ``sudo su`` beforehand. In a new terminal, you can type ``docker ps`` to view running Docker containers. Look for a container with a name along the lines of ``turkey_web_1`` (its image should be ``turkey_web``). To connect to and run commands in this container, run the following command::
 
     docker exec -i -t turkey_web_1 /bin/bash
 
@@ -48,7 +48,7 @@ For local development, we suggest the use of Docker and virtual environments. On
     service docker start
     docker-compose up
 
-If you encounter failure when running ``pip install``, please refer to `this issue <https://github.com/CuriousG102/turkey/issues/53>`_. The remainder of this setup is identical to the above section. Note that you may be required to start docker as a root user. If this is the case, you must execute all subsequent docker commands as root as well. In a new terminal, you can type ``docker ps`` to view running Docker containers. Look for a container with a name along the lines of ``turkey_web_1`` (its image should be ``turkey_web``). To connect to and run commands in this container, run the following command::
+It is likely that you will need to install several other packages before running ``pip install``. Please refer to `this issue <https://github.com/CuriousG102/turkey/issues/53>`_. The remainder of this setup is identical to the above section. In a new terminal, you can type ``docker ps`` to view running Docker containers. Look for a container with a name along the lines of ``turkey_web_1`` (its image should be ``turkey_web``). To connect to and run commands in this container, run the following command::
 
     docker exec -i -t turkey_web_1 /bin/bash
 
