@@ -13,7 +13,6 @@ For data collection, we suggest you use a virtual server such as an Amazon EC2 i
     export HOST=<your hostname or public DNS>
     
     service docker start
-    docker-compose build
     docker-compose up
 
 Note that you may be required to start docker as a root user. If this is the case, you must execute all subsequent docker commands as root as well. In a new terminal, you can type ``docker ps`` to view running Docker containers. Look for a container with a name along the lines of ``turkey_web_1`` (its image should be ``turkey_web``). To connect to and run commands in this container, run the following command::
@@ -47,7 +46,6 @@ For local development, we suggest the use of Docker and virtual environments. On
     export DEBUG=1
 
     service docker start
-    docker-compose build
     docker-compose up
 
 If you encounter failure when running ``pip install``, please refer to `this issue <https://github.com/CuriousG102/turkey/issues/53>`_. The remainder of this setup is identical to the above section. Note that you may be required to start docker as a root user. If this is the case, you must execute all subsequent docker commands as root as well. In a new terminal, you can type ``docker ps`` to view running Docker containers. Look for a container with a name along the lines of ``turkey_web_1`` (its image should be ``turkey_web``). To connect to and run commands in this container, run the following command::
