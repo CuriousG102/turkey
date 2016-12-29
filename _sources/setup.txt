@@ -9,7 +9,8 @@ For data collection, we suggest you use a virtual server such as an Amazon EC2 i
 
     cd ./turkey
 
-    export SECRET_KEY=your_arbitrary_secret_key
+    export SECRET_KEY=<your arbitrary secret key>
+    export HOST=<your hostname or public DNS>
     
     service docker start
     docker-compose build
