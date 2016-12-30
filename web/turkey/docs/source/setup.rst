@@ -11,6 +11,7 @@ First, clone and ``cd`` into the repo::
 
     cd ./turkey
 
+
 You will then need to set your ``SECRET_KEY`` (i.e., a password) and ``DOMAIN`` (i.e., the hostname or public DNS of your server) environment variables::
 
     export SECRET_KEY=<your arbitrary secret key>
@@ -29,9 +30,11 @@ In a new terminal, you can type ``docker ps`` to view running Docker containers.
 
     docker exec -i -t turkey_web_1 /bin/bash
 
+
 The above steps can be followed the next time you use MmmTurkey, minus cloning the repository. If you set the ``DOMAIN`` environment variable in your ``.env`` file, then you do not need to repeat this step either. Creating a superuser (e.g., admin) only needs to be done the first time you set up MmmTurkey unless you need to add more admins::
 
     python manage.py createsuperuser
+
 
 MmmTurkey should now be ready and accessible via your web browser. Navigate to ``http://hostname/admin``, where ``hostname`` is the hostname of your instance, in your browser and you should reach the login page. You can log into the dashboard using the credentials you just entered in.
 
@@ -47,6 +50,7 @@ First, clone and ``cd`` into the repo::
     git clone https://github.com/CuriousG102/turkey.git
 
     cd ./turkey/
+
 
 Once you have ``virtualenv`` installed, you can run these commands to create, setup, and start your virtual environment::
 
@@ -66,13 +70,16 @@ The following steps are for starting the server to view and test the framework::
     service docker start
     docker-compose up
 
+
 In a new terminal, you can type ``docker ps`` to view running Docker containers. Look for a container with a name along the lines of ``turkey_web_1`` (its image should be ``turkey_web``). To connect to and run commands in this container, run the following command, substituting ``turkey_web_1`` with the correct name of the container if necessary::
 
     docker exec -i -t turkey_web_1 /bin/bash
 
+
 The above steps can be followed the next time you work on MmmTurkey, minus cloning the repository and creating and setting up the virtual environment. Creating a superuser (e.g., admin) only needs to be done the first time you set up MmmTurkey unless you need to add more admins::
 
     python manage.py createsuperuser
+
 
 MmmTurkey should now be ready to run locally for development on your machine. Navigate to `localhost <http://localhost/admin>`_ in your browser and you should reach the login page. You can log into the dashboard using the credentials you just entered in.
 
