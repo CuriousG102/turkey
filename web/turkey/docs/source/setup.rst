@@ -32,14 +32,14 @@ The above steps can be followed the next time you use MmmTurkey, minus cloning t
     cd ./turkey
     python manage.py createsuperuser
 
-MmmTurkey should now be ready and accessible via your web browser. Navigate to ``http://hostname/admin``, where ``hostname`` is the hostname of your instance, in your browser and you should reach the login page. You can log into the dashboard using the credentials you just entered in.
+If your server is configured correctly to accept incoming HTTP traffic, MmmTurkey should now be ready and accessible via your web browser. Navigate to ``http://hostname/admin``, where ``hostname`` is the hostname of your instance, in your browser and you should reach the login page. You can log into the dashboard using the credentials you just entered in.
 
 You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The setup should then be complete. You are now free to `create new tasks <taskcreation.html>`_ or `view or export data <data.html>`_ for previous tasks if you have already created some.
 
 
 For Local Development
 =====================
-For local development, we suggest the use of Docker and virtual environments. Once you have the ``virtualenv`` package and `Docker and Docker Compose installed <https://docs.docker.com/compose/install/>`_, the following steps will help guide you through the process of downloading and setting up MmmTurkey.
+For local development, we suggest the use of Docker and virtual environments. Once you have the ``virtualenv`` package installed and `Docker and Docker Compose installed <https://docs.docker.com/compose/install/>`_, the following steps will help guide you through the process of downloading and setting up MmmTurkey.
 
 First, clone and ``cd`` into the repo::
 
@@ -47,7 +47,7 @@ First, clone and ``cd`` into the repo::
 
     cd ./turkey
 
-Once you have ``virtualenv`` installed, you will need to create, setup, and start your virtual environment. It is possible that you will need to install several other packages before running ``pip install``. If you encounter an error, please refer to `this issue <https://github.com/CuriousG102/turkey/issues/53>`_ for further instructions.
+Once you have ``virtualenv`` installed, you will need to create, setup, and start your virtual environment. You may need to install the ``build-essential`` and ``libjpeg-dev`` packages before running ``pip install``, otherwise your dependency installation may fail. See `this issue <https://github.com/CuriousG102/turkey/issues/53>`_ for reference.
 
 ::
 
