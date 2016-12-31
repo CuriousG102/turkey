@@ -51,12 +51,17 @@
 <span class="n">cd</span> <span class="o">./</span><span class="n">turkey</span>
 </pre></div>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p>You will then need to set your <code class="docutils literal"><span class="pre">SECRET_KEY</span></code> (i.e., a password) and <code class="docutils literal"><span class="pre">DOMAIN</span></code> (i.e., the hostname or public DNS of your server) environment variables:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">SECRET_KEY</span><span class="o">=&lt;</span><span class="n">your</span> <span class="n">arbitrary</span> <span class="n">secret</span> <span class="n">key</span><span class="o">&gt;</span>
 <span class="n">export</span> <span class="n">DOMAIN</span><span class="o">=&lt;</span><span class="n">your</span> <span class="n">hostname</span> <span class="ow">or</span> <span class="n">public</span> <span class="n">DNS</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>You can add the <code class="docutils literal"><span class="pre">DOMAIN</span></code> environment variable to your <code class="docutils literal"><span class="pre">.env</span></code>, that way you don&#8217;t have to declare it more than once. We recommend against doing this for the <code class="docutils literal"><span class="pre">SECRET_KEY</span></code> environment variable for security reasons.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p>The next step is to start the Docker daemon and run the containers:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">service</span> <span class="n">docker</span> <span class="n">start</span>
 <span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
@@ -67,9 +72,12 @@
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">exec</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">t</span> <span class="n">turkey_web_1</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
 </pre></div>
 </div>
-<p>The above steps can be followed the next time you use MmmTurkey, minus cloning the repository. If you set the <code class="docutils literal"><span class="pre">DOMAIN</span></code> environment variable in your <code class="docutils literal"><span class="pre">.env</span></code> file, then you do not need to repeat this step either. Creating a superuser (e.g., admin) only needs to be done the first time you set up MmmTurkey unless you need to add more admins:</p>
+<p>The above steps can be followed the next time you use MmmTurkey, minus cloning the repository. Creating a superuser (e.g., admin) only needs to be done the first time you set up MmmTurkey unless you need to add more admins:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
 </pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 <p>MmmTurkey should now be ready and accessible via your web browser. Navigate to <code class="docutils literal"><span class="pre">http://hostname/admin</span></code>, where <code class="docutils literal"><span class="pre">hostname</span></code> is the hostname of your instance, in your browser and you should reach the login page. You can log into the dashboard using the credentials you just entered in.</p>
 <p>You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The setup should then be complete. You are now free to <a class="reference external" href="taskcreation.html">create new tasks</a> or <a class="reference external" href="data.html">view or export data</a> for previous tasks if you have already created some.</p>
@@ -83,6 +91,9 @@
 <span class="n">cd</span> <span class="o">./</span><span class="n">turkey</span><span class="o">/</span>
 </pre></div>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p>Once you have <code class="docutils literal"><span class="pre">virtualenv</span></code> installed, you can run these commands to create, setup, and start your virtual environment:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">virtualenv</span> <span class="n">venv</span>
 <span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="n">python3</span> <span class="n">venv</span>
@@ -93,6 +104,9 @@
 </pre></div>
 </div>
 <p>It is possible that you will need to install several other packages before running <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span></code>. If you encounter an error, please refer to <a class="reference external" href="https://github.com/CuriousG102/turkey/issues/53">this issue</a> for further instructions.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p>The following steps are for starting the server to view and test the framework:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">DEBUG</span><span class="o">=</span><span class="mi">1</span>
 
@@ -100,9 +114,15 @@
 <span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
 </pre></div>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p>In a new terminal, you can type <code class="docutils literal"><span class="pre">docker</span> <span class="pre">ps</span></code> to view running Docker containers. Look for a container with a name along the lines of <code class="docutils literal"><span class="pre">turkey_web_1</span></code> (its image should be <code class="docutils literal"><span class="pre">turkey_web</span></code>). To connect to and run commands in this container, run the following command, substituting <code class="docutils literal"><span class="pre">turkey_web_1</span></code> with the correct name of the container if necessary:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">exec</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">t</span> <span class="n">turkey_web_1</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
 </pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 <p>The above steps can be followed the next time you work on MmmTurkey, minus cloning the repository and creating and setting up the virtual environment. Creating a superuser (e.g., admin) only needs to be done the first time you set up MmmTurkey unless you need to add more admins:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
