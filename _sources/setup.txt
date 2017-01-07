@@ -55,9 +55,6 @@ Once you have ``virtualenv`` installed, you will need to create, setup, and star
     source venv/bin/activate
     pip install -r ./web/requirements.txt
 
-    source venv/bin/activate
-
-
 Run following steps to start the server to view and test the framework::
 
     export DEBUG=1
