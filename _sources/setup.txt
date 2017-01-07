@@ -51,7 +51,6 @@ Once you have ``virtualenv`` installed, you will need to create, setup, and star
 
 ::
 
-    virtualenv venv
     virtualenv -p python3 venv
     source venv/bin/activate
     pip install -r ./web/requirements.txt
