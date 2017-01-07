@@ -55,7 +55,7 @@ Once you have ``virtualenv`` installed, you will need to create, setup, and star
     source venv/bin/activate
     pip install -r ./web/requirements.txt
 
-Run following steps to start the server to view and test the framework::
+You can run following steps to start the server to view and test the framework. Note that you may be required to start Docker as a root user. If this is the case, you must execute all docker commands as root and set your ``DEBUG`` environment variable as root as well. If this is the case, it may be easiest to log into a root environment with ``sudo su`` before running these steps.::
 
     export DEBUG=1
 
