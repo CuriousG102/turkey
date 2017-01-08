@@ -47,7 +47,7 @@ First, clone and ``cd`` into the repo::
 
     cd ./turkey
 
-Once you have ``virtualenv`` installed, you will need to create, setup, and start your virtual environment. You may need to install the ``build-essential`` and ``libjpeg-dev`` packages before running ``pip install``, otherwise your dependency installation may fail. See `this issue <https://github.com/CuriousG102/turkey/issues/53>`_ for reference.
+Once you have ``virtualenv`` installed, you will need to create, setup, and start your virtual environment. You may need to install the ``libpq-dev``, ``python3-dev``, and ``libjpeg-dev`` packages before running ``pip install``, otherwise your dependency installation may fail. See `this issue <https://github.com/CuriousG102/turkey/issues/53>`_ for reference.
 
 ::
 
