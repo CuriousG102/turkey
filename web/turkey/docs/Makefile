@@ -234,10 +234,10 @@ gh-pages:
 	rm -rf build _sources _static
 	rm ../../../*.html ../../../objects.inv ../../../searchindex.js
 	rm -rf ../../../_sources ../../../_static
-	git checkout brandon-sphinx source
+	git checkout sphinx source
 	git reset HEAD
 	make html
 	mv -fv build/html/* ../../..
 	rm -rf source build
 	git add -A
-	git commit -m "Generated gh-pages for `git log brandon-sphinx -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout brandon-sphinx
+	git commit -m "Generated gh-pages for `git log brandon-sphinx -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout sphinx
