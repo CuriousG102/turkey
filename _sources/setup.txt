@@ -78,6 +78,6 @@ The above steps can be followed the next time you work on MmmTurkey, minus cloni
     cd ./turkey
     python manage.py createsuperuser
 
-MmmTurkey should now be ready to run locally for development on your machine. Navigate to `localhost <http://localhost/admin>`_ in your browser and you should reach the login page. You can log into the dashboard using the credentials you just entered in.
+MmmTurkey should now be ready to run locally for development on your machine. Navigate to `http://localhost/admin <http://localhost/admin>`_ in your browser and you should reach the login page. You can log into the dashboard using the credentials you just entered in.
 
-You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The set up should then be complete. You are now free to work on MmmTurkey.
+You will be prompted for your email address, a username, and a password. Once you have finished, you can then log in to the MmmTurkey dashboard in your browser using your credentials. The set up should then be complete. You are now free to `work on MmmTurkey <extending.html>`_.

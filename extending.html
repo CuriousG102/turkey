@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Steps and Auditors &#8212; Turkey 0.1 documentation</title>
+    <title>Contributing and Extending &#8212; Turkey 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -39,116 +39,40 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="steps-and-auditors">
-<h1>Steps and Auditors<a class="headerlink" href="#steps-and-auditors" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="contributing-and-extending">
+<h1>Contributing and Extending<a class="headerlink" href="#contributing-and-extending" title="Permalink to this headline">¶</a></h1>
+<p>MmmTurkey was designed to be modular with the ability to easily add new steps and auditors. If you would like to share your custom steps and auditors and add them to the MmmTurkey project, please feel free to submit a <a class="reference external" href="https://github.com/CuriousG102/turkey/pulls">pull request</a>. Other ways to contribute include writing unit tests and helping out with the docs.</p>
 <div class="section" id="steps">
 <h2>Steps<a class="headerlink" href="#steps" title="Permalink to this headline">¶</a></h2>
-<p>If you think of your HIT as a test, then a &#8220;step&#8221; is an individual question in your test. You can add as many steps as you would like to your task, and you can choose to have them ordered or unordered (randomized). The same applies to the response options of each step, if applicable.</p>
-<div class="section" id="currently-included-steps">
-<h3>Currently Included Steps<a class="headerlink" href="#currently-included-steps" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="multiple-answer">
-<h4>Multiple Answer<a class="headerlink" href="#multiple-answer" title="Permalink to this headline">¶</a></h4>
-<p>Checkbox questions that allows the worker to select several answers.</p>
-</div>
-<div class="section" id="multiple-choice">
-<h4>Multiple Choice<a class="headerlink" href="#multiple-choice" title="Permalink to this headline">¶</a></h4>
-<p>Classic multiple choice question that restricts the worker to selecting only one answer.</p>
-</div>
-<div class="section" id="text-input">
-<h4>Text Input<a class="headerlink" href="#text-input" title="Permalink to this headline">¶</a></h4>
-<p>Question that requires the worker to type a textual response.</p>
-</div>
-</div>
-<div class="section" id="writing-your-own">
-<h3>Writing Your Own<a class="headerlink" href="#writing-your-own" title="Permalink to this headline">¶</a></h3>
-<p>Writing your own steps will involve several steps. You will need to add Python code, generate migrations, and have associated Python, HTML, and JavaScript.</p>
+<p>If you think of your HIT as a test, then a &#8220;step&#8221; is an individual question in your test. You can add as many steps as you would like to your task, and you can choose to have them ordered or unordered (randomized). The same applies to the response options of each step, if applicable. Writing your own steps will involve several steps. You will need to add Python code, generate migrations, and have associated Python, HTML, and JavaScript.</p>
 <div class="section" id="python">
-<h4>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h4>
+<h3>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h3>
 <p>Add your step to the dictionary <code class="docutils literal"><span class="pre">NAME_TO_STEP</span></code> at the top of the file. You will need to write two classes, one for the step&#8217;s data and one for the step itself. The data class will have a &#8220;general_models&#8221; field with the foreign key being the name of your step and a &#8220;response&#8221; field specifying the type of response your database should expect to receive (int, text, etc). The step class has a &#8220;script_location&#8221; field, a &#8220;template_file&#8221; location field, a &#8220;data_model&#8221; field (which is simply the data class you just wrote), and some metadata fields specific to an instance of this step such as &#8220;title&#8221; and &#8220;text&#8221; (question text). Fields in this class will affect how the process of adding this step will appear on the admin site. Note that a step&#8217;s fields can be accessed in a template with step_instance.attribute; this can be helpful when filling out HTML element fields.</p>
 </div>
 <div class="section" id="javascript">
-<h4>Javascript<a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h4>
+<h3>JavaScript<a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h3>
 <p>Scripts are located in <code class="docutils literal"><span class="pre">turkey/web/turkey/survey/static/survey/js/</span></code>. Create an object with a <code class="docutils literal"><span class="pre">submit_callable</span></code> function that returns an object. This object should get the responses of every instance of this specific step type, and each instance&#8217;s response should be paired with its primary key in the return object. jQuery should be extremely helpful in extracting the responses of a step instance. After writing this object, be sure to register your step to the &#8220;SubmissionHandler&#8221; object in <code class="docutils literal"><span class="pre">submission_handler.js</span></code>, which handles the submission of results and all auditor data when the submit button is clicked.</p>
-</div>
 </div>
 </div>
 <div class="section" id="auditors">
 <h2>Auditors<a class="headerlink" href="#auditors" title="Permalink to this headline">¶</a></h2>
-<p>Inspired by the <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">work</a> of Jeff Rzeszotarski and Aniket Kittur, the framework provides &#8220;auditor&#8221; objects that record a worker&#8217;s interactions with a task from the moment they start until they submit their responses or close out of the page. Auditor data can be used to analyze worker behavior and estimate the quality of responses. Doing this can potentially help identify bad response data or observe a behavioral pattern amongst workers. Auditors are written in JavaScript and primarily make use of jQuery events to detect browser interactions. Auditor code can be found in <code class="docutils literal"><span class="pre">.../js/auditors</span></code>.</p>
-<div class="section" id="currently-included-auditors">
-<h3>Currently Included Auditors<a class="headerlink" href="#currently-included-auditors" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="focus-based-auditors">
-<h4>FOCUS BASED AUDITORS<a class="headerlink" href="#focus-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording whether the worker is on or off focus. A worker is considered on focus if the task page is &#8220;visible&#8221;. The page is visible if it is not tabbed out, minimized, or closed. Primarily makes use of the Page Visibility API (<code class="docutils literal"><span class="pre">.../js/globals/visibility_changes.js</span></code>) to detect changes in focus.</p>
-<ul class="simple">
-<li><strong>Focus Changes</strong>: Timestamps of whenever the worker switches out of focus (tabs out, minimizes, etc).</li>
-<li><strong>On Focus Time</strong>: The total amount of time in milliseconds the worker spent on focus (not tabbed out, etc). Also a <a class="reference external" href="extending.html#time-based-auditors">Time Based Auditor</a>.</li>
-<li><strong>Recorded Time Disparity</strong>: The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="extending.html#time-based-auditors">Time Based Auditor</a>.</li>
-</ul>
-</div>
-<div class="section" id="keyboard-based-auditors">
-<h4>KEYBOARD BASED AUDITORS<a class="headerlink" href="#keyboard-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording typing interactions. Makes use of jQuery keyboard events.</p>
-<ul class="simple">
-<li><strong>Before Typing Delay</strong>: Total time in milliseconds before a worker types; can be null.</li>
-<li><strong>Keypresses Total</strong>: Total number of keypresses.</li>
-<li><strong>Keypresses Specific</strong>: Keycode of the key that was pressed.</li>
-<li><strong>Within Typing Delay</strong>: Checks if the worker typed within the first 10 seconds (default) of the task. Returns &#8220;true&#8221; if so, &#8220;false&#8221; if not.</li>
-</ul>
-</div>
-<div class="section" id="mouse-based-auditors">
-<h4>MOUSE BASED AUDITORS<a class="headerlink" href="#mouse-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording mouse interactions. Makes use of jQuery&#8217;s mousemove and click events.</p>
-<ul class="simple">
-<li><strong>Clicks Total</strong>: Total number of times the worker clicks.</li>
-<li><strong>Clicks Specific</strong>: The DOM element clicked by the worker. Reports the DOM type, id, class, and name.</li>
-<li><strong>Mouse Movement Total</strong>: Total number of times the worker moves his mouse, debounced.</li>
-<li><strong>Mouse Movement Specific</strong>: Ending position of the cursor after the worker moves his mouse, debounced.</li>
-</ul>
-</div>
-<div class="section" id="scroll-based-auditors">
-<h4>SCROLL BASED AUDITORS<a class="headerlink" href="#scroll-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording scrolling events. Makes use of jQuery&#8217;s scroll event and <a class="reference external" href="http://benalman.com/code/projects/jquery-throttle-debounce/examples/debounce/">Ben Alman&#8217;s</a> jQuery debounce plugin (<code class="docutils literal"><span class="pre">.../js/globals/jquery.ba-throttle-debounce.min.js</span></code>).</p>
-<ul class="simple">
-<li><strong>Scrolled Pixels Total</strong>: The total number of pixels scrolled by the worker. Returns both the vertical count and horizontal count, debounced.</li>
-<li><strong>Scrolled Pixels Specific</strong>: For each scrolling event, reports the end position, the raw change in pixels from the previous position, and the timestamp of the event. Records data for both horizontal and vertical scrolling, debounced.</li>
-</ul>
-</div>
-<div class="section" id="time-based-auditors">
-<h4>TIME BASED AUDITORS<a class="headerlink" href="#time-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording the time spent completing the task.</p>
-<ul class="simple">
-<li><strong>Total Task Time</strong>: The total time it takes the worker to complete this task in milliseconds.</li>
-<li><strong>On Focus Time</strong>: The total amount of time in milliseconds the worker spent on focus (not tabbed out, etc). Also a <a class="reference external" href="extending.html#focus-based-auditors">Focus Based Auditor</a>.</li>
-<li><strong>Recorded Time Disparity</strong>: The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="extending.html#focus-based-auditors">Focus Based Auditor</a>.</li>
-</ul>
-</div>
-<div class="section" id="other-auditors">
-<h4>OTHER AUDITORS<a class="headerlink" href="#other-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Pasting events, User Agent spying, and URL.</p>
-<ul class="simple">
-<li><strong>Pastes Total</strong>: Total number of pastes actions.</li>
-<li><strong>Pastes Specific</strong>: The content (text) of a paste action.</li>
-<li><strong>URL</strong>: Returns the URL of the current page.</li>
-<li><strong>User Agent</strong>: Returns the User Agent of the worker; can be parsed to find browser/version and operating system/version.</li>
-</ul>
-</div>
-</div>
-<div class="section" id="id3">
-<h3>Writing Your Own<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="javascript-the-actual-auditor">
-<h4>Javascript: The Actual Auditor<a class="headerlink" href="#javascript-the-actual-auditor" title="Permalink to this headline">¶</a></h4>
+<p>Inspired by the <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">work</a> of Jeff Rzeszotarski and Aniket Kittur, the framework provides &#8220;auditor&#8221; objects that record a worker&#8217;s interactions with a task from the moment they start until they submit their responses or close out of the page. Auditor data can be used to analyze worker behavior and estimate the quality of responses. Doing this can potentially help identify bad response data or observe a behavioral pattern amongst workers. Auditors are written in JavaScript and primarily make use of jQuery events to detect browser interactions. Auditor code can be found in <code class="docutils literal"><span class="pre">.../js/auditors</span></code>. As with steps, writing auditors consists of several steps.</p>
+<div class="section" id="id1">
+<h3>JavaScript<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Auditors generally have the same format, and referencing the default auditors can be helpful when trying to write your own. Create a JavaScript auditor object (<code class="docutils literal"><span class="pre">.../js/auditors/</span></code>) with your needed fields, a function that modifies those fields, and a function to submit those fields. The modifier function is the action that should be executed when your auditor detects a certain interaction. The submission function (<code class="docutils literal"><span class="pre">submit_callable</span></code>) must return a JavaScript object or array of JavaScript objects. The fields can have the value of a single value (int, string, etc). Be sure to register your auditor to the &#8220;SubmissionHandler&#8221; object (<code class="docutils literal"><span class="pre">.../js/submission_handler.js</span></code>), which handles the submission of results and all auditor data when the submit button is clicked.</p>
 </div>
-<div class="section" id="python-the-auditor-s-models">
-<h4>Python: The Auditor&#8217;s Models<a class="headerlink" href="#python-the-auditor-s-models" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id2">
+<h3>Python<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Similarly to the JavaScript side, the Python code (<code class="docutils literal"><span class="pre">.../survey/auditors.py</span></code>) across all auditors is rather similar and should be helpful when writing the models for your auditor. Firstly, add your auditor to the &#8220;NAME_TO_AUDITOR&#8221; dictionary at the top. You will then need to write a class for your auditor&#8217;s data and for the auditor itself. The data class will have a &#8220;general_models&#8221; field with the foreign key being the name of your auditor and a field corresponding to each item specified in the auditor&#8217;s returned object. For instance, if your auditor returned { &#8216;count&#8217;: some_int_var }, this class must have a &#8220;count&#8221; field that accepts data of type int. The actual auditor class has a &#8220;script_location&#8221; field, which is the directory and name of your auditor file, and a &#8220;data_model&#8221; field, which is simply the data class you just wrote.</p>
 </div>
 <div class="section" id="wrapping-it-up">
-<h4>Wrapping it Up<a class="headerlink" href="#wrapping-it-up" title="Permalink to this headline">¶</a></h4>
-<p>If the JavaScript and Python parts were implemented correctly, then your auditor should be able to save its data to the database correctly and without problems. You should be able to see and add your auditor to any new tasks you create, but be sure to test your code before publishing the HIT.</p>
+<h3>Wrapping it Up<a class="headerlink" href="#wrapping-it-up" title="Permalink to this headline">¶</a></h3>
+<p>If the JavaScript and Python parts are implemented correctly, then your auditor should be able to save its data to the database correctly and without problems. You should be able to see and add your auditor to any new tasks you create, but be sure to test your code before publishing the task. It additionally might be helpful to write some unit tests for the auditor.</p>
 </div>
 </div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>To add to or edit existing documentation, <code class="docutils literal"><span class="pre">git</span> <span class="pre">checkout</span></code> the <code class="docutils literal"><span class="pre">sphinx</span></code> branch. Make sure that your virtual environment is active. Source files are located in <code class="docutils literal"><span class="pre">turkey/web/turkey/docs/source</span></code>. A <code class="docutils literal"><span class="pre">Makefile</span></code> is provided for convenience in the <code class="docutils literal"><span class="pre">docs</span></code> directory. To generate HTML files, simply run <code class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></code> in the <code class="docutils literal"><span class="pre">docs</span></code> directory, and the build files will be located in <code class="docutils literal"><span class="pre">build/html</span></code>. When you are finished working on documentation, you can make a <a class="reference external" href="https://github.com/CuriousG102/turkey/pulls">pull request</a> to the <code class="docutils literal"><span class="pre">sphinx</span></code> branch (not <code class="docutils literal"><span class="pre">master</span></code>!).</p>
 </div>
 </div>
 
@@ -160,39 +84,19 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Steps and Auditors</a><ul>
+<li><a class="reference internal" href="#">Contributing and Extending</a><ul>
 <li><a class="reference internal" href="#steps">Steps</a><ul>
-<li><a class="reference internal" href="#currently-included-steps">Currently Included Steps</a><ul>
-<li><a class="reference internal" href="#multiple-answer">Multiple Answer</a></li>
-<li><a class="reference internal" href="#multiple-choice">Multiple Choice</a></li>
-<li><a class="reference internal" href="#text-input">Text Input</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#writing-your-own">Writing Your Own</a><ul>
 <li><a class="reference internal" href="#python">Python</a></li>
-<li><a class="reference internal" href="#javascript">Javascript</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#javascript">JavaScript</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#auditors">Auditors</a><ul>
-<li><a class="reference internal" href="#currently-included-auditors">Currently Included Auditors</a><ul>
-<li><a class="reference internal" href="#focus-based-auditors">FOCUS BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#keyboard-based-auditors">KEYBOARD BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#mouse-based-auditors">MOUSE BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#scroll-based-auditors">SCROLL BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#time-based-auditors">TIME BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#other-auditors">OTHER AUDITORS</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id3">Writing Your Own</a><ul>
-<li><a class="reference internal" href="#javascript-the-actual-auditor">Javascript: The Actual Auditor</a></li>
-<li><a class="reference internal" href="#python-the-auditor-s-models">Python: The Auditor&#8217;s Models</a></li>
+<li><a class="reference internal" href="#id1">JavaScript</a></li>
+<li><a class="reference internal" href="#id2">Python</a></li>
 <li><a class="reference internal" href="#wrapping-it-up">Wrapping it Up</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
 </ul>

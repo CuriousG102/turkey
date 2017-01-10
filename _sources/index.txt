@@ -14,6 +14,7 @@ Contents:
    overview
    authors
    setup
+   stepsauditors
    taskcreation
    data
    extending
