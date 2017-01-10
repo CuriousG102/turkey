@@ -1,11 +1,11 @@
 {% load static %}
 <!-- MmmTurkey embed -->
 <!-- TODO: The request crap is a painful hack till we have our static assets served off-server -->
-<script src="{% if request %}//{% endif %}{% static "http:" %}{{ request.get_host }}{% static "survey/js/globals/jquery.ba-throttle-debounce.min.js" %}"></script>
-<script src="{% if request %}//{% endif %}{% static "http:" %}{{ request.get_host }}{% static "survey/js/globals/visibility_changes.js" %}"></script>
-<script src="{% if request %}//{% endif %}{% static "http:" %}{{ request.get_host }}{% static "survey/js/globals/js.cookie.js" %}"></script>
-<script src="{% if request %}//{% endif %}{% static "http:" %}{{ request.get_host }}{% static "survey/js/interaction_manager.js" %}"></script>
-<script src="{% if request %}//{% endif %}{% static "http:" %}{{ request.get_host }}{% static "survey/js/mmm_turkey.js" %}"></script>
+<script src="{% if request %}http://{% endif %}{{ request.get_host }}{% static "survey/js/globals/jquery.ba-throttle-debounce.min.js" %}"></script>
+<script src="{% if request %}http://{% endif %}{{ request.get_host }}{% static "survey/js/globals/visibility_changes.js" %}"></script>
+<script src="{% if request %}http://{% endif %}{{ request.get_host }}{% static "survey/js/globals/js.cookie.js" %}"></script>
+<script src="{% if request %}http://{% endif %}{{ request.get_host }}{% static "survey/js/interaction_manager.js" %}"></script>
+<script src="{% if request %}http://{% endif %}{{ request.get_host }}{% static "survey/js/mmm_turkey.js" %}"></script>
 <script>
   var interaction_manager = new InteractionManager(
       "{{ fetch_interaction_endpoint }}",
