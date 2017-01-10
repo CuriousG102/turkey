@@ -44,39 +44,27 @@
 <h1>Steps and Auditors<a class="headerlink" href="#steps-and-auditors" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="steps">
 <h2>Steps<a class="headerlink" href="#steps" title="Permalink to this headline">¶</a></h2>
-<p>If you think of your HIT as a test, then a &#8220;step&#8221; is an individual question in your test. You can add as many steps as you would like to your task, and you can choose to have them ordered or unordered (randomized). The same applies to the response options of each step, if applicable.</p>
-<div class="section" id="currently-included-steps">
-<h3>Currently Included Steps<a class="headerlink" href="#currently-included-steps" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="multiple-answer">
-<h4>Multiple Answer<a class="headerlink" href="#multiple-answer" title="Permalink to this headline">¶</a></h4>
-<p>Checkbox questions that allows the worker to select several answers.</p>
-</div>
-<div class="section" id="multiple-choice">
-<h4>Multiple Choice<a class="headerlink" href="#multiple-choice" title="Permalink to this headline">¶</a></h4>
-<p>Classic multiple choice question that restricts the worker to selecting only one answer.</p>
-</div>
-<div class="section" id="text-input">
-<h4>Text Input<a class="headerlink" href="#text-input" title="Permalink to this headline">¶</a></h4>
-<p>Question that requires the worker to type a textual response.</p>
-</div>
-</div>
+<p>If you think of your HIT as a test, then a &#8220;step&#8221; is an individual question in your test. You can add as many steps as you would like to your task, and you can choose to have them ordered or unordered (randomized). The same applies to the response options of each step, if applicable. The list of currently included steps is as follows:</p>
+<ul class="simple">
+<li><strong>Multiple Answer</strong>: Checkbox question that allows the worker to select several answers.</li>
+<li><strong>Multiple Choice</strong>: Classic multiple choice question that restricts the worker to selecting only one answer.</li>
+<li><strong>Text Input</strong>: Question that requires the worker to type a textual response.</li>
+</ul>
 </div>
 <div class="section" id="auditors">
 <h2>Auditors<a class="headerlink" href="#auditors" title="Permalink to this headline">¶</a></h2>
-<p>Inspired by the <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">work</a> of Jeff Rzeszotarski and Aniket Kittur, the framework provides &#8220;auditor&#8221; objects that record a worker&#8217;s interactions with a task from the moment they start until they submit their responses or close out of the page. Auditor data can be used to analyze worker behavior and estimate the quality of responses. Doing this can potentially help identify bad response data or observe a behavioral pattern amongst workers. Auditors are written in JavaScript and primarily make use of jQuery events to detect browser interactions. Auditor code can be found in <code class="docutils literal"><span class="pre">.../js/auditors</span></code>.</p>
-<div class="section" id="currently-included-auditors">
-<h3>Currently Included Auditors<a class="headerlink" href="#currently-included-auditors" title="Permalink to this headline">¶</a></h3>
+<p>Inspired by the <a class="reference external" href="http://jeffrz.com/wp-content/uploads/2010/08/fp359-rzeszotarski.pdf">work</a> of Jeff Rzeszotarski and Aniket Kittur, the framework provides &#8220;auditor&#8221; objects that record a worker&#8217;s interactions with a task from the moment they start until they submit their responses or close out of the page. Auditor data can be used to analyze worker behavior and estimate the quality of responses. Doing this can potentially help identify bad response data or observe a behavioral pattern amongst workers. Auditors are written in JavaScript and primarily make use of jQuery events to detect browser interactions. Auditor code can be found in <code class="docutils literal"><span class="pre">.../js/auditors</span></code>. Currently included auditors are as follows:</p>
 <div class="section" id="focus-based-auditors">
-<h4>FOCUS BASED AUDITORS<a class="headerlink" href="#focus-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording whether the worker is on or off focus. A worker is considered on focus if the task page is &#8220;visible&#8221;. The page is visible if it is not tabbed out, minimized, or closed. Primarily makes use of the Page Visibility API (<code class="docutils literal"><span class="pre">.../js/globals/visibility_changes.js</span></code>) to detect changes in focus.</p>
+<h3>Focus-based Auditors<a class="headerlink" href="#focus-based-auditors" title="Permalink to this headline">¶</a></h3>
+<p>Auditors recording whether the worker is on or off focus. A worker is considered on focus if the task page is &#8220;visible&#8221;. The page is visible if it is not tabbed out, minimized, or closed. Primarily makes use of the <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API">Page Visibility API</a> to detect changes in focus.</p>
 <ul class="simple">
 <li><strong>Focus Changes</strong>: Timestamps of whenever the worker switches out of focus (tabs out, minimizes, etc).</li>
-<li><strong>On Focus Time</strong>: The total amount of time in milliseconds the worker spent on focus (not tabbed out, etc). Also a <a class="reference external" href="extending.html#time-based-auditors">Time Based Auditor</a>.</li>
-<li><strong>Recorded Time Disparity</strong>: The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="extending.html#time-based-auditors">Time Based Auditor</a>.</li>
+<li><strong>On Focus Time</strong>: The total amount of time in milliseconds the worker spent on focus (not tabbed out, etc). Also a <a class="reference external" href="stepsauditors.html#time-based-auditors">Time-based Auditor</a>.</li>
+<li><strong>Recorded Time Disparity</strong>: The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="stepsauditors.html#time-based-auditors">Time-based Auditor</a>.</li>
 </ul>
 </div>
 <div class="section" id="keyboard-based-auditors">
-<h4>KEYBOARD BASED AUDITORS<a class="headerlink" href="#keyboard-based-auditors" title="Permalink to this headline">¶</a></h4>
+<h3>Keyboard-based Auditors<a class="headerlink" href="#keyboard-based-auditors" title="Permalink to this headline">¶</a></h3>
 <p>Auditors recording typing interactions. Makes use of jQuery keyboard events.</p>
 <ul class="simple">
 <li><strong>Before Typing Delay</strong>: Total time in milliseconds before a worker types; can be null.</li>
@@ -86,8 +74,8 @@
 </ul>
 </div>
 <div class="section" id="mouse-based-auditors">
-<h4>MOUSE BASED AUDITORS<a class="headerlink" href="#mouse-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording mouse interactions. Makes use of jQuery&#8217;s mousemove and click events.</p>
+<h3>Mouse-based Auditors<a class="headerlink" href="#mouse-based-auditors" title="Permalink to this headline">¶</a></h3>
+<p>Auditors recording mouse interactions. Makes use of jQuery&#8217;s mousemove and click events. Additionally, makes use of <a class="reference external" href="http://benalman.com/code/projects/jquery-throttle-debounce/examples/debounce/">Ben Alman&#8217;s jQuery debounce plugin</a>.</p>
 <ul class="simple">
 <li><strong>Clicks Total</strong>: Total number of times the worker clicks.</li>
 <li><strong>Clicks Specific</strong>: The DOM element clicked by the worker. Reports the DOM type, id, class, and name.</li>
@@ -96,24 +84,24 @@
 </ul>
 </div>
 <div class="section" id="scroll-based-auditors">
-<h4>SCROLL BASED AUDITORS<a class="headerlink" href="#scroll-based-auditors" title="Permalink to this headline">¶</a></h4>
-<p>Auditors recording scrolling events. Makes use of jQuery&#8217;s scroll event and <a class="reference external" href="http://benalman.com/code/projects/jquery-throttle-debounce/examples/debounce/">Ben Alman&#8217;s</a> jQuery debounce plugin (<code class="docutils literal"><span class="pre">.../js/globals/jquery.ba-throttle-debounce.min.js</span></code>).</p>
+<h3>Scroll-based Auditors<a class="headerlink" href="#scroll-based-auditors" title="Permalink to this headline">¶</a></h3>
+<p>Auditors recording scrolling events. Makes use of jQuery&#8217;s scroll event and Ben Alman&#8217;s jQuery debounce plugin.</p>
 <ul class="simple">
 <li><strong>Scrolled Pixels Total</strong>: The total number of pixels scrolled by the worker. Returns both the vertical count and horizontal count, debounced.</li>
 <li><strong>Scrolled Pixels Specific</strong>: For each scrolling event, reports the end position, the raw change in pixels from the previous position, and the timestamp of the event. Records data for both horizontal and vertical scrolling, debounced.</li>
 </ul>
 </div>
 <div class="section" id="time-based-auditors">
-<h4>TIME BASED AUDITORS<a class="headerlink" href="#time-based-auditors" title="Permalink to this headline">¶</a></h4>
+<h3>Time-based Auditors<a class="headerlink" href="#time-based-auditors" title="Permalink to this headline">¶</a></h3>
 <p>Auditors recording the time spent completing the task.</p>
 <ul class="simple">
 <li><strong>Total Task Time</strong>: The total time it takes the worker to complete this task in milliseconds.</li>
-<li><strong>On Focus Time</strong>: The total amount of time in milliseconds the worker spent on focus (not tabbed out, etc). Also a <a class="reference external" href="extending.html#focus-based-auditors">Focus Based Auditor</a>.</li>
-<li><strong>Recorded Time Disparity</strong>: The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="extending.html#focus-based-auditors">Focus Based Auditor</a>.</li>
+<li><strong>On Focus Time</strong>: The total amount of time in milliseconds the worker spent on focus (not tabbed out, etc). Also a <a class="reference external" href="stepsauditors.html#focus-based-auditors">Focus-based Auditor</a>.</li>
+<li><strong>Recorded Time Disparity</strong>: The total amount of time in milliseconds the worker spent off focus (tabbed out, etc). Also a <a class="reference external" href="stepsauditors.html#focus-based-auditors">Focus-based Auditor</a>.</li>
 </ul>
 </div>
 <div class="section" id="other-auditors">
-<h4>OTHER AUDITORS<a class="headerlink" href="#other-auditors" title="Permalink to this headline">¶</a></h4>
+<h3>Other Auditors<a class="headerlink" href="#other-auditors" title="Permalink to this headline">¶</a></h3>
 <p>Pasting events, User Agent spying, and URL.</p>
 <ul class="simple">
 <li><strong>Pastes Total</strong>: Total number of pastes actions.</li>
@@ -121,7 +109,6 @@
 <li><strong>URL</strong>: Returns the URL of the current page.</li>
 <li><strong>User Agent</strong>: Returns the User Agent of the worker; can be parsed to find browser/version and operating system/version.</li>
 </ul>
-</div>
 </div>
 </div>
 </div>
@@ -135,25 +122,14 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Steps and Auditors</a><ul>
-<li><a class="reference internal" href="#steps">Steps</a><ul>
-<li><a class="reference internal" href="#currently-included-steps">Currently Included Steps</a><ul>
-<li><a class="reference internal" href="#multiple-answer">Multiple Answer</a></li>
-<li><a class="reference internal" href="#multiple-choice">Multiple Choice</a></li>
-<li><a class="reference internal" href="#text-input">Text Input</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#steps">Steps</a></li>
 <li><a class="reference internal" href="#auditors">Auditors</a><ul>
-<li><a class="reference internal" href="#currently-included-auditors">Currently Included Auditors</a><ul>
-<li><a class="reference internal" href="#focus-based-auditors">FOCUS BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#keyboard-based-auditors">KEYBOARD BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#mouse-based-auditors">MOUSE BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#scroll-based-auditors">SCROLL BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#time-based-auditors">TIME BASED AUDITORS</a></li>
-<li><a class="reference internal" href="#other-auditors">OTHER AUDITORS</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#focus-based-auditors">Focus-based Auditors</a></li>
+<li><a class="reference internal" href="#keyboard-based-auditors">Keyboard-based Auditors</a></li>
+<li><a class="reference internal" href="#mouse-based-auditors">Mouse-based Auditors</a></li>
+<li><a class="reference internal" href="#scroll-based-auditors">Scroll-based Auditors</a></li>
+<li><a class="reference internal" href="#time-based-auditors">Time-based Auditors</a></li>
+<li><a class="reference internal" href="#other-auditors">Other Auditors</a></li>
 </ul>
 </li>
 </ul>
