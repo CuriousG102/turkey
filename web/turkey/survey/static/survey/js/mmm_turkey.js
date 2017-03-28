@@ -41,7 +41,8 @@ AuditorHandler.prototype.submit = function(callback) {
             callback();
         }
     }
-    $.post({
+    $.ajax({
+        method: "POST",
         url: this.submission_endpoint,
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(submission),

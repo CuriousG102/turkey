@@ -36,10 +36,11 @@ InteractionManager.prototype.get_interaction = function(callback) {
     if (token) {
         post_data['token'] = token;
     }
-    this.request_promise = $.post({
+    this.request_promise = $.ajax({
+        method: "POST",
         url: this.fetch_interaction_endpoint,
         contentType: "application/json; charset=ut-8",
-        data: JSON.stringify(post_data),
+        data: JSON.stringify(post_data)
     }).promise();
     this.request_promise
         .done(function (data, text, xhr) {
